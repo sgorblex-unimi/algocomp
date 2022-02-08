@@ -1,0 +1,97 @@
+\chapter{Laboratorio 1: cammini disgiunti tramite algoritmo basato su pricing}
+
+<<>>= 
+import networkx as nx
+import math
+from networkx.algorithms.shortest_paths.weighted import dijkstra_path
+@
+
+Definiamo una funzione per generare grafi in una  forma precisa, ossia a 
+\textit{doppio ventaglio}: 
+
+<<>>=
+def doubleFan(k):
+    G = nx.DiGraph()
+    G.add_nodes_from(['s', 't', 'x', 'y'])
+    G.add_nodes_from(['a' + str(i) for i in range(k)])
+    G.add_nodes_from(['b' + str(i) for i in range(k)])
+    G.add_edges_from([('s', 'a' + str(i)) for i in range(k)])
+    G.add_edges_from([('a' + str(i), 'x') for i in range(k)])
+    G.add_edges_from([('y', 'b' + str(i)) for i in range(k)])
+    G.add_edges_from([('b' + str(i), 't') for i in range(k)])
+    G.add_edge('x', 'y')
+    return G
+@
+
+<<>>=
+nx.draw(doubleFan(2))
+@
+
+<<>>=
+nx.draw(doubleFan(4))
+@
+
+<<>>=
+nx.draw(doubleFan(8))
+@
+
+Definiamo, quindi, una funzione che implementa \textsc{PricedDisjointPaths}: 
+
+<<>>=
+def greedyDisjointPaths(G_original, sourceTargetPairs, c = 1):
+    G = G_original.copy()
+    result = []
+    beta = math.pow(G.number_of_edges(), 1 / (c + 1))
+    # Set all lengths to 1 and all congestion to 0
+    for u,v,d in G.edges(data = True):
+        d['length'] = 1
+        d['congestion'] = 0
+    # Main cycle
+    while True:
+        minPath = None
+        for pairIndex in range(len(sourceTargetPairs)):
+            try:
+                source = sourceTargetPairs[pairIndex][0]
+                target = sourceTargetPairs[pairIndex][1]
+                path = dijkstra_path(G, source, target, 'length')
+            except:
+                pass
+            else:
+                pathLength = 0
+                for i in range(len(path) - 1):
+                    pathLength += G[path[i]][path[i+1]]['length']
+                if minPath == None or pathLength < minPathLength:
+                    minPath = path
+                    minPathLength = pathLength
+                    minPathIndex = pairIndex
+        if minPath == None:
+            break
+        result.append(minPath)
+        sourceTargetPairs.pop(minPathIndex)
+        for i in range(len(path) - 1):
+            x1 = path[i]
+            x2 = path[i+1]
+            G[x1][x2]['length'] *= beta
+            G[x1][x2]['congestion'] += 1
+            if G[x1][x2]['congestion'] == c:
+                G.remove_edge(x1, x2)
+    return result
+@
+
+<<>>=
+g = doubleFan(2)
+nx.draw(g, with_labels = True)
+@
+
+<<>>=
+greedyDisjointPaths(g, [('s', 't')]*11, c = 10)
+@
+
+<<>>=
+g = doubleFan(4)
+nx.draw(g, with_labels = True)
+@
+
+<<>>=
+greedyDisjointPaths(g, [('s', 't')]*11, c = 10)
+@

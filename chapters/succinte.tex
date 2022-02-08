@@ -1,0 +1,547 @@
+\chapter{Strutture succinte}
+\section{Abstract data types}
+Essi sono tipi di dati descritti dal loro comportamento: un esempio è
+l'ADT \texttt{stack<T>}, il quale è dotato di alcune operazioni inerenti al tipo
+stesso, chiamate \textbf{primitive}:
+\begin{lstlisting}
+  bool  isEmpty()
+  T     top()
+  void  pop()
+  void  push(T)
+\end{lstlisting}
+\textit{Spiegare} cosa facciano i metodi si può fare in molti modi: si può
+utilizzare un metodo discorsivo, spiegando a parole, o utilizzare un metodo
+analitico:
+$$
+	\forall S, s.push(x).top() = x
+$$
+(nonostante la notazione impropria dovuta alla signatura delle funzioni);
+$$
+	\forall S, s.isEmpty() = S.push(x).pop().isEmpty()
+$$
+Una volta descritto un ADT è necessario implementarlo, ossia costruire effettivamente
+una struttura che implementa le primitive e le equazioni descritte. Chiaramente,
+vi sono molte implementazioni diverse che sì soddisfano le equazioni richieste
+ma hanno \textit{costi} diversi, sia in tempo che in spazio. Saremo interessati
+ad alcuni ADT e relative implementazioni che utilizzano poco tempo e spazio.
+
+\subsection{Information-theoretical lower bounds}
+I concetti relativi discendono dai teoremi di Shannon.
+\begin{theorem}
+	Per codificare $v$ valori servono in media $\log_2(v)$ bit.
+\end{theorem}
+
+Per esempio, immaginiamo di dover codificare un'immagine $100x100$ pixel
+in bianco e nero. Le immagini possibili sono $2^{10000}$: per codificare
+queste immagini servono in media $10000$ bit.
+
+Siano dati $v$ valori tali per cui sono necessari $x_1, x_2, \cdots, x_v$ bit
+per rappresentare ogni $v_i$ valore. Ciò che il teorema dice è che
+$$
+	\frac{\sum_{i} x_i}{v} = \log_2(v)
+$$
+Il teorema di Shannon afferma anche che c'è un \textit{sistema di compressione}
+che riesce ad utilizzare un numero di bit in media tra $[\log_2(v), 1+ \log_2(v))$.
+Ci confronteremo spesso con questo \textit{lower bound}: si immagini un ADT
+con $v_n$ valori di taglia $n$; per esempio, uno \textsc{stack}  con valori tra
+$<\{1, \cdots, 10>$; lo stack di taglia $0$ è lo stack vuoto, gli stack
+di taglia $1$ sono gli stack che contengono solo $1$, solo $2$, e così via e
+sono $10$; gli stack di taglia $2$ sono $10^2$ - in generale uno stack
+di taglia $n$ ha $10^n$ valori. Il teorema di  Shannon afferma che in media servono
+$log_2{10^n} = n \log_2(10) \approx 4n$ bit: sappiamo quindi che in media
+\textit{nessuna implementazione} può utilizzare, in media, meno di
+$Z_n = (\log_2(1))n$ bit.
+
+Ipotizziamo di avere una struttura che utilizza in media $D_n \geq Z_n$ bit:
+esiste un tradeoff tra quanto \textit{compatta} è la struttura e quanto
+tempo è necessario per eseguire le funzioni primitive. Al contrario di quanto
+possa accadere per un sistema di compressione (e.g. \texttt{tz2}), non siamo
+interessati a strutture che richiedono la decompressione dei dati per poter
+eseguire le funzioni primitive.
+
+Un'implementazione dell'ADT è chiamata \textbf{implicita} se occupa un numero
+di bit $D_n = Z_n + O(1)$, \textbf{succinta} se occupa un numero di bit
+$D_n = Z_n + o(Z_n)$ e \textbf{compatta} se $D_n = O(Z_n)$; tutto questo sempre
+notando che le primitive devono essere efficienti tanto quanto quelle definite
+su strutture non compresse.
+
+\section{Strutture di rango e selezione}
+Questi ADT sono definiti da $b \in 2^n$ con due primitive:
+$$
+	rank_b = \mathbb{N} \rightarrow \mathbb{N}
+$$
+$$
+	select_b= \mathbb{N} \rightarrow \mathbb{N}
+$$
+tali che:
+$$
+	\forall p \leq n ~~ rank_b(p) = |\{i | i < p \land b_i = 1\}|
+$$
+$$
+	\forall k \leq n ~~ select_b(k) =\max |\{p | rank_b(p) \leq k\}|
+$$
+$$
+	\forall k rank_b(select_b(k)) = k
+$$
+$$
+	\forall p select_b(rank_b(p)) \geq p
+$$
+Grazie a quest'ultima proprietà è possibile dedurre la struttura sottostante,
+nel senso che è possibile capire dove siano gli $0$ e gli $1$.
+
+\subsection{Strutture di Jacobson per il rango}
+\subsubsection{Four-Russians trick}
+L'idea è utilizzare il ``\textit{Four-Russians trick}''. Si immagini di
+voler rappresentare una matrice binaria: un modo per farlo potrebbe essere
+dividere la matrice in blocchi (le cui dimensioni saranno da stabilirsi, per esempio $3\times 2$)
+chiamati \textit{piastrelle} e controllare la matrice all'interno di ogni blocco;
+teniamo una seconda tabella di blocchi possibili, associate ad un enumeratore.
+
+% disegno.. 19-11-2021 ... 
+
+
+% lezione 17 - 24-11-2021
+Se la matrice è molto ripetitiva, le piastrelle possibili da ricordare saranno
+poche e basterà utilizzare il numero associato alla piastrella per rappresentare
+l'intera matrice.
+
+\noindent
+Il vettore $b$  di $n$ bit viene quindi diviso in blocchi della stessa lunghezza, chiamati
+\textit{superblocchi}, di lunghezza $\log_2(n)^2$. Ogni superblocco viene
+diviso a sua volta in blocchi più piccoli, di lunghezza $0.5 \log_2(n)$.
+% disegno b, superblocchi e blocchi. 
+
+A questo punto, per ogni superblocco $i$ si memorizza un numero
+$$
+	S_i = \mathbf{rank}(i[0])
+$$
+Ci saranno quindi delle entry nella tabella dei rank che corrispondono alle
+posizioni $0$, $\log_2(n)^2$, $2\log_2(n)^2$ e così via.
+Per ogni blocco $l$ afferente al superblocco $i$ si memorizza un numero
+$$
+	B_l = \mathbf{rank}(l[0]) - S_i
+$$
+Quindi, gli $S_i$ occupano spazio
+$$
+	\frac{n}{\log_2(n)^2} \underbrace{\log_2(n)}_{\text{spazio di un } S_I} = \frac{n}{\log_2(n)}
+$$
+mentre i $B_l$ occupano spazio
+$$
+	\frac{n}{\frac{1}{2}\log_2(n)} \underbrace{\log_2(\log(n)^2)}_{\text{al massimo}} = \frac{2n}{\log_2(n)} 2 \log(\log(n))
+$$
+Queste quantità sono $o(n)$.
+
+Se si vuole conoscere il rango di uno specifico bit in un blocco bisogna
+recuperare $S_i$ e $B_i$ e calcolare il quale sia effettivamente il rango, che
+invece non è stato memorizzato. Il trucco è utilizzato in questo punto:
+siccome i blocchi sono di lunghezza $1/2 \log_2(n)$, vi sono
+$2^{1/2 \log_2(n)} = \sqrt(n)$ blocchi; possiamo quindi enumerarli e,
+per ogni possibile enumerazione, elencare quale sia il rango di ogni
+bit del blocco.  Questa struttura occupa spazio
+$$
+	\sqrt(n) \underline{righe}_{\frac{1}{2} \log_2(n)} \log_2(\frac{1}{2}\log(n))
+	\leq \sqrt(n) \log_2(n) \log_2(\log_2(n))  = o(n)
+$$
+Complessivamente, quindi, tutte le tabelle necessario occupano un $D_n = o(n)$ bit.
+Quanto tempo impiega un'interrogazione $\mathbf{rank}_b(p)$?
+
+% equazione min. 20 
+
+ossia in tempo lineare, poiché si tratta di accedere a $3$ tabelle; la struttura
+quindi occupa lo spazio di $n + o(n)$ bit, poiché è necessario mantenere $b$ e
+risponde alle query in tempo $O(1)$. Rispetto alla nostra classificazione,
+questa struttura è succinta e ha la stessa efficienza della struttura na\:ive.
+
+\subsubsection{Struttura di Clarke per select}
+
+
+
+% lezione 19 - 01-12-2021
+\section{Strutture succinte per alberi binari}
+Un albero binario è l'insieme vuoto $\emptyset$ o una coppia $(L, R)$ di alberi binari.
+% disegno albero vuoto e albero binario L R..
+Per ora stiamo descrivendo alberi \textit{vuoti}, ossia che non contengono dati:
+alternative sono gli alberi \textbf{ancillari}, i quali contengono dati solo nei nodi interni
+o solo nelle foglie.
+\begin{theorem} \label{thm:}
+	Il numero di foglie in un albero binario è uguale al numero di nodi esterni più uno:
+	$$
+		Leaves = Internal + 1
+	$$
+\end{theorem}
+\begin{proof}
+	Per induzione.
+	Caso base: $ext(\emptyset) = 1$ e $int(\emptyset) = 0$.
+	Passo induttivo: siano $L, R$ due alberi binari. Allora
+	$$
+		ext(L,R) = ext(L) + ext(R) = int(L) + 1 + int(R) + 1 = int(L, R)  + 1
+	$$
+\end{proof}
+
+In particolare, chiameremo $n$ il numero di nodi interni per un generico albero binario.
+\begin{corollario}
+	Ogni albero con $n$ nodi interni ha in totale $2n +1$ nodi.
+\end{corollario}
+
+\begin{theorem}\label{lem:ncatalano}
+	Il numero di alberi binari con $n$ nodi interni è
+	$$
+		C_n = \frac{1}{n+1}{2n \choose n}
+	$$
+\end{theorem}
+
+% x! \approx \sqrt{2\pi x} (\frac{x}{e})^x Sterling..
+
+$$
+	C_n = \frac{1}{n+1} \frac{(2n)!}{n! (2n - n)!} = \frac{1}{n+1}\frac{(2n)!}{(n!)^2} \approx
+	\frac{1}{n+1} \frac{\sqrt{4 \pi n} (\frac{2n}{e})^{2n}}{2 \pi e (\frac{n}{e})^{2n}}
+	= \frac{1}{n+1} \frac{1}{\sqrt{\pi n }} 2^{2n} \approx \frac{4^n}{\sqrt{\pi n^3}}
+$$
+(che può essere dimostrato asintoticamente corretto).
+Questo significa che
+$$
+	\log_2(C_n) = n \log_2(4) - \frac{1}{2}\log_2(\pi n^3) = 2n + O(\log_2(n))
+$$
+\begin{corollario}
+	Per memorizzare alberi binari con $n$ nodi interni sono necessari
+	$$
+		Z_n = 2n + O(\log_2(n))
+	$$
+	bit.
+\end{corollario}
+
+Numeriamo seguendo una visita in ampiezza un albero binario e creiamo un vettore di bit
+le cui entry sono $2n+1$. Per ogni $i$ del vettore binario si inserisce un $1$ se $i$ è il numero di
+un nodo interno, ottenendo quindi esattamente $n-1$ $1$ nel vettore.
+Si immagini di avere l'albero binario in cui vi è un nodo interno numerato $P$ con due figli con numeri $Q$ e $Q+1$.
+Chiaramente si ha $Q = |nodi di T'| = 2 |nodi interni di T'| + 1 = 2(|nodi interni di T| < P) + 1 = 2(|uni dentro il vettore b di indice p +1 = 2rank_b(P) +1$.
+Se invece è necessario anche risalire al genitore a partire dal figlio, allora il figlio di sinistra è
+$2rank_b(q) +1 = P$, mentre il figlio di destra è $2rank_b(q) + 2 = P$, quindi
+$$
+	\begin{cases}
+		rank_b(q) = \frac{P}{2} - \frac{1}{2} \\
+		rank_b(q) = \frac{P}{2} - 1           \\
+	\end{cases}
+	= rank_b(q) = \lfloor\frac{P}{2} - {1}{2} \rfloor
+$$
+$select(rank_b(q)) = select(\lfloor\frac{P}{2} - {1}{2} \rfloor) \implies q = select(\lfloor\frac{P}{2} - {1}{2}\rfloor)$
+indipendentemente dal fatto che $q$ sia figlio di destra o di sinistra.
+
+
+Per rappresentare un albero con $n$ nodi interni utilizziamo un vettore $b$ che ha tanti
+bit tanti quanti sono i nodi dell'albero, ossia $2n +1$. Oltre a questo, si utilizza
+lo spazio utilizzato dalle strutture di rank e select, ossia
+$$
+	D_n = 2n +1 + o(2n+1) = 2n + 1 + o(n)
+$$
+con un risultato per $Z_n$ pari a $2n + O(\log_1(n))$, la differenza è
+$$
+	D_n - Z_n = o(n)
+$$
+pertanto la struttura è succinta con accesso in tempo costante.
+
+\subsection{Alberi binari con dati}
+Se i dati si trovano su ogni tipo di nodo dell'albero (sia interni che interni) i dati
+\textit{ancillari} si possono mantenere in un ulteriore vettore della stessa lunghezza.
+% disegno..
+Se, invece, i dati ancillari si trovano esclusivamente sui nodi interni, la situazione è leggermente
+più complicata: il vettore dei dati avrà lunghezza pare ai al numero di nodi interni: sarà quindi
+necessario ottenere il numero del nodo interno, utilizzando quindi una \texttt{select}. Alternativamente,
+se si vogliono salvare dati sulle foglie, si dovrà utilizzare una tecnica in grado di contare il \texttt{rank}
+per gli $0$.
+
+\section{Rappresentazione di Elias-Fano di sequenze monotone}
+Una sequenza di interi
+$$
+	x_0, x_1, \cdots, x_{n+1}
+$$
+ordinati (ossia $i < j \implies x_i < x_j$) e tutti minori di un numero $u$ chiamato
+\textit{dimensione dell'universo} (ossia $\forall i, x_i < u$) richiede una primitiva che, presentato
+un indice $i$, restituisce l'$i$-esimo elemento della sequenza.
+
+La rappresentazione di Elias-Fano
+% 0  	0 	0 	0
+% 0     0       0       0
+% 1     1       1       1 			Parte superiore
+% 1     1       1       1
+% -------------------------- 			Limite l 
+% 0     1       1       1 			
+% 1     0       0       1 			Parte inferiore
+% 0     0       1       0
+$l = \max\{0, \lfloor \log_2{\frac{u}{n}}\rfloor\}$ assumiamo $u >= n$.
+
+Le parti inferiori $l_i = x_i \mod 2^l$ vengono memorizzati esplicitamente, utilizzando $l$ bit per ciascuno.
+Ciò che rimane è la parte superiore, ossia $s_i = \lfloor{\frac{x_{i}}{2^l}}\rfloor$ e chiamiamo
+$$
+	u_i = \lfloor{\frac{x_i}{2^l}}\rfloor -\lfloor{\frac{x_{i-1}}{2^l}}\rfloor
+$$
+assumendo $x_{-1} = 0$; questa sequenza di differenze viene memorizzata in unario, terminate dal bit $1$:
+questa sequenza è salvata in un vettore $u$, sul quale viene costruita una struttura di rank e select.
+
+Le due strutture, la lista di $l$ e il vettore $u$, utilizzano il seguente spazio:
+$l$: $ln$ bit; $u$: $\sum_{i = 0}^{ n-1} (u_i + 1) = n + \sum_{i = 0}^{n-1} u_i = n + \sum_{i = 0}^{n-1} \lfloor{\frac{x_i}{2^l}}\rfloor -\lfloor{\frac{x_{i-1}}{2^l}}\rfloor$
+che identifica una serie telescopica, nella quale rimarrà $u = n - \lfloor{\frac{x_{n-1}}{2^l}}\rfloor -\lfloor{\frac{x_{-1}}{2^l}}\rfloor \leq n + \frac{u}{2^l}$
+$ = n + \frac{u}{2^{\lfloor log(\frac{u}{n})\rfloor}}$.
+Se $u/n$ è una potenza di $2$, allora
+$ = n + \frac{u}{(u/n)} = 2n$;
+altrimenti
+$ \leq n + \frac{u}{2^{log(\frac{u}{n}) - 1 }} = n + \frac{u}{2^{\log(u/n)}1/2} = n + \frac{2n}{u/n} = 3n$.
+In tutto, quindi, si occupano
+$(l+2)n$ bit o $(l+3)n$ bit, a seconda che $u/n$ sia potenza di $2$.
+$$
+	\lceil l = \log_2(u/n) \rceil =
+	\begin{cases}
+		l & u/n \text{ è una potenza di } 2 \\
+		l +1                                \\
+	\end{cases}
+$$
+concludiamo
+$$
+	D_n = (2 + \lceil \log_2(u/n) \rceil)
+$$
+che però non tiene conto dello spazio occupato da rank e select.
+
+Supponiamo di volere la posizione dell'$i$-esimo $1$ in $u$:
+$$
+	select_u(i) = u_0 + u_1 \cdots + u_{i-1} + i
+$$
+Quindi $ select_u(i) - i = \sum_{j = 0}^i \lfloor{\frac{x_{j}}{2^l}}\rfloor -\lfloor{\frac{x_{j-1}}{2^l}}\rfloor  = \lfloor \frac{x_i}{2^l} \rfloor$;
+di conseguenza $x_i =  \lfloor \frac{x_i}{2^l} \rfloor 2^l + x_i mod 2^l = (select_u(i) - i ) 2^l + l_i$.
+E, contando anche le strutture di rank e select,
+$$
+	D_n = (2 + \lceil \log_2(u/n) \rceil)n + o(n)
+$$
+
+\subsubsection{Lower bound per le strutture di Elias-Fano}
+Dobbiamo considerare tutte le sequenze monotone
+$$
+	0 \leq x_0 \leq \cdots \leq x_{n-1} \leq u
+$$
+Quante sono, una volta fissati $n$ e $u$? Esse sono in biiezioni con i multinsiemi di cardinalità
+$n$ sottoinsiemi di $\{0,1, \cdots, u-1\}$. Uno di questi multinsiemi si può vedere come
+$$
+	c_0, c_1, \cdots, c_{u-1}
+$$
+che si può vedere come il numero di occorrenze del valore $0, 1, \cdots, u-1$ nel multinsieme, ossia
+il numero di soluzioni intere non negative dell'equazione $c_0 + c_1, \cdots, c_{u-1} = n$. Quante sono le
+soluzioni? Per farlo, si può utilizzare la tecnica \textit{stars and bands}.  Il numero di soluzioni
+è uguale al numero di stringhe costruite in tale modo. In quanti modi si possono disporre le
+$n$ stelline e le $u-1$ barrette? Si hanno in totale $u + n -1 $ caratteri; ossia ${u + n -1}\choose{u - 1}$.
+Questo fornisce l'I.T.L.B:
+$Z_n = \log_2({{u + n -1}\choose{u - 1}})$.
+%
+% Approx: (a choose b) \approx b log(a/b) + (a - b ) + log(a/(a-b))
+
+$Z_n = \log_2({{u + n -1}\choose{u - 1}}) \approx = n \log_2(\frac{u + n -1) + (u + n -1 - u + 1) + log(\frac{u + n - 1}{\frac{u + n -1-u + 1}{u -1}}})$
+$= n \log_2(\frac{u + n - 1}{n}) = n \log(u/n(1 + n/u - 1/u)) = n log(u/n) + log(1 + n/u - 1/u)$
+% approx: x \approx ln(1+x)
+$= Z_n \approx n log(u/n) + n ln(1 + n/u - 1/u) {1/\ln(2)} = n log (u/n) + n (n/u - 1/n) 1/ln2 = n log(u/n( + 1/n 1/log2) - n/u 1(ln2))$
+$ Z_n \approx n \log_2(\frac{u}{n})$
+
+
+numero di bit per elemento nel caso migliore:
+$$
+	\bar{Z}_n = log (u/n)
+$$
+$$
+	\bar{D}_n = 2 + \lceil log(u/n) \rceil + o(n)
+$$
+$$
+	\bar{Z}_n - \bar{D}_n = 2 + o(n) \implies \bar{D}_n = \bar{Z}_n + O(1)
+$$
+rendendo la struttura \textit{quasi}-implicita nel caso sparso; si può vedere che l'analisi funziona a patto che
+$n \leq \sqrt(u)$.
+
+\section{Struttura succinta per rappresentare strutture parentetizzate ben formate}
+
+DI ogni parentesi lontana possiamo guardare dove si chiude: due parentesi lontane in un blocco
+si possono chiudere entrambe in un blocco più avanti; la prima viene chiamata \textit{pioniera}.
+Essa è una parentesi lontana e
+\begin{itemize}
+	\item è la prima del blocco oppure
+	\item è la prima a chiudersi in un certo blocco
+\end{itemize}
+Per rappresentare la parola memorizziamo, oltre a $w$, un vettore $p$ di $n$ bit con $1$ nelle posizioni
+delle pioniere. Inoltre, teniamo altri tre vettori: $E$, che per ogni blocco $i$ da l'eccesso all'inizio
+del blocco $i$ (quindi ha un elemento per ogni blocco); $M$, che per ogni blocco $i$ mantiene la posizione
+della parentesi corrispondente all'$i$-esima pioniera e, infine, $O$ per ogni blocco $i$ mantiene la
+posizione della prima aperta a sinistra dell'inizio di $i$ avente eccesso $x-1$, dove $x$ è il
+minimo eccesso del blocco.
+
+Lo spazio occupato da queste strutture è:
+$$
+\begin{aligned}
+	& w && n \\
+	& p && n + o(n) \\
+	& E && k + \log_2(n) \\
+	& O && k + \log_2(n) \\
+	& M && \text{pioniere} \cdot \log_2(n) < (4k - 6) \log_2(n) < 4k\log_2(n)
+\end{aligned}
+$$
+\begin{theorem}
+	Se ci sono $k$ blocchi, vi sono al massimo $2^k - 3$ coppie di pionieri.
+\end{theorem}
+\begin{proof}
+	Costruiamo un grafo $G = (V, E)$ dove $V$ sono i blocchi; esiste un arco tra un blocco $x$ e $y$ se
+	e solo se $x$ contiene una pioniera cha ha in $y$ la sua corrispondente.
+	Dimostriamo per induzione su $k$: vi sono due casi.
+	\begin{itemize}
+		\item se l'insieme di blocchi è separabile, ossia esiste una posizione nella parola sulla quale
+		      ``non passano archi'', la parola è scomponibile in due diverse parole ben formate;
+		      allora il numero di pioniere nella prima parte è $\text{pioniere}_1 \leq 2p - 3$ e il
+		      numero di pioniere nella seconda parte è $\text{pioniere}_2 \leq 2(k - p + 1) - 3$;
+		      allora $\text{pioniere} \leq 2p - 3 + 2 k - 2p + 2 - 3 = 2k - 4$.
+		\item se l'insieme di blocchi non è separabile, ossia la parola non è scomponibile in due
+		      parole diverse,
+	\end{itemize}
+\end{proof}
+
+Sommando, lo spazio occupato è $2n + o(n) + 6k \log_2(n) = 2n + 6n + o(n) = 8n + o(n)$.
+
+\texttt{findClosed}: trovata una parentesi $i$ aperta, si vuole sapere dove si chiude.
+\begin{itemize}
+	\item calcolare gli eccessi nel blocco di $i$ con $E$ (tempo logaritmico)
+	\item se $i$ è vicina, find completa. Altrimenti, $j = rank_p(i)$ è l'indice della pioniera
+	      che precede $i$; si può usare $M[j] = i'$ per calcolare dove si chiude la pioniera che precede $i$.
+	      Si può ora ripetere $1$ per il blocco di $i'$.
+
+\end{itemize}
+
+Se siamo in questo caso, anche le parantesi precedenti hanno
+
+Per calcolare l'Information-theoretical lower bound sarà necessario passare attraverso alcuni isomorfismi
+interessanti. Siano quindi $D_n$ l'insieme delle parole di Dyck di lunghezza $n$, $B_n$ l'insieme degli
+alberi binari con $n$ nodi interni e $F_n$ l'insieme delle foreste ordinate con $n$ nodi in tutto.
+
+Una foresta ordinata è una sequenza ordinata (per numero di nodi) di alberi ordinati (corrispondenti
+ad alberi radicati).
+$$
+	\phi(<>) = \blacktriangledown
+$$
+%phi di una foresta...
+Sia $\psi: D_{2n} \rightarrow F_n$.
+Definiamo $\psi(\epsilon) = <>$; $\psi(w_1 \cdots w_k) =  <\psi(w_1), \cdots, \psi(w_k)>$, $\psi((w)) = <\circ < \psi(w) >$
+Sappiamo che $D_{2n} \approxeq F_n \approxeq B_n \implies |B_n| = C_n \rightarrow 2n + o (\log_2(n))$.
+Noi usiamo $8n + o(n)$, quindi la struttura è compatta.
+
+
+% lezione 15-12-2021
+\section{Hash minimali perfetti}
+\subsection{Funzioni di hash}
+Le funzioni di hash compaiono in molti contesti diversi: con ogni probabilità
+si sono discusse nel contesto delle \textit{tabelle di hash}.
+Nel modo più generale, dato un universo $U$ infinito o \textit{molto grande} e un numero $m \in \mathbb{N}$,
+che è il \textit{numero di bucket}, una funzione di hash è
+$$
+	h: U \rightarrow m
+$$
+
+le funzioni di hash, se $U$ è infinito, sono infinite; altrimenti, se $U$ è finito, sono $m^|U|$.
+L'insieme di funzioni viene denominato $\mathcal{H}_{U,m}$.
+La funzione deve avere alcune proprietà: prendiamo come esempio proprio le tabelle di hash,
+utilizzate per memorizzare un sottoinsieme $S \subseteq U$, per esempio delle stringhe su un certo
+alfabeto $\Sigma = \{a, b, c, d\}$. Fissato un $m \in \mathbb{N}$, la funzione è
+$$
+	h: \Sigma^* \leadsto m
+$$
+vedendo i simboli in $\Sigma$ come un'enumerazione $a = 0, b = 1, \cdots$, una funzione di hash
+potrebbe semplicemente sommare i simboli di una stringa e operarne il modulo in $m$.
+Inizialmente, la tabella che vogliamo creare è vuota: quando si vuole inserire $s = "foo"$
+si calcola $h("foo") = h_1$; la tabella $M[h_1]$ conterrà quindi una reference alla stringa $"foo"$.
+Chiaramente possono accadere dei conflitti, ossia due stringhe $s_1$ e $s_2$ tali che
+$h(s_1) = h(s_2)$; per ovviare a questo problema si descrive $M$ come una mappa di liste, ossia
+$M[h(s_1)] = [s_1] |-> [s_2] |-> \cdots$.  La tabella $M$ funziona con qualsiasi funzione di hash
+$h$ (anche $h(\cdots) = 0$), ma l'efficienza di $M$ cambia al suo variare, fino al denegenerare in una
+lista. Per far funzionare \textit{bene} $M$ deve essere
+\begin{itemize}
+	\item $h$ sia veloce da calcolare
+	\item $h$ divide l'universo $U$ in \textit{buckets} in modo tale che le controimmagini siano
+	      più o meno \textit{grandi uguali}. % disegno pagina 1 15-12-2021 buckets nell'universo. 
+\end{itemize}
+
+Faremo alcune assunzioni:
+\begin{enumerate}
+	\item (\textit{full randomness assumption}) possiamo estrarre uniformemente una funzione $h$ dall'insieme $\mathcal{H}_{U,m}$, e
+	\item $h$ sia calcolabile in tempo e spazio costante, inoltre occupa spazio costante in termini di codice
+	      (non usa array arbitrariamente grandi, ...). Questa assunzione è normalmente inattuabile: si pensi
+	      al caso in cui $U = \Sigma^*$.
+\end{enumerate}
+
+Si consideri $U = \Sigma^{\leq k}$.  Vogliamo scrivere delle funzioni $h: U \rightarrow m$; ci
+prepariamo un array chiamato \textit{array dei pesi} contenente $k$ valori, inizializzandolo a valori pseudocasuali nell'insieme $\{0, \cdots, m-1\}$.
+Quando si vuole calcolare l'hash di una stringa $s = "foo"$ si considera il valore di ogni lettera della
+stringa e si moltiplicano per i pesi di quel valore. Si sommano i risultati e si computa il modulo $m$.
+
+
+\subsection{Relazione con i grafi}
+\subsubsection{Sequenza di peeling di un grafo}
+Si supponga di avere un grafo $G = (V,E)$ non orientato. Una \textbf{sequenza di peeling} è
+una sequenza di coppie di archi e vertici in cui appaiono tutti i lati e uno dei due vertici incidenti
+a tale lato. Ogni vertice che appare è chiamato \textit{hinge} della sequenza. La sequenza deve essere tale
+per cui nessun vertice hinge $x_i$ è apparso nei lati che precedono $i$.
+
+Non tutti i grafi ammettono una sequenza di peeling.
+\begin{theorem}
+	Un grafo $G$ ammette una sequenza di peeling se e solo se è aciclico.
+\end{theorem}
+\begin{proof}
+	$\implies$ Per assurdo, si supponga che $<\{e_0, x_0\}, \cdots, \{e_{m-1}, x_{m-1}\}>$ sia una sequenza
+	di peeling e che esista un ciclo sui vertici $y_1, y_2, \cdots, y_k$ e i relativi lati
+	$\{y_1, y_2\}, \cdots, \{y_{k-1}, y_k\}$. Sia $\bar{i}$ l'indice massimo della sequenza del ciclo.
+	Inserendo tutti i lati del ciclo nella sequenza, quando si arriva ad inserire l'ultimo lato del ciclo,
+	non ci sarà modo di scegliere un nodo che ancora non appare nella sequenza.
+	$\impliedby$ Per induzione su $|E|$. Omessa. %(esercizio). Hint: si parte dai lati più esterni. 
+\end{proof}
+
+
+
+\subsubsection{Ipergrafi}
+Vorremo generalizzare questa nozione agli ipergrafi. Un $r$-ipergrafo è $G = (V, E)$ di vertici
+e \textit{iperlati} dove ogni lato è un insieme di $r$ vertici, ossia $E \subseteq {V \choose r}$
+Non esiste una nozione di aciclicità per ipergrafi, mentre esiste una nozione di sequenza di peeling;
+per questo motivo non si generalizza la nozione di aciclicità bensì quella di sequenza di peeling.
+
+Il nostro obiettivo è memorizzare funzioni statiche. Dato un universo $U$, un sottoinsieme fissato
+$X \subseteq U$ e $r \in \mathbb{N}$ vogliamo memorizzare
+$$
+	f: X \rightarrow 2^r
+$$
+Di nuovo, si immagini $U = \Sigma = ASCII$.
+%
+%		X 	| 	f(x) 
+%      --------------------------------
+%	Paolo Boldi 	| 	00111 	7 
+% 	Anna Zuppi 	| 	10100	20
+%	Giovanni Galli 	| 	10111	23
+%
+
+Vogliamo ricavare una struttura dati $D$ tale che $"Paolo Boldi" \mapsto 00111$ e così via.
+
+%	     ------------
+% x \in X -> |	  D  	| -> f(x)
+%	     ------------ 
+
+Chiaramente sarà possibile fornire anche input non elencati nella tabella che vogliamo memorizzare:
+il comportamento inteso per questi casi è irrilevante.
+\subsection{Tecnica MWHC (Majewski, Worwald, Havas, Czech)}
+Si fissa un $m$ intero e si scelgono uniformemente due funzioni
+$$
+	h_1, h_2 : U \rightarrow m
+$$
+Costruiamo un grafo i cui vertici sono i numeri $0, \cdots, m-1$; i lati corrispondono agli elementi 
+dell'insieme $X$ con l'idea che ai lati corrispondono $\{h_1(x), h_2(x)\}$. Non vogliamo generare 
+cappi: in caso accada, si generano due nuove funzioni di hash. Inoltre, non deve corrispondere lo 
+stesso lato a due chiavi diverse: anche in questo caso si generano due nuove funzioni di hash. 
+Inoltre, vogliamo che $G$ sia aciclico. 
+
+Sui lati che sono comparsi scriviamo i valori desiderati. Trasformeremo ora il grafo in un sistema di 
+equazioni: ogni vertice è una variabile $w_0, w_1, \cdots, w_{m-1}$ e ad ogni lato corrisponde 
+l'equazione 
+$$
+    \forall x \in X ~~ w_{h_1(x)} + w_{h_2(x)} mod 2^r = f(x)
+$$
+Se il grafo è aciclico (che è un'assunzione) il sistema è risolvibile, utilizzando una sequenza di 
+peeling. 
+%%% Local Variables:
+%%% TeX-master: "../main"
+%%% End:

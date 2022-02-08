@@ -1,0 +1,204 @@
+%%% Local variables:
+%%% TeX-command-extra-options: "-shell-escape"
+%%% End:
+
+\documentclass[12pt, a4paper,titlepage]{book}
+\usepackage[a4paper,left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[italian]{babel}
+\usepackage{
+    mathptmx, % use ~Times New Roman
+    wrapfig,
+    graphicx, 
+    titlesec, 
+    fancyhdr,
+    tikz, 
+    pgfplots, 
+    amsmath,
+    amsthm,
+    subcaption, 
+    multirow, 
+    listings,
+    fancybox,
+    xcolor,
+    environ, 
+    amssymb,
+    minted
+}
+
+\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+\setminted[python]{mathescape,
+               linenos,
+               numbersep=5pt,
+               frame=lines,
+               framesep=2mm}
+\usetikzlibrary{calc}
+\usetikzlibrary{patterns}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{positioning, shapes.geometric}
+\usepackage[italiano,linesnumbered,ruled,vlined]{algorithm2e}
+\DontPrintSemicolon
+\usepackage[noend]{algpseudocode}
+\usepackage{tkz-euclide}
+\tikzset{%
+    pics/sema/.style args={#1/#2/#3}{code={%
+        \ifstrequal{#2}{0}{%
+            \node[circle,minimum width=2mm,draw,fill=#1] {};
+        }{%
+            \tkzDefPoint(0,0){O}
+            \tkzDrawSector[R,fill=#1](O,2mm)(90,90-#2)
+            \tkzDrawSector[R,fill=#3](O,2mm)(90-#2,90-360)
+    }
+    }},
+}
+\SetKwInput{KwInput}{Input} 
+\SetKwInput{KwOutput}{Output}
+
+\usepackage[utf8]{inputenc}
+\usepackage[debugshow]{tabularx}
+\usepackage[hidelinks, linktoc=all]{hyperref}
+\usepackage[capitalize, italian]{cleveref}
+\usetikzlibrary{matrix,chains,positioning,decorations.pathreplacing,arrows,angles,quotes}
+\let\oldforall\forall
+\renewcommand{\forall}{~~\oldforall}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.17}
+\newcommand{\pgfenv}{
+\pgfplotsset{
+        standard/.style={%Axis format configuration
+        axis x line=middle,
+        axis y line=middle,
+        enlarge x limits=0.15,
+        enlarge y limits=0.15,
+        every axis x label/.style={at={(current axis.right of origin)},anchor=north west},
+        every axis y label/.style={at={(current axis.above origin)},anchor=north east},
+        every axis plot post/.style={mark options={fill=white}}
+        }
+    }
+  }
+
+\setlength{\headheight}{16pt}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{2}
+\lstset{
+tabsize = 2, %% set tab space width
+showstringspaces = false, %% prevent space marking in strings, string is defined as the text that is generally printed directly to the console
+basicstyle = \small \ttfamily , %% set listing font and size
+breaklines = true, %% enable line breaking
+numberstyle = \tiny,
+}
+% Chapter Titling: Chapter [0-9] LEFT, Chapter Title RIGHT
+\newcommand*{\justifyheading}{\raggedleft}
+\titleformat{\chapter}[display]
+{\normalfont\large}{\MakeUppercase\chaptertitlename \ \ \thechapter}
+{20pt}{\Huge\bfseries\justifyheading}
+
+% -- Definizione di problemi
+\newcommand{\prob}[4]{
+    \begin{tabular}{ll}
+    \multicolumn{2}{l}{\textsc{#1}} \\
+    \textbf{Input}:           & #2        \\
+    \textbf{Output}:          & #3        \\
+    \textbf{Problema}:        & #4      
+    \end{tabular}
+}
+
+\newcommand{\popt}[7]{
+\begin{tabular}{ll}
+\multicolumn{2}{l}{\textsc{#1}} \\
+\textbf{Input}:          & #2   \\
+\textbf{Output}:         & #3   \\
+\textbf{Problema}:       & #4   \\
+\textbf{Ammissibili}:    & #5   \\
+\textbf{Tipo}:           & #6   \\
+\textbf{Costo}:          & #7  
+\end{tabular}
+}
+
+% -- Teoremi, lemmi, corollari, osservazioni
+\newtheorem{theorem}{Teorema}
+\numberwithin{theorem}{chapter}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollario}[theorem]{Corollario}
+\newtheorem{oss}[theorem]{Osservazione}
+
+\makeatletter
+\newenvironment{CenteredBox}{% 
+\begin{Sbox}}{% Save the content in a box
+\end{Sbox}\centerline{\parbox{\wd\@Sbox}{\TheSbox}}}% And output it centered
+\makeatother
+
+\begin{document}
+% Forewords + TOC Page header Style
+% pageNumber -- Chapter Title -------- | ------- Chapter Title -- pageNumber
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt} % to remove line on header
+\renewcommand{\footrulewidth}{0pt} % to remove line on footer
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyhead[LE]{\thepage \ \ }
+\fancyhead[RO]{\MakeUppercase\leftmark \ \ \thepage}
+\fancyfoot[C] {\thepage}
+
+
+\frontmatter
+\begin{titlepage}
+	\centering
+	\vspace*{6cm}
+	\Huge{Algoritmi e complessità}
+
+	\vspace*{0.5cm}
+
+	\Large{Appunti delle lezioni tenute dal Prof. Paolo Boldi}
+
+	\vspace*{2.5cm}
+
+	\Large{Edoardo Marangoni}
+
+	\vspace*{2cm}
+
+	\small{Università Statale di Milano}
+
+	\small{Dipartimento di Informatica}
+
+	\small{\today}
+
+	\vspace*{2cm}
+	\includegraphics[width=0.2\textwidth]{images/unimi.png}
+
+\end{titlepage}
+
+\mainmatter
+% Corpus Header Style
+% pageNumber -- ChapterTitle ----- Chapter | Chapter ------ Section -- pageNumber
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyhf{}
+\fancyhead[LE]{\thepage \ \ \MakeUppercase\leftmark}
+\fancyhead[RE, LO]{\MakeUppercase\chaptertitlename \ \ \thechapter}
+\fancyhead[RO]{\rightmark \ \ \thepage}
+\fancyfoot[C]{\thepage}
+
+
+
+\tableofcontents
+
+\input{chapters/intro.tex}
+\input{chapters/ottimizzazione.tex}
+\input{chapters/deterministici.tex}
+\input{chapters/probabilistici.tex}
+\input{chapters/succinte.tex}
+\cleardoublepage
+
+\appendix
+\input{labs/lab1.tex}
+\input{labs/lab2.tex}
+% \backmatter 
+% if necessary, insert here your bibliography
+\bibliographystyle{alpha}
+\bibliography{bib/db}
+
+\end{document}
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../main"
+%%% End:

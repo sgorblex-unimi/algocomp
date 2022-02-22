@@ -1,56 +1,55 @@
-%%% Local variables:
-%%% TeX-command-extra-options: "-shell-escape"
-%%% End:
-
 \documentclass[12pt, a4paper,titlepage]{book}
-\usepackage[a4paper,left=3cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[italian]{babel}
 \usepackage{
-    mathptmx, % use ~Times New Roman
-    wrapfig,
-    graphicx, 
-    titlesec, 
-    fancyhdr,
-    tikz, 
-    pgfplots, 
-    amsmath,
-    amsthm,
-    subcaption, 
-    multirow, 
-    listings,
-    fancybox,
-    xcolor,
-    environ, 
-    amssymb,
-    minted
+	wrapfig,
+	graphicx,
+	titlesec,
+	fancyhdr,
+	tikz,
+	pgfplots,
+	amsmath,
+	amsthm,
+	subcaption,
+	multirow,
+	listings,
+	fancybox,
+	xcolor,
+	environ,
+	amssymb,
+	minted
 }
+
+% -- Font settings
+\usepackage[math-style=ISO]{unicode-math}
+\setmainfont{EB Garamond}%You should have installed the font
+\setmathfont{Garamond-Math.otf}[StylisticSet={7,9}]
 
 \DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
 \setminted[python]{mathescape,
-               linenos,
-               numbersep=5pt,
-               frame=lines,
-               framesep=2mm}
+	linenos,
+	numbersep=5pt,
+	frame=lines,
+	framesep=2mm}
 \usetikzlibrary{calc}
 \usetikzlibrary{patterns}
 \usetikzlibrary{arrows.meta}
 \usetikzlibrary{positioning, shapes.geometric}
 \usepackage[italiano,linesnumbered,ruled,vlined]{algorithm2e}
 \DontPrintSemicolon
-\usepackage[noend]{algpseudocode}
 \usepackage{tkz-euclide}
 \tikzset{%
-    pics/sema/.style args={#1/#2/#3}{code={%
-        \ifstrequal{#2}{0}{%
-            \node[circle,minimum width=2mm,draw,fill=#1] {};
-        }{%
-            \tkzDefPoint(0,0){O}
-            \tkzDrawSector[R,fill=#1](O,2mm)(90,90-#2)
-            \tkzDrawSector[R,fill=#3](O,2mm)(90-#2,90-360)
-    }
-    }},
+	pics/sema/.style args={#1/#2/#3}{code={%
+					\ifstrequal{#2}{0}{%
+						\node[circle,minimum width=2mm,draw,fill=#1] {};
+					}{%
+						\tkzDefPoint(0,0){O}
+						\tkzDrawSector[R,fill=#1](O,2mm)(90,90-#2)
+						\tkzDrawSector[R,fill=#3](O,2mm)(90-#2,90-360)
+					}
+				}},
 }
-\SetKwInput{KwInput}{Input} 
+\SetKwInput{KwInput}{Input}
 \SetKwInput{KwOutput}{Output}
 
 \usepackage[utf8]{inputenc}
@@ -63,29 +62,24 @@
 \usepgfplotslibrary{fillbetween}
 \pgfplotsset{compat=1.17}
 \newcommand{\pgfenv}{
-\pgfplotsset{
-        standard/.style={%Axis format configuration
-        axis x line=middle,
-        axis y line=middle,
-        enlarge x limits=0.15,
-        enlarge y limits=0.15,
-        every axis x label/.style={at={(current axis.right of origin)},anchor=north west},
-        every axis y label/.style={at={(current axis.above origin)},anchor=north east},
-        every axis plot post/.style={mark options={fill=white}}
-        }
-    }
-  }
+	\pgfplotsset{
+		standard/.style={%Axis format configuration
+				axis x line=middle,
+				axis y line=middle,
+				enlarge x limits=0.15,
+				enlarge y limits=0.15,
+				every axis x label/.style={at={(current axis.right of origin)},anchor=north west},
+				every axis y label/.style={at={(current axis.above origin)},anchor=north east},
+				every axis plot post/.style={mark options={fill=white}}
+			}
+	}
+}
 
 \setlength{\headheight}{16pt}
 \setcounter{tocdepth}{2}
 \setcounter{secnumdepth}{2}
-\lstset{
-tabsize = 2, %% set tab space width
-showstringspaces = false, %% prevent space marking in strings, string is defined as the text that is generally printed directly to the console
-basicstyle = \small \ttfamily , %% set listing font and size
-breaklines = true, %% enable line breaking
-numberstyle = \tiny,
-}
+
+
 % Chapter Titling: Chapter [0-9] LEFT, Chapter Title RIGHT
 \newcommand*{\justifyheading}{\raggedleft}
 \titleformat{\chapter}[display]
@@ -94,24 +88,25 @@ numberstyle = \tiny,
 
 % -- Definizione di problemi
 \newcommand{\prob}[4]{
-    \begin{tabular}{ll}
-    \multicolumn{2}{l}{\textsc{#1}} \\
-    \textbf{Input}:           & #2        \\
-    \textbf{Output}:          & #3        \\
-    \textbf{Problema}:        & #4      
-    \end{tabular}
+	\begin{tabular}{ll}
+		\multicolumn{2}{l}{\textsc{#1}} \\
+		\textbf{Input}:    & #2         \\
+		\textbf{Output}:   & #3         \\
+		\textbf{Problema}: & #4
+	\end{tabular}
 }
 
+
 \newcommand{\popt}[7]{
-\begin{tabular}{ll}
-\multicolumn{2}{l}{\textsc{#1}} \\
-\textbf{Input}:          & #2   \\
-\textbf{Output}:         & #3   \\
-\textbf{Problema}:       & #4   \\
-\textbf{Ammissibili}:    & #5   \\
-\textbf{Tipo}:           & #6   \\
-\textbf{Costo}:          & #7  
-\end{tabular}
+	\begin{tabular}{ll}
+		\multicolumn{2}{l}{\textsc{#1}} \\
+		\textbf{Input}:       & #2      \\
+		\textbf{Output}:      & #3      \\
+		\textbf{Problema}:    & #4      \\
+		\textbf{Ammissibili}: & #5      \\
+		\textbf{Tipo}:        & #6      \\
+		\textbf{Costo}:       & #7
+	\end{tabular}
 }
 
 % -- Teoremi, lemmi, corollari, osservazioni
@@ -123,8 +118,8 @@ numberstyle = \tiny,
 
 \makeatletter
 \newenvironment{CenteredBox}{% 
-\begin{Sbox}}{% Save the content in a box
-\end{Sbox}\centerline{\parbox{\wd\@Sbox}{\TheSbox}}}% And output it centered
+	\begin{Sbox}}{% Save the content in a box
+	\end{Sbox}\centerline{\parbox{\wd\@Sbox}{\TheSbox}}}% And output it centered
 \makeatother
 
 \begin{document}
@@ -166,6 +161,8 @@ numberstyle = \tiny,
 
 \end{titlepage}
 
+\tableofcontents
+
 \mainmatter
 % Corpus Header Style
 % pageNumber -- ChapterTitle ----- Chapter | Chapter ------ Section -- pageNumber
@@ -179,9 +176,6 @@ numberstyle = \tiny,
 \fancyfoot[C]{\thepage}
 
 
-
-\tableofcontents
-
 \input{chapters/intro.tex}
 \input{chapters/ottimizzazione.tex}
 \input{chapters/deterministici.tex}
@@ -192,13 +186,10 @@ numberstyle = \tiny,
 \appendix
 \input{labs/lab1.tex}
 \input{labs/lab2.tex}
-% \backmatter 
+
+\backmatter 
 % if necessary, insert here your bibliography
 \bibliographystyle{alpha}
 \bibliography{bib/db}
 
 \end{document}
-%%% Local Variables:
-%%% mode: latex
-%%% TeX-master: "../main"
-%%% End:

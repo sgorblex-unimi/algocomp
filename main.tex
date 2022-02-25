@@ -31,6 +31,7 @@
 	numbersep=5pt,
 	frame=lines,
 	framesep=2mm}
+\usetikzlibrary{shapes.geometric}
 \usetikzlibrary{calc}
 \usetikzlibrary{patterns}
 \usetikzlibrary{arrows.meta}
@@ -137,7 +138,7 @@
 \frontmatter
 \begin{titlepage}
 	\centering
-	\vspace*{6cm}
+	\vspace*{4cm}
 	\Huge{Algoritmi e complessità}
 
 	\vspace*{0.5cm}
@@ -156,8 +157,22 @@
 
 	\small{\today}
 
-	\vspace*{2cm}
-	\includegraphics[width=0.2\textwidth]{images/unimi.png}
+	\vspace*{1cm}
+	\begin{figure}[h]
+	    \centering
+		\begin{tikzpicture}[thick]
+			\foreach \i in {-30,-28,...,0}{
+
+					\node[draw,
+						isosceles triangle,
+						isosceles triangle apex angle=60,
+						minimum size=-2*\i mm,
+						rotate=\i,inner sep =0pt] at (0,0){};
+				}
+
+		\end{tikzpicture}
+	\end{figure}
+%	\includegraphics[width=0.2\textwidth]{images/unimi.png}
 
 \end{titlepage}
 
@@ -187,7 +202,7 @@
 \input{labs/lab1.tex}
 \input{labs/lab2.tex}
 
-\backmatter 
+\backmatter
 % if necessary, insert here your bibliography
 \bibliographystyle{alpha}
 \bibliography{bib/db}

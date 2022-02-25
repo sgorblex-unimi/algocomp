@@ -730,34 +730,34 @@ si utilizza il four-russians trick. Inizialmente osserviamo quanto segue.
 \end{oss}
 \begin{oss}
 	$$
-		\bar{r}^i_j < \log_2(\bar{r}^i_j) \cdot \log_2(r_i) \cdot (\log_2(\log_2(n))^2 
+		\bar{r}^i_j < \log_2(\bar{r}^i_j) \cdot \log_2(r_i) \cdot (\log_2(\log_2(n))^2
 		\leq 16(\log_2\log_2(n))^4
 	$$
 \end{oss}
-Lo spazio necessario per utilizzare il four-russians trick è quanto segue. 
-Servono $2^{\bar{r}^i_j}$ enumerazioni di `sottovettori', 
-ossia la dimensione tra $S^i_j$ e $S^i_{j+1}$, 
+Lo spazio necessario per utilizzare il four-russians trick è quanto segue.
+Servono $2^{\bar{r}^i_j}$ enumerazioni di `sottovettori',
+ossia la dimensione tra $S^i_j$ e $S^i_{j+1}$,
 che è la parte che va memorizzata esplicitamente; per ognuna di queste
-enumerazioni è necessario salvare la posizione di $\bar{r}^i_j$ $1$ utilizzando 
-memoria al massimo $\log_2(\bar{r}^i_j)$: 
+enumerazioni è necessario salvare la posizione di $\bar{r}^i_j$ $1$ utilizzando
+memoria al massimo $\log_2(\bar{r}^i_j)$:
 \begin{align*}
-    2^{\bar{r}^i_j} \cdot \bar{r}^i_j \cdot \log_2(\bar{r}^i_j) &\leq 
-2^{16(\log_2\log_2(n))^4} \cdot 16(\log_2\log_2(n))^4 \cdot \log_2(16(\log_2\log_2(n))^4) \\
-								&= 16(\log_2\log_2(n))^8 \log_2(16(\log_2\log_2(n))^4) = o(n)
+	2^{\bar{r}^i_j} \cdot \bar{r}^i_j \cdot \log_2(\bar{r}^i_j) & \leq
+	2^{16(\log_2\log_2(n))^4} \cdot 16(\log_2\log_2(n))^4 \cdot \log_2(16(\log_2\log_2(n))^4)                                  \\
+	                                                            & = 16(\log_2\log_2(n))^8 \log_2(16(\log_2\log_2(n))^4) = o(n)
 \end{align*}
 
 
 \subsubsection{Complessità totale in spazio}
-In totale, per memorizzare $\mathbf{b}$ e i possibili tre livelli di struttura, 
-sono necessari $o(n)$ bit per il primo livello e, in base a come è fatto il secondo livello 
+In totale, per memorizzare $\mathbf{b}$ e i possibili tre livelli di struttura,
+sono necessari $o(n)$ bit per il primo livello e, in base a come è fatto il secondo livello
 $$
-\sum^{\frac{n}{\log_2(n)\cdot \log_2(\log_2(n))}} \frac{P_{i+1} - P_i}{\log_2(\log_2(n)} 
-= \frac{P_n - P_0}{\log_2(\log_2(n))} 
-\leq \frac{n}{\log_2(\log_2(n))} = o(n) \text{ bit}
+	\sum^{\frac{n}{\log_2(n)\cdot \log_2(\log_2(n))}} \frac{P_{i+1} - P_i}{\log_2(\log_2(n)}
+	= \frac{P_n - P_0}{\log_2(\log_2(n))}
+	\leq \frac{n}{\log_2(\log_2(n))} = o(n) \text{ bit}
 $$
-più $o(n)$ bit per il terzo livello. Quindi, la struttura di Clarke occupa 
-spazio $n + o(n)$ e ha accesso tempo di accesso costante, pertanto è 
-una struttura \textbf{succinta}. 
+più $o(n)$ bit per il terzo livello. Quindi, la struttura di Clarke occupa
+spazio $n + o(n)$ e ha accesso tempo di accesso costante, pertanto è
+una struttura \textbf{succinta}.
 
 \begin{figure}
 	\centering
@@ -811,62 +811,271 @@ una struttura \textbf{succinta}.
 
 % lezione 19 - 01-12-2021
 \section{Strutture succinte per alberi binari}
-Un albero binario è l'insieme vuoto $\emptyset$ o una coppia $(L, R)$ di alberi binari.
-% disegno albero vuoto e albero binario L R..
-Per ora stiamo descrivendo alberi \textit{vuoti}, ossia che non contengono dati:
+Gli \textit{alberi} possono essere visti in due modi: per i
+matematici, essi sono dei grafi connessi aciclici mentre per gli
+informatici sono una \textit{struttura dati} radicata che ha una
+\textit{radice}. In particolare, un albero \textit{binario} è un
+albero tale per cui ogni nodo ha al più due figli; formalmente,
+si definiscono induttivamente: l'albero con un solo nodo (che è anche
+la radice), denotato $\emptyset$, è un albero binario;
+se $T_1$ e $T_2$ sono due alberi binari,
+allora anche l'albero radicato in un nuovo nodo che ha come figli
+$T_1$ e $T_2$, denotato $(T_1, T_2)$ è un albero binario. In questa definizione,
+ogni nodo ha o $0$ o $2$ figli. I nodi che non hanno figli
+sono chiamati \textbf{nodi esterni} o \textbf{foglie}, mentre gli altri sono
+chiamati \textbf{nodi interni}.
+
+
+\begin{figure}[!hb]
+	\begin{subfigure}{0.45\textwidth}
+		\begin{center}
+			\begin{tikzpicture}
+				\node [circle, draw]{};
+			\end{tikzpicture}
+		\end{center}
+		\caption{L'albero binario $\emptyset$.}
+	\end{subfigure}
+	\begin{subfigure}{0.45\textwidth}
+		\begin{center}
+			\begin{tikzpicture}
+				\node [circle,draw]{}
+				child {node [isosceles triangle,draw,shape border rotate=90] {$T_1$}}
+				child {node [isosceles triangle,draw,shape border rotate=90] {$T_2$}};
+			\end{tikzpicture}
+		\end{center}
+		\caption{L'albero binario $(T_1, T_2)$.}
+	\end{subfigure}
+	\caption{Definizione induttiva di albero binario.}
+	\label{fig:btree_inductive}
+\end{figure}
+
+\begin{figure}
+	\begin{center}
+		\begin{tikzpicture}
+			\node [circle,draw]{} [level distance=10mm,sibling distance=25mm]
+			child { node [circle,draw]{} [level distance=10mm ,sibling distance=15mm]
+					child {node [circle,draw] {}
+							child {node [circle,fill] {}}
+							child {node [circle,fill]{}}}
+					child {node [circle,draw,fill]{}}
+				}
+			child {node [circle,draw] {} [level distance=10mm ,sibling distance=15mm]
+					child {node [circle,draw,fill] {}}
+					child {node [circle,draw,fill]{}}
+				};
+		\end{tikzpicture}
+	\end{center}
+	\caption{L'albero binario $(((\emptyset, \emptyset), \emptyset), (\emptyset, \emptyset))$.}
+	\label{fig:btree_example}
+\end{figure}
+
+\noindent
+Ora stiamo descrivendo alberi \textit{vuoti}, ossia che non contengono dati:
 alternative sono gli alberi \textbf{ancillari}, i quali contengono dati solo nei nodi interni
-o solo nelle foglie.
-\begin{theorem} \label{thm:}
-	Il numero di foglie in un albero binario è uguale al numero di nodi esterni più uno:
+o solo nelle foglie. Al netto di queste distinzioni, definiamo $E$ l'insieme dei nodi
+esterni, $I$ l'insieme dei nodi interni di un albero binario e $n$ il numero di nodi
+interni, ossia $n = |I|$. Inoltre, `equipaggiamo' gli alberi binari di due funzioni
+$ext$ e $int$, che denotano l'insieme delle foglie interne e l'insieme delle foglie
+interne di un albero binario.
+
+\begin{theorem} \label{thm:btree_leaves}
+	In ogni albero binario, il numero di foglie in un albero binario è uguale al numero di nodi esterni più uno:
 	$$
-		Leaves = Internal + 1
+		|E| = |I| + 1
 	$$
 \end{theorem}
 \begin{proof}
 	Per induzione.
-	Caso base: $ext(\emptyset) = 1$ e $int(\emptyset) = 0$.
-	Passo induttivo: siano $L, R$ due alberi binari. Allora
-	$$
-		ext(L,R) = ext(L) + ext(R) = int(L) + 1 + int(R) + 1 = int(L, R)  + 1
-	$$
+	\begin{itemize}
+		\item{\bf base}: $ext(\emptyset) = 1$ e $int(\emptyset) = 0$.
+		\item{\bf induzione}: siano $L, R$ due alberi binari. Allora
+		$$
+			ext((L,R)) = ext(L) + ext(R) = int(L) + 1 + int(R) + 1 = int((L, R))  + 1
+		$$
+	\end{itemize}
 \end{proof}
 
-In particolare, chiameremo $n$ il numero di nodi interni per un generico albero binario.
 \begin{corollario}
 	Ogni albero con $n$ nodi interni ha in totale $2n +1$ nodi.
 \end{corollario}
 
-\begin{theorem}\label{lem:ncatalano}
+\begin{theorem}[di Catalan]\label{thm:catalan}
 	Il numero di alberi binari con $n$ nodi interni è
 	$$
 		C_n = \frac{1}{n+1}{2n \choose n}
 	$$
 \end{theorem}
+\begin{proof}
+	Omessa.
+\end{proof}
+\begin{corollario}
+	$ \forall n ~ \log_2(C_n)  =2n + O(\log_2(n)) $
+\end{corollario}
+\begin{proof}
+	Utilizzando l'approssimazione di Sterling
+	$$
+		x! \approx \sqrt{2\pi x} (\frac{x}{e})^x
+	$$
 
-% x! \approx \sqrt{2\pi x} (\frac{x}{e})^x Sterling..
-
-$$
-	C_n = \frac{1}{n+1} \frac{(2n)!}{n! (2n - n)!} = \frac{1}{n+1}\frac{(2n)!}{(n!)^2} \approx
-	\frac{1}{n+1} \frac{\sqrt{4 \pi n} (\frac{2n}{e})^{2n}}{2 \pi e (\frac{n}{e})^{2n}}
-	= \frac{1}{n+1} \frac{1}{\sqrt{\pi n }} 2^{2n} \approx \frac{4^n}{\sqrt{\pi n^3}}
-$$
-(che può essere dimostrato asintoticamente corretto).
-Questo significa che
-$$
-	\log_2(C_n) = n \log_2(4) - \frac{1}{2}\log_2(\pi n^3) = 2n + O(\log_2(n))
-$$
+	si ha che
+	$$
+		C_n = \frac{1}{n+1} \frac{(2n)!}{n! (2n - n)!} = \frac{1}{n+1}\frac{(2n)!}{(n!)^2} \approx
+		\frac{1}{n+1} \frac{\sqrt{4 \pi n} (\frac{2n}{e})^{2n}}{2 \pi n (\frac{n}{e})^{2n}}
+		= \frac{1}{n+1} \frac{1}{\sqrt{\pi n }} 2^{2n} \approx \frac{4^n}{\sqrt{\pi n^3}}
+	$$
+	(che può essere dimostrato asintoticamente corretto).
+	Questo significa che
+	$$
+		\log_2(C_n) = n \log_2(4) - \frac{1}{2}\log_2(\pi n^3)
+		= 2n - \frac{3}{2}\log_2(n) - \frac{1}{2}\log_2(\pi)
+		= 2n + O(\log_2(n))
+	$$
+\end{proof}
 \begin{corollario}
 	Per memorizzare alberi binari con $n$ nodi interni sono necessari
 	$$
-		Z_n = 2n + O(\log_2(n))
+		Z_n = 2n + O(\log_2(n)) \text{ bit}
 	$$
-	bit.
 \end{corollario}
 
-Numeriamo seguendo una visita in ampiezza un albero binario e creiamo un vettore di bit
-le cui entry sono $2n+1$. Per ogni $i$ del vettore binario si inserisce un $1$ se $i$ è il numero di
-un nodo interno, ottenendo quindi esattamente $n-1$ $1$ nel vettore.
-Si immagini di avere l'albero binario in cui vi è un nodo interno numerato $P$ con due figli con numeri $Q$ e $Q+1$.
+\subsection{Rappresentazione}
+
+Per rappresentare un albero binario con $n$ nodi interni, numeriamo seguendo una visita in
+ampiezza i nodi dell'albero, come rappresentato in \cref{fig:btree_rappr_num}. I numeri assegnati
+andranno da $0$ a $2n$.
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\begin{tikzpicture}[
+				every node/.style={circle, draw, minimum size=4mm, inner sep=0.5mm},
+				level distance=10mm,
+				level 1/.style={sibling distance=25mm},
+				level 2/.style={sibling distance=25mm}]
+			\node [label=above:{0}]{}
+			child {
+			node [label=above:{1}] {}
+			child {node[fill, label=above:{3}]{}}
+			child {
+			node[label=above:{4}]{}
+			child {
+			node [label=above:{5}]{}
+			child {node[fill,label=above:{7}]{}}
+			child {node[fill,label=above:{8}]{}}
+			}
+			child {
+			node[label=above:{6}]  {}
+			[level distance=10mm ,sibling distance=15mm]
+			child {node[fill,label=above:{9}] {}}
+			child {node[fill,label=above:{10}] {}}
+			}
+			}
+			}
+			child {node [fill, label=above:{2}]{}};
+		\end{tikzpicture}
+
+		\caption{L'albero binario $((\emptyset, ((\emptyset, \emptyset), (\emptyset, \emptyset))), \emptyset)$ numerato.}
+		\label{fig:btree_rappr_num}
+
+	\end{subfigure}
+	\begin{subfigure}[t]{0.45\textwidth}
+		\centering
+		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+			%Shape: Rectangle [id:dp4589196649246813] 
+			\draw   (160,120) -- (180,120) -- (180,140.67) -- (160,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp7482491218517459] 
+			\draw   (180,120) -- (200,120) -- (200,140.67) -- (180,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp3055160865785119] 
+			\draw   (200,120) -- (220,120) -- (220,140.67) -- (200,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp6460750266770654] 
+			\draw   (220,120) -- (240,120) -- (240,140.67) -- (220,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp45180487257490853] 
+			\draw   (240,120) -- (260,120) -- (260,140.67) -- (240,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp28629681352535363] 
+			\draw   (260,120) -- (280,120) -- (280,140.67) -- (260,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp7936708770675233] 
+			\draw   (280,120) -- (300,120) -- (300,140.67) -- (280,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp23915136536136594] 
+			\draw   (300,120) -- (320,120) -- (320,140.67) -- (300,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp722227591081337] 
+			\draw   (320,120) -- (340,120) -- (340,140.67) -- (320,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp6052306075858915] 
+			\draw   (340,120) -- (360,120) -- (360,140.67) -- (340,140.67) -- cycle ;
+			%Shape: Rectangle [id:dp5583026074292488] 
+			\draw   (360,120) -- (380,120) -- (380,140.67) -- (360,140.67) -- cycle ;
+
+			% Text Node
+			\draw (121,122.4) node [anchor=north west][inner sep=0.75pt]    {$\mathbf{b} \ =\ $};
+			% Text Node
+			\draw (164,101.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
+			% Text Node
+			\draw (184,101.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
+			% Text Node
+			\draw (204,101.4) node [anchor=north west][inner sep=0.75pt]    {$2$};
+			% Text Node
+			\draw (224,101.4) node [anchor=north west][inner sep=0.75pt]    {$3$};
+			% Text Node
+			\draw (244,101.4) node [anchor=north west][inner sep=0.75pt]    {$4$};
+			% Text Node
+			\draw (264,101.4) node [anchor=north west][inner sep=0.75pt]    {$5$};
+			% Text Node
+			\draw (284,101.4) node [anchor=north west][inner sep=0.75pt]    {$6$};
+			% Text Node
+			\draw (304,101.4) node [anchor=north west][inner sep=0.75pt]    {$7$};
+			% Text Node
+			\draw (324,101.4) node [anchor=north west][inner sep=0.75pt]    {$8$};
+			% Text Node
+			\draw (344,101.46) node [anchor=north west][inner sep=0.75pt]    {$9$};
+			% Text Node
+			\draw (361,101.4) node [anchor=north west][inner sep=0.75pt]    {$10$};
+			% Text Node
+			\draw (164,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
+			% Text Node
+			\draw (184,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
+			% Text Node
+			\draw (204,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
+			% Text Node
+			\draw (224,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
+			% Text Node
+			\draw (244,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
+			% Text Node
+			\draw (264,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
+			% Text Node
+			\draw (284,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
+			% Text Node
+			\draw (304,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
+			% Text Node
+			\draw (324,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
+			% Text Node
+			\draw (344,121.46) node [anchor=north west][inner sep=0.75pt]    {$0$};
+			% Text Node
+			\draw (364,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
+
+		\end{tikzpicture}
+		\caption{Vettore $\mathbf{v}$ associato.}
+		\label{fig:btree_rappr_vec}
+	\end{subfigure}
+	\caption{}
+\end{figure}
+
+La concreta rappresentazione dell'albero si realizza con un vettore di bit di lunghezza
+$2n + 1$ $\mathbf{v}$ tale che
+$$
+	\forall i ~ \mathbf{v}[i] =
+	\begin{cases}
+		1 & i \in I \\
+		0 & i \in E
+	\end{cases}
+$$
+ottenendo quindi esattamente $n$ `$1$' nel vettore, come esemplificato in \cref{fig:btree_rappr_vec}.
+
+Si immagini di avere l'albero binario in cui vi è un nodo interno numerato $p$
+con due figli con numeri $q$ e $q+1$, come in \cref{fig:btree_rappr_step}.
 Chiaramente si ha $Q = |nodi di T'| = 2 |nodi interni di T'| + 1 = 2(|nodi interni di T| < P) + 1 = 2(|uni dentro il vettore b di indice p +1 = 2rank_b(P) +1$.
 Se invece è necessario anche risalire al genitore a partire dal figlio, allora il figlio di sinistra è
 $2rank_b(q) +1 = P$, mentre il figlio di destra è $2rank_b(q) + 2 = P$, quindi
@@ -892,6 +1101,46 @@ $$
 	D_n - Z_n = o(n)
 $$
 pertanto la struttura è succinta con accesso in tempo costante.
+
+\begin{figure}[h]
+	\centering
+	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+		%Shape: Circle [id:dp7169355320482411] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (360.11,106.08) .. controls (360.11,102.68) and (362.87,99.92) .. (366.28,99.92) .. controls (369.68,99.92) and (372.44,102.68) .. (372.44,106.08) .. controls (372.44,109.49) and (369.68,112.25) .. (366.28,112.25) .. controls (362.87,112.25) and (360.11,109.49) .. (360.11,106.08) -- cycle ;
+		%Straight Lines [id:da11031799115386731] 
+		\draw    (366.28,106.08) -- (356.04,122.86) ;
+		%Straight Lines [id:da5314879825236313] 
+		\draw    (366.28,106.08) -- (376.09,121.82) ;
+		%Shape: Triangle [id:dp2636274720755136] 
+		\draw   (360.11,21.08) -- (436.94,191.08) -- (283.28,191.08) -- cycle ;
+		%Straight Lines [id:da07107046785599602] 
+		\draw    (312.18,126.95) -- (334.47,126.95) ;
+		%Straight Lines [id:da23996966123276942] 
+		\draw    (345.08,116.14) -- (402.93,116.14) ;
+		%Straight Lines [id:da8657897153449609] 
+		\draw    (345.49,115.99) -- (333.99,127.24) ;
+		%Shape: Circle [id:dp6390655913899737] 
+		\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (350.11,123.93) .. controls (350.11,120.53) and (352.87,117.76) .. (356.28,117.76) .. controls (359.68,117.76) and (362.44,120.53) .. (362.44,123.93) .. controls (362.44,127.34) and (359.68,130.1) .. (356.28,130.1) .. controls (352.87,130.1) and (350.11,127.34) .. (350.11,123.93) -- cycle ;
+		%Shape: Circle [id:dp31674144349432576] 
+		\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (370.11,124.11) .. controls (370.11,120.71) and (372.87,117.95) .. (376.28,117.95) .. controls (379.68,117.95) and (382.44,120.71) .. (382.44,124.11) .. controls (382.44,127.52) and (379.68,130.28) .. (376.28,130.28) .. controls (372.87,130.28) and (370.11,127.52) .. (370.11,124.11) -- cycle ;
+
+		% Text Node
+		\draw (341.53,130) node [anchor=north west][inner sep=0.75pt]    {$q$};
+		% Text Node
+		\draw (364.58,130) node [anchor=north west][inner sep=0.75pt]    {$q+1$};
+		% Text Node
+		\draw (363.18,78.26) node [anchor=north west][inner sep=0.75pt]    {$p$};
+		% Text Node
+		\draw (353.2,51.2) node [anchor=north west][inner sep=0.75pt]    {$T'$};
+
+
+	\end{tikzpicture}
+	\caption{}
+	\label{fig:btree_rappr_step}
+\end{figure}
+
+
 
 \subsection{Alberi binari con dati}
 Se i dati si trovano su ogni tipo di nodo dell'albero (sia interni che interni) i dati

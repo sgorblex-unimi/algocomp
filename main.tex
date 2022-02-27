@@ -1,6 +1,11 @@
 \documentclass[12pt, a4paper,titlepage]{book}
 \usepackage[a4paper,left=2cm,right=2cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[italian]{babel}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={3.0},
+]{doclicense}
 \usepackage{
 	wrapfig,
 	graphicx,
@@ -173,10 +178,18 @@
 		\end{tikzpicture}
 	\end{figure}
 %	\includegraphics[width=0.2\textwidth]{images/unimi.png}
-
 \end{titlepage}
 
+
+\vspace*{\fill}
+% most of the used packages use LPPL licenses; some others use MIT and 
+% GPL. For now, CC-BY-NC-SA is ok, however we shall use GPL or GFDL.
+\doclicenseThis
+\vspace*{\fill}
+
 \tableofcontents
+\listoffigures
+\listoftables
 
 \mainmatter
 % Corpus Header Style

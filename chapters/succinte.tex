@@ -1097,11 +1097,11 @@ ottenendo quindi esattamente $n$ `$1$' nel vettore, come mostrato in \cref{fig:b
 
 \subsubsection{Implementazione}
 Per capire come implementare l'ADT utilizzando il vettore $\mathbf{v}$, ci poniamo
-nella situazione di dover trovare, dato un nodo numerato $p$ in un albero 
-binario $T$, i suoi due figli, i quali sono numerati $q$ e $q+1$. 
-Sia quindi $T'$ un sottoalbero di $T$, radicato nella stessa radice di $T$, 
-che contiene tutti i nodi di $T$ numerati fino al nodo precedente 
-al nodo $q$, come rappresentato in \cref{fig:btree_rappr_step}. 
+nella situazione di dover trovare, dato un nodo numerato $p$ in un albero
+binario $T$, i suoi due figli, i quali sono numerati $q$ e $q+1$.
+Sia quindi $T'$ un sottoalbero di $T$, radicato nella stessa radice di $T$,
+che contiene tutti i nodi di $T$ numerati fino al nodo precedente
+al nodo $q$, come rappresentato in \cref{fig:btree_rappr_step}.
 
 
 \begin{figure}[h]
@@ -1158,55 +1158,55 @@ al nodo $q$, come rappresentato in \cref{fig:btree_rappr_step}.
 	\label{fig:btree_rappr_step}
 \end{figure}
 
-Definiamo l'insieme dei nodi interni di $T$ con numerazione strettamente 
+Definiamo l'insieme dei nodi interni di $T$ con numerazione strettamente
 minore di $p$
 $$
-E_{T, p} = \{n \in int(T) | n < p \}
+	E_{T, p} = \{n \in int(T) | n < p \}
 $$
-e, intuitivamente, deve essere 
+e, intuitivamente, deve essere
 $$
-q = |int(T')| + |ext(T')| = 2 |int(T')| + 1 = 2 |E_{T,p}| + 1 ) = 2 \mathbf{rank_v}(p) + 1. 
+	q = |int(T')| + |ext(T')| = 2 |int(T')| + 1 = 2 |E_{T,p}| + 1 ) = 2 \mathbf{rank_v}(p) + 1.
 $$
-poiché $|E_{T,p}|$ è uguale al numero di `$1$' presenti in $\mathbf{v}$ con indice 
-strettamente minore a $p$, concludendo, chiaramente se e solo se 
-$\mathbf{is\_leaf}(p) = \mathbf{v}[p] = 1$, che\footnote{In quanto segue si omette 
-la biiezione $node$, dando per implicito il rapporto tra enumerazione e nodi.}
+poiché $|E_{T,p}|$ è uguale al numero di `$1$' presenti in $\mathbf{v}$ con indice
+strettamente minore a $p$, concludendo, chiaramente se e solo se
+$\mathbf{is\_leaf}(p) = \mathbf{v}[p] = 1$, che\footnote{In quanto segue si omette
+	la biiezione $node$, dando per implicito il rapporto tra enumerazione e nodi.}
 $$
-\forall p \in \{0, \cdots, 2n\} ~~ \mathbf{left\_child}(p) = 2 \mathbf{rank_v}(p) + 1
+	\forall p \in \{0, \cdots, 2n\} ~~ \mathbf{left\_child}(p) = 2 \mathbf{rank_v}(p) + 1
 $$
 $$
-\forall p \in \{0, \cdots, 2n\} ~~ \mathbf{right\_child}(p) = 2 \mathbf{rank_v}(p) + 2
+	\forall p \in \{0, \cdots, 2n\} ~~ \mathbf{right\_child}(p) = 2 \mathbf{rank_v}(p) + 2
 $$
-Per risalire al genitore a partire da un figlio, ossia da $q$ risalire a $p$, 
-basta osservare che $p$ è un nodo tale per cui 
+Per risalire al genitore a partire da un figlio, ossia da $q$ risalire a $p$,
+basta osservare che $p$ è un nodo tale per cui
 $$
-\begin{cases}
-    2\mathbf{rank_v}(p) + 1 = q & \text{se } q \text{ è il figlio di sinistra} \\
-    2\mathbf{rank_v}(p) + 2 = q & \text{se } q \text{ è il figlio di destra}
-\end{cases} 
-\implies
-\begin{cases}
-    \mathbf{rank_v}(p) + \frac{1}{2} = \frac{q}{2} \\
-    \mathbf{rank_v}(p) + 1 = \frac{q}{2} 
-\end{cases} 
-\implies
-\begin{cases}
-    \mathbf{rank_v}(p) = \frac{q}{2}  - \frac{1}{2}\\
-    \mathbf{rank_v}(p) = \frac{q}{2} - 1
-\end{cases} 
+	\begin{cases}
+		2\mathbf{rank_v}(p) + 1 = q & \text{se } q \text{ è il figlio di sinistra} \\
+		2\mathbf{rank_v}(p) + 2 = q & \text{se } q \text{ è il figlio di destra}
+	\end{cases}
+	\implies
+	\begin{cases}
+		\mathbf{rank_v}(p) + \frac{1}{2} = \frac{q}{2} \\
+		\mathbf{rank_v}(p) + 1 = \frac{q}{2}
+	\end{cases}
+	\implies
+	\begin{cases}
+		\mathbf{rank_v}(p) = \frac{q}{2}  - \frac{1}{2} \\
+		\mathbf{rank_v}(p) = \frac{q}{2} - 1
+	\end{cases}
 $$
-ma possiamo concludere che 
+ma possiamo concludere che
 $$
-    \mathbf{rank_v}(p) = \lfloor \frac{q}{2} - \frac{1}{2} \rfloor
+	\mathbf{rank_v}(p) = \lfloor \frac{q}{2} - \frac{1}{2} \rfloor
 $$
-siccome a seconda che $q$ sia pari o dispari l'equazione sarà sempre verificata, 
-ossia questa uguaglianza è vera se e solo se è almeno una delle due precedenti; 
-se $\frac{q}{2} - \frac{1}{2}$ è intero, allora è vera la prima equazione, mentre 
+siccome a seconda che $q$ sia pari o dispari l'equazione sarà sempre verificata,
+ossia questa uguaglianza è vera se e solo se è almeno una delle due precedenti;
+se $\frac{q}{2} - \frac{1}{2}$ è intero, allora è vera la prima equazione, mentre
 se non è intero si ottiene $\frac{q}{2} - 1$, verificando la seconda.
-Applichiamo ad entrami i membri l'operazione di $\mathbf{select}$: 
+Applichiamo ad entrami i membri l'operazione di $\mathbf{select}$:
 $$
-\mathbf{select_v(rank_v}(p)) = \mathbf{select_v}(\lfloor \frac{q}{2} - \frac{1}{2} \rfloor) 
-\implies p = \mathbf{select_v}(\lfloor \frac{q}{2} - \frac{1}{2} \rfloor) 
+	\mathbf{select_v(rank_v}(p)) = \mathbf{select_v}(\lfloor \frac{q}{2} - \frac{1}{2} \rfloor)
+	\implies p = \mathbf{select_v}(\lfloor \frac{q}{2} - \frac{1}{2} \rfloor)
 $$
 
 \subsubsection{Complessità in spazio}
@@ -1225,60 +1225,60 @@ pertanto la struttura è succinta con accesso in tempo costante.
 \subsubsection{Alberi binari con dati}
 Se i dati si trovano su ogni tipo di nodo dell'albero (sia interni che interni) i dati
 ancillari si possono mantenere in un ulteriore vettore della stessa lunghezza.
-Se, invece, i dati ancillari si trovano esclusivamente sui nodi interni, 
-la situazione è leggermente più complicata: il vettore dei dati avrà 
-lunghezza pare ai al numero di nodi interni e sarà necessario ottenere il numero 
-ordinale del nodo interno, utilizzando quindi la funzione rank. 
-Alternativamente, se si vogliono salvare dati sulle foglie, si dovrà utilizzare 
+Se, invece, i dati ancillari si trovano esclusivamente sui nodi interni,
+la situazione è leggermente più complicata: il vettore dei dati avrà
+lunghezza pare ai al numero di nodi interni e sarà necessario ottenere il numero
+ordinale del nodo interno, utilizzando quindi la funzione rank.
+Alternativamente, se si vogliono salvare dati sulle foglie, si dovrà utilizzare
 una tecnica in grado di contare il \texttt{rank} per gli $0$.
 
 \section{Struttura di Elias-Fano per sequenze monotone}
-La struttura (o codifica, rappresentazione) di Elias-Fano che andiamo 
-a presentare occupa sulle sequenze monotone di interi, ossia 
+La struttura (o codifica, rappresentazione) di Elias-Fano che andiamo
+a presentare occupa sulle sequenze monotone di interi, ossia
 una sequenza di $n$ numeri interni
 $$
 	0 \leq x_0, x_1, \cdots, x_{n+1}
 $$
 ordinati, ossia
 $$
-\forall i, j ~ i < j \implies x_i < x_j
+	\forall i, j ~ i < j \implies x_i < x_j
 $$
-e tali per cui 
+e tali per cui
 $$
-\exists u ~ \forall i ~ x_i < u
+	\exists u ~ \forall i ~ x_i < u
 $$
 dove $u$ è chiamato \textit{dimensione dell'universo}.
 L'ADT che vogliamo rappresentare richiede una primitiva
-che, presentato un indice $i$, restituisce l'$i$-esimo elemento della sequenza, 
+che, presentato un indice $i$, restituisce l'$i$-esimo elemento della sequenza,
 ossia
 $$
-\forall i ~ \mathbf{project}(i) = x_i
+	\forall i ~ \mathbf{project}(i) = x_i
 $$
-La rappresentazione di seqenze monotone di interi è molto utile. 
-Per esempio, per rappresentare un grafo, si può attribuire ad ogni 
-nodo un numero: l'idea classica è quella di utilizzare poi, per esempio, 
-liste di adiacenza per elencare i nodi raggiungibili da un certo noto 
-considerato. I nodi adiacenti possono essere ordinati in ordine crescente, 
-ottenendo una sequenza esattamente monotona. 
-Un altro esempio di utilizzo di sequenze monotone è negli indici inversi. 
+La rappresentazione di seqenze monotone di interi è molto utile.
+Per esempio, per rappresentare un grafo, si può attribuire ad ogni
+nodo un numero: l'idea classica è quella di utilizzare poi, per esempio,
+liste di adiacenza per elencare i nodi raggiungibili da un certo noto
+considerato. I nodi adiacenti possono essere ordinati in ordine crescente,
+ottenendo una sequenza esattamente monotona.
+Un altro esempio di utilizzo di sequenze monotone è negli indici inversi.
 
 
 \subsection{Rappresentazione}
-La rappresentazione banale sarebbe utilizare un vettore di $n$ numeri 
-utilizzando per ognuno $\log_2(u)$ bit; la rappresentazione di Elias-Fano 
-utilizza meno spazio basandosi sulla seguente idea: si definisce 
+La rappresentazione banale sarebbe utilizare un vettore di $n$ numeri
+utilizzando per ognuno $\log_2(u)$ bit; la rappresentazione di Elias-Fano
+utilizza meno spazio basandosi sulla seguente idea: si definisce
 $$
-    l = \max\{0, \lfloor\log_2(\frac{u}{n})|\rfloor\}
+	l = \max\{0, \lfloor\log_2(\frac{u}{n})|\rfloor\}
 $$
-e gli $l$ bit meno significativi di ogni $x_i$ vengono salvati 
-esplicitamente, mentre i rimanenti bit vengono rappresentati 
-in un altro modo. Consideremo sempre il caso in cui $l\neq 0$, in 
-quanto $l = 0 \iff u < n$, facendo quindi una moderata 
-assunzione di sparsità. 
+e gli $l$ bit meno significativi di ogni $x_i$ vengono salvati
+esplicitamente, mentre i rimanenti bit vengono rappresentati
+in un altro modo. Consideremo sempre il caso in cui $l\neq 0$, in
+quanto $l = 0 \iff u < n$, facendo quindi una moderata
+assunzione di sparsità.
 \begin{table}[h]
-    \centering
-    \begin{tabular}{c}
-    \begin{lstlisting}
+	\centering
+	\begin{tabular}{c}
+		\begin{lstlisting}
 	 0 0 0 1 parte superiore
 	 . . . .
 	 1 1 1 1 		
@@ -1287,48 +1287,48 @@ assunzione di sparsità.
 	 . . . .
 	 1 0 0 1 parte inferiore
     \end{lstlisting}
-\end{tabular}
-\caption{Divisione di ogni $x_i$.}
+	\end{tabular}
+	\caption{Divisione di ogni $x_i$.}
 \end{table}
 
 \subsubsection{Implementazione e complessità in spazio}
-Le parti inferiori vengono `estratte' definendo 
+Le parti inferiori vengono `estratte' definendo
 $$
-\forall i \in \{0, \cdots, n\} ~ l_i = x_i \mod 2^l 
+	\forall i \in \{0, \cdots, n\} ~ l_i = x_i \mod 2^l
 $$
-utilizzando $n \cdot l$ bit in totale.  Ciò che rimane è la parte superiore, ossia 
+utilizzando $n \cdot l$ bit in totale.  Ciò che rimane è la parte superiore, ossia
 $s_i = \lfloor{\frac{x_{i}}{2^l}}\rfloor$; definiamo una sequenza di differenze
 $$
 	d_i = \lfloor{\frac{x_i}{2^l}}\rfloor - \lfloor{\frac{x_{i-1}}{2^l}}\rfloor
 $$
-assumendo $x_{-1} = 0$. Stiamo sfruttando il fatto che la sequenza sia non 
-decrescente, quindi $\forall i ~ d_i \geq 0$. 
+assumendo $x_{-1} = 0$. Stiamo sfruttando il fatto che la sequenza sia non
+decrescente, quindi $\forall i ~ d_i \geq 0$.
 
 Ogni differenza della sequenza viene rappresentata in unario, utilizzando $d_i$ bit
-`$0$' seguiti dal bit `$1$' per rappresentare il valore $d_i$; la sequenza 
-così rappresentata viene salvata in un vettore $\mathbf{d}$ equipaggiato 
-con funzioni di rango e selezione. Questa struttura occupa in spazio 
-una quantità al più 
+`$0$' seguiti dal bit `$1$' per rappresentare il valore $d_i$; la sequenza
+così rappresentata viene salvata in un vettore $\mathbf{d}$ equipaggiato
+con funzioni di rango e selezione. Questa struttura occupa in spazio
+una quantità al più
 $$
-\sum_{i = 0}^{n - 1}(d_i + 1) = n + \sum_{i=0}^{n-1} d_i 
-= n + \sum_{i = 0}^{n-1} (\lfloor{\frac{x_i}{2^l}}\rfloor - \lfloor{\frac{x_{i-1}}{2^l}}\rfloor) \text{ bit}
+	\sum_{i = 0}^{n - 1}(d_i + 1) = n + \sum_{i=0}^{n-1} d_i
+	= n + \sum_{i = 0}^{n-1} (\lfloor{\frac{x_i}{2^l}}\rfloor - \lfloor{\frac{x_{i-1}}{2^l}}\rfloor) \text{ bit}
 $$
-che identifica una serie telescopica; pertanto, il consumo in spazio è 
+che identifica una serie telescopica; pertanto, il consumo in spazio è
 $$
-    n - (\lfloor{\frac{x_{n-1}}{2^l}}\rfloor -\lfloor{\frac{x_{-1}}{2^l}}\rfloor) \leq n + \frac{u}{2^l} 
-    = n + \frac{u}{2^{\lfloor \log_2(\frac{u}{n})\rfloor}} \text{ bit}
+	n - (\lfloor{\frac{x_{n-1}}{2^l}}\rfloor -\lfloor{\frac{x_{-1}}{2^l}}\rfloor) \leq n + \frac{u}{2^l}
+	= n + \frac{u}{2^{\lfloor \log_2(\frac{u}{n})\rfloor}} \text{ bit}
 $$
-Se $u/n$ è una potenza di $2$, allora il consumo è 
+Se $u/n$ è una potenza di $2$, allora il consumo è
 $$
-n + \frac{u}{(u/n)} = 2n \text{ bit}
+	n + \frac{u}{(u/n)} = 2n \text{ bit}
 $$
 altrimenti è al più
 $$
-n + \frac{u}{2^{\log_2(\frac{u}{n}) - 1 }} = n + \frac{u}{2^{\log_2(u/n)}1/2} = n + \frac{2n}{u/n} = 3n \text{ bit}
+	n + \frac{u}{2^{\log_2(\frac{u}{n}) - 1 }} = n + \frac{u}{2^{\log_2(u/n)}1/2} = n + \frac{2n}{u/n} = 3n \text{ bit}
 $$
-Considerando entrambe le parti, questa struttura occupa in spazio $l\cdot n$ bit 
-per la parte inferiore e $2n$ o $3n$ bit per la parte superiore; in totale, 
-quindi, si consumano $(l+2)n$ o $(l+3)n$ bit. 
+Considerando entrambe le parti, questa struttura occupa in spazio $l\cdot n$ bit
+per la parte inferiore e $2n$ o $3n$ bit per la parte superiore; in totale,
+quindi, si consumano $(l+2)n$ o $(l+3)n$ bit.
 Ricordando che stiamo considerando sempre $l = \lfloor \log_2(u/n) \rfloor$, consideriamo
 $$
 	\lceil \log_2(u/n) \rceil =
@@ -1341,18 +1341,18 @@ e concludiamo
 $$
 	D_n = (2 + \lceil \log_2(u/n) \rceil) n \text{ bit}
 $$
-che però non tiene conto dello spazio occupato dalla struttura di rango e selezione, 
+che però non tiene conto dello spazio occupato dalla struttura di rango e selezione,
 che infatti sono necessiarie: supponiamo di volere la posizione dell'$i$-esimo $1$ in $\mathbf{d}$:
 $$
 	\mathbf{select_d}(i) = d_0 + d_1 + \cdots + d_{i-1} + i
 $$
-quindi 
-$$ 
-\mathbf{select_d}(i) - i = \sum_{j = 0}^i \lfloor{\frac{x_{j}}{2^l}}\rfloor -\lfloor{\frac{x_{j-1}}{2^l}}\rfloor  = \lfloor \frac{x_i}{2^l} \rfloor
+quindi
 $$
-di conseguenza 
+	\mathbf{select_d}(i) - i = \sum_{j = 0}^i \lfloor{\frac{x_{j}}{2^l}}\rfloor -\lfloor{\frac{x_{j-1}}{2^l}}\rfloor  = \lfloor \frac{x_i}{2^l} \rfloor
 $$
-    x_i =  \lfloor \frac{x_i}{2^l} \rfloor 2^l + (x_i ~ \mathrm{mod}{2^l}) = (\mathbf{select_d}(i) - i ) 2^l + l_i
+di conseguenza
+$$
+	x_i =  \lfloor \frac{x_i}{2^l} \rfloor 2^l + (x_i ~ \mathrm{mod}{2^l}) = (\mathbf{select_d}(i) - i ) 2^l + l_i
 $$
 Contando anche le strutture di rank e select, che quindi sono necessarie, si occupa uno spazio
 $$
@@ -1360,7 +1360,7 @@ $$
 $$
 
 \subsection{Lower bound per le strutture di Elias-Fano}
-La parte difficile dello studio di questa struttura è il calcolo del lower bound: 
+La parte difficile dello studio di questa struttura è il calcolo del lower bound:
 dobbiamo considerare tutte le sequenze monotone
 $$
 	0 \leq x_0 \leq \cdots \leq x_{n-1} \le u
@@ -1371,159 +1371,878 @@ $$
 	c_0, c_1, \cdots, c_{u-1}
 $$
 dove ogni $c_i$ è il numero di occorrenze del valore $i$ nel multinsieme, ossia
-il numero di soluzioni intere non negative dell'equazione 
+il numero di soluzioni intere non negative dell'equazione
 $$
-    c_0 + c_1, \cdots, c_{u-1} = n
+	c_0 + c_1, \cdots, c_{u-1} = n
 $$
-e possiamo calcolare il numero di sequenze monotone calcolando il numero 
+e possiamo calcolare il numero di sequenze monotone calcolando il numero
 di possibili soluzioni per questa equazione fissati $n$ e $u$.
 
-Per esempio, si immagini di avere un universo di dimensione $u = 7$ e $n = 5$ numeri 
-estratti da $\{0, 1, \cdots, 7\}$: la sequenza 
+Per esempio, si immagini di avere un universo di dimensione $u = 7$ e $n = 5$ numeri
+estratti da $\{0, 1, \cdots, 7\}$: la sequenza
 $$
-0 \leq 1 \leq 3 \leq 3 \leq 5 \leq 6 \le 7 
+	0 \leq 1 \leq 3 \leq 3 \leq 5 \leq 6 \le 7
 $$
-la cui equazione associata è 
+la cui equazione associata è
 $$
-c_0 + c_1 + c_2 + \cdots + c_6 = 5
+	c_0 + c_1 + c_2 + \cdots + c_6 = 5
 $$
-è rappresentabile, in termini di $c_i$, come 
+è rappresentabile, in termini di $c_i$, come
 $$
-c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1
+	c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1
 $$
-che è una soluzione dell'equazione precedente. 
+che è una soluzione dell'equazione precedente.
 
 \subsubsection{Metodo stars and bars}
-Per contare le possibili soluzioni si può utilizzare la tecnica \textit{stars and bars}, in 
-cui si utilizzano delle stringhe costruite utilizzando $n$ stelline e $u-1$ barrette, piazzate 
-in qualsiasi posizione: 
+Per contare le possibili soluzioni si può utilizzare la tecnica \textit{stars and bars}, in
+cui si utilizzano delle stringhe costruite utilizzando $n$ stelline e $u-1$ barrette, piazzate
+in qualsiasi posizione:
 $$
-| \star || \star \star || \star | \star
+	| \star || \star \star || \star | \star
 $$
 
-Il numero di soluzioni è uguale al numero di stringhe costruite in tale modo: i valori nella sequenza 
-sono $n$ e vanno `distribuiti' in $u$ spazi, delineati dalle $u-1$ barrette. L'interpretazione della 
-stringa appena mostrata è $ c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1 $, come 
-nell'esempio precedente. I simboli utilizzabili sono $(u-1) + n$, pertanto le possibili stringhe 
+Il numero di soluzioni è uguale al numero di stringhe costruite in tale modo: i valori nella sequenza
+sono $n$ e vanno `distribuiti' in $u$ spazi, delineati dalle $u-1$ barrette. L'interpretazione della
+stringa appena mostrata è $ c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1 $, come
+nell'esempio precedente. I simboli utilizzabili sono $(u-1) + n$, pertanto le possibili stringhe
 costruibili con questi simboli sono  ${u + n -1}\choose{u - 1}$.
 Questo fornisce il lower bound desiderato:
 $$
-Z_n = \log_2{{u + n -1}\choose{u - 1}} = \log_2{{u + n - 1}\choose{n}} \text{ bit}
+	Z_n = \log_2{{u + n -1}\choose{u - 1}} = \log_2{{u + n - 1}\choose{n}} \text{ bit}
 $$
 e introduciamo l'approssimazione
 $$
- {{a}\choose{b}} \approx b \log_2(\frac{a}{b}) + (a - b)\log_2(\frac{a}{a-b})
+	{{a}\choose{b}} \approx b \log_2(\frac{a}{b}) + (a - b)\log_2(\frac{a}{a-b})
 $$
 che ci permette di scrivere
 \begin{align*}
-    Z_n = \log_2{{u + n -1}\choose{u - 1}} &\approx n \log_2(\frac{u + n -1}{n}) + (u -1) \log_2(\frac{u + n - 1}{u - 1}) = \\
-					     &= n \log_2(\frac{u + n - 1}{n}) = n \log_2(\frac{u}{n}(1 + \frac{n}{u} - \frac{1}{u})) \\
-					     &= n \log_2(\frac{u}{n}) + n \log_2(1 + \frac{n}{u} - \frac{1}{u}) \text{ bit}
+	Z_n = \log_2{{u + n -1}\choose{u - 1}} & \approx n \log_2(\frac{u + n -1}{n}) + (u -1) \log_2(\frac{u + n - 1}{u - 1}) =        \\
+	                                       & = n \log_2(\frac{u + n - 1}{n}) = n \log_2(\frac{u}{n}(1 + \frac{n}{u} - \frac{1}{u})) \\
+	                                       & = n \log_2(\frac{u}{n}) + n \log_2(1 + \frac{n}{u} - \frac{1}{u}) \text{ bit}
 \end{align*}
 
 \noindent
-Un'altra proprietà che utilizziamo è 
+Un'altra proprietà che utilizziamo è
 $$
-x \approx \ln(1 + x)
+	x \approx \ln(1 + x)
 $$
-quindi 
+quindi
 \begin{align*}
-    Z_n &= n \log_2(\frac{u}{n}) + n \ln(1 + \frac{n}{u}-\frac{1}{u})\frac{1}{\ln(2)} 
-    \approx n \log_2(\frac{u}{n}) + n (\frac{n}{u}-\frac{1}{u})\frac{1}{\ln(2)} \\
-	&= n \log_2(\frac{u}{n}) + \frac{1}{u}\frac{1}{\ln(2)} - \frac{n}{u}\frac{1}{\ln(2)} 
+	Z_n & = n \log_2(\frac{u}{n}) + n \ln(1 + \frac{n}{u}-\frac{1}{u})\frac{1}{\ln(2)}
+	\approx n \log_2(\frac{u}{n}) + n (\frac{n}{u}-\frac{1}{u})\frac{1}{\ln(2)}               \\
+	    & = n \log_2(\frac{u}{n}) + \frac{1}{u}\frac{1}{\ln(2)} - \frac{n}{u}\frac{1}{\ln(2)}
 	\approx n \log_2(\frac{u}{n}) \text{ bit}
 \end{align*}
 
-L'utilizzo in spazio calcolato precedentemente è 
+L'utilizzo in spazio calcolato precedentemente è
 $$
-D_n = 2n + n \lceil \log_2(\frac{u}{n}) \rceil + o(n)
+	D_n = 2n + n \lceil \log_2(\frac{u}{n}) \rceil + o(n)
 $$
-In questo frangente, per raffinare l'analisi, conviene considerare la differenza 
-col lower bound non sull'intera struttura, bensì sul singolo elemento. 
+In questo frangente, per raffinare l'analisi, conviene considerare la differenza
+col lower bound non sull'intera struttura, bensì sul singolo elemento.
 Definiamo, quindi, il lower bound per l'elemento
 $$
-\bar{Z_n} \approx \log_2(\frac{u}{n})
+	\bar{Z_n} \approx \log_2(\frac{u}{n})
 $$
-e 
+e
 $$
-\bar{D_n} = 2+ \lceil \log_2(\frac{u}{n}) \rceil + o(n) = \bar{Z_n} + O(1)
+	\bar{D_n} = 2+ \lceil \log_2(\frac{u}{n}) \rceil + o(n) = \bar{Z_n} + O(1)
 $$
-la struttura è `quasi' implicita, dove l'incertezza deriva dal numero di 
-approssimazioni fatte e sull'assunzione di sparsità; in pratica, ciò che succede 
+la struttura è `quasi' implicita, dove l'incertezza deriva dal numero di
+approssimazioni fatte e sull'assunzione di sparsità; in pratica, ciò che succede
 in pratica è che questa uguaglianza vale quando $n \leq \sqrt{u}$.
 
-\section{Strutture per parentesi ben formate}
-
-DI ogni parentesi lontana possiamo guardare dove si chiude: due parentesi lontane in un blocco
-si possono chiudere entrambe in un blocco più avanti; la prima viene chiamata \textit{pioniera}.
-Essa è una parentesi lontana e
-\begin{itemize}
-	\item è la prima del blocco oppure
-	\item è la prima a chiudersi in un certo blocco
-\end{itemize}
-Per rappresentare la parola memorizziamo, oltre a $w$, un vettore $p$ di $n$ bit con $1$ nelle posizioni
-delle pioniere. Inoltre, teniamo altri tre vettori: $E$, che per ogni blocco $i$ da l'eccesso all'inizio
-del blocco $i$ (quindi ha un elemento per ogni blocco); $M$, che per ogni blocco $i$ mantiene la posizione
-della parentesi corrispondente all'$i$-esima pioniera e, infine, $O$ per ogni blocco $i$ mantiene la
-posizione della prima aperta a sinistra dell'inizio di $i$ avente eccesso $x-1$, dove $x$ è il
-minimo eccesso del blocco.
-
-Lo spazio occupato da queste strutture è:
+\section{Struttura per parentesi ben formate}
+\subsection{Linguaggi di Dyck}
+Un linguaggio di Dyck $L$ è un linguaggio sull'alfabeto $D={(,)}$ tale che $L\subseteq D^*$
+e una stringa $w \in D^*$ appartiene a $L$ se e solo se
+\begin{enumerate}
+	\item $|w|_{(} = |w|_{)}$; e
+	\item $\forall w_1, w_2 ~~ w = w_1w_2 \implies|w_1|_{(} \geq |w_2|_{)}$
+\end{enumerate}
+Un modo interessante per studiare una parola $w$ di Dyck è studiarne la
+\textit{funzione di eccesso}, definita
 $$
-	\begin{aligned}
-		 & w &  & n                                                                  \\
-		 & p &  & n + o(n)                                                           \\
-		 & E &  & k + \log_2(n)                                                      \\
-		 & O &  & k + \log_2(n)                                                      \\
-		 & M &  & \text{pioniere} \cdot \log_2(n) < (4k - 6) \log_2(n) < 4k\log_2(n)
-	\end{aligned}
+	E_w(i) = |\{j | j \le i ~ w_j = ( ~\}| - |\{j | j \leq i ~ w_j = ) ~\}|
 $$
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\draw[->] (-1, 0) -- (8.50, 0) node[right] {$x$};
+		\draw[->] (-1, 0) -- (-1, 4) node[above] {$y$};
+
+		\draw (0,0) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (1,1) node[circle,fill,inner sep=1pt]{};
+		\draw (1,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (2,1) node[circle,fill,inner sep=1pt]{};
+		\draw (2,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (3,1) node[circle,fill,inner sep=1pt]{};
+		\draw (3,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (4,2) node[circle,fill,inner sep=1pt]{};
+		\draw (4,2) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (5,2) node[circle,fill,inner sep=1pt]{};
+		\draw (5,2) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (6,1) node[circle,fill,inner sep=1pt]{};
+		\draw (6,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (7,0) node[circle,fill,inner sep=1pt, label=above:{)}]{};
+	\end{tikzpicture}
+	\caption{Funzione di eccesso per la parola $(()(()))$.}
+	\label{fig:func_excess}
+\end{figure}
+
+Questa funzione parte da $0$, può tornare a $0$ e, se la parola è effettivamente nel
+linguaggio, termina a $0$. Ci sono due tipi di stringhe di Dyck: quelle per cui
+la funzione non raggiunge nessuno $0$ tranne quello iniziale e quello finale,
+chiamate \textit{fortemente bilanciate}, e quelle per cui questa funzione raggiunge
+uno $0$ diverso da quello iniziale e quello finale, quindi $w = w_1w_2$ è
+\textit{debolmente bilanciata} e tale per cui almeno uno tra $w_1$ e $w_2$ è
+fortemente bilanciata.
+
+Ci sono molti motivi per cui le sequenze di parentesi sono interessanti. In particolare,
+le espressioni ben parentesizzate sono in biiezione sia con le foreste di alberi binari che con gli
+alberi non binari. In qualche modo, esattamente come abbiamo visto una rappresentazione
+per gli alberi binari in precedenza, ora stiamo analizzando una struttura per alberi
+generali. Le sequenze di parentesi aperte e chiuse le penseremo come stringhe di bit, cioè
+una stringa
+$$
+	(()(()())(()))
+$$
+è rappresentata come una stringa
+$$
+	11011010011000
+$$
+la cui funzione di eccesso è rappresentata in \cref{fig:func_excess_example}.
+
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\draw[->] (-1, 0) -- (14.5, 0) node[right] {$x$};
+		\draw[->] (-1, 0) -- (-1, 4) node[above] {$y$};
+
+		\draw (0,0) node[label=above:{(}]	{} -- 	(1,1) node[circle,fill,inner sep=1pt]{};
+		\draw (1,1) node[label=above:{(}] 	{} -- 	(2,1) node[circle,fill,inner sep=1pt]{};
+		\draw (2,1) node[label=above:{)}] 	{} -- 	(3,1) node[circle,fill,inner sep=1pt]{};
+		\draw (3,1) node[label=above:{(}] 	{} -- 	(4,2) node[circle,fill,inner sep=1pt]{};
+		\draw (4,2) node[label=above:{(}] 	{} -- 	(5,2) node[circle,fill,inner sep=1pt]{};
+		\draw (5,2) node[label=above:{)}] 	{} -- 	(6,2) node[circle,fill,inner sep=1pt]{};
+		\draw (6,2) node[label=above:{(}] 	{} -- 	(7,2) node[circle,fill,inner sep=1pt]{};
+		\draw (7,2) node[label=above:{)}] 	{} -- 	(8,1) node[circle,fill,inner sep=1pt]{};
+		\draw (8,1) node[label=above:{)}] 	{} -- 	(9,1) node[circle,fill,inner sep=1pt]{};
+		\draw (9,1) node[label=above:{(}] 	{} -- 	(10,2) node[circle,fill,inner sep=1pt]{};
+		\draw (10,2) node[label=above:{(}]  	{} -- 	(11,2) node[circle,fill,inner sep=1pt]{};
+		\draw (11,2) node[label=above:{)}]  	{} -- 	(12,1) node[circle,fill,inner sep=1pt]{};
+		\draw (12,1) node[label=above:{)}]  	{} -- 	(13,0) node[circle,fill,inner sep=1pt,label=above:{)}]{};
+	\end{tikzpicture}
+	\caption{Funzione di eccesso per la parola $(()(()())(()))$.}
+	\label{fig:func_excess_example}
+\end{figure}
+
+\subsection{L'ADT stringa bilanciata}
+L'ADT che vogliamo descrivere per le stringhe di parentesi ben bilanciate ha le primitive
+$$
+	\forall p \in \mathbb{N} ~~ \mathbf{find\_open}(p) = \text{parentesi aperta corrispondente alla chiusa in posizione } p
+$$
+$$
+	\forall p \in \mathbb{N} ~~ \mathbf{find\_close}(p) = \text{parentesi chiusa corrispondente all'aperta in posizione } p
+$$
+$$
+	\forall p \in \mathbb{N} ~~ \mathbf{enclose}(p) = \text{prima parentesi aperta che racchiude la parentesi in posizione } p
+$$
+
+Pensando ad una soluzione banale, una $\mathbf{find\_open}$ in una qualche posizione si può
+calcolare innanzitutto realizzando che la parentesi aperta corrispondente ad una
+parentesi chiusa è sicuramente prima della chiusa stessa; basta quindi cercare all'indietro fermandosi
+alla prima parentesi aperta che ha la stessa funzione di eccesso. Analogamente si fa per $\mathbf{find\_close}$.
+La cosa più semplice, quindi, sarebbe calcolare anticipatamente la funzione di eccesso e usarla
+facendo ricerche lineari, utilizzando uno spazio $n \log_2(n)$.
+Faremo meglio creando una struttura succinta con tempo di interrogazione logaritmico.
+
+\subsubsection{Rappresentazione}
+La prima operazione sulle parentesi da eseguire nella costruzione della struttura è dividere, nuovamente,
+la parola in blocchi di lunghezza $l$, creando $k = \lceil n/l \rceil$ blocchi. In ogni blocco
+ci sono parentesi chiuse e aperte e, in alcuni casi, le parentesi hanno la loro corrispondente
+dentro il blocco stesso: in questa situazione, definiamo la parentesi \textit{vicina}, mentre
+tutte le altri sono definite \textit{lontane}; in generale, tutte le parentesi aperte lontane
+si chiuderanno in un qualche blocco successivo.
+
+In ogni blocco ci sono alcune parentesi vicine e varie parentesi lontane. Può succedere
+che una o più parentesi lontane si chiudano nello stesso blocco: definiamo \textit{pioniera}
+la lontana aperta (benché si possa fare lo stesso ragionamento, a specchio, per le chiuse)
+che è la prima del blocco al quale appartiene a chiudersi in un qualsiasi altro blocco successivo.
+Un esempio di queste divisioni è in \cref{fig:paren_blocks}, dove le parentesi gialle sono le vicine,
+quelle blu sono lontane e quelle rosse sono pioniere.
+
+\begin{figure}[h]
+
+	\centering
+
+	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+		%Shape: Rectangle [id:dp12028039856705786] 
+		\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (160,170) -- (170,170) -- (170,190) -- (160,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp6017350169887977] 
+		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (170,170) -- (180,170) -- (180,190) -- (170,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp1862637830525412] 
+		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (180,170) -- (190,170) -- (190,190) -- (180,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp7375538410378665] 
+		\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (190,170) -- (200,170) -- (200,190) -- (190,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp42832713437851455] 
+		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (200,170) -- (210,170) -- (210,190) -- (200,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp3771120606312378] 
+		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (210,170) -- (220,170) -- (220,190) -- (210,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp19892421904849122] 
+		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (220,170) -- (230,170) -- (230,190) -- (220,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp0006276055923941648] 
+		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (230,170) -- (240,170) -- (240,190) -- (230,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp16538357452442487] 
+		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (240,170) -- (250,170) -- (250,190) -- (240,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp06112380309966958] 
+		\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (250,170) -- (260,170) -- (260,190) -- (250,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp06951356935410424] 
+		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (260,170) -- (270,170) -- (270,190) -- (260,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp885838800749071] 
+		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (270,170) -- (280,170) -- (280,190) -- (270,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp37752499309076915] 
+		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (280,170) -- (290,170) -- (290,190) -- (280,190) -- cycle ;
+
+		%Shape: Rectangle [id:dp7109616333523956] 
+		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (290,170) -- (300,170) -- (300,190) -- (290,190) -- cycle ;
+
+		%Straight Lines [id:da856450147041028] 
+		\draw    (210,160) -- (210,200) ;
+		%Straight Lines [id:da0823905364290688] 
+		\draw    (260,160) -- (260,200) ;
+		%Straight Lines [id:da8657156752341498] 
+		\draw    (205.14,190.29) -- (205.14,204.36) -- (216.43,204.36) -- (216.43,192.93) ;
+		\draw [shift={(216.43,189.93)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+		%Straight Lines [id:da4613663625082196] 
+		\draw    (195.57,189.79) -- (195.57,212.07) -- (244.57,212.07) -- (244.57,193.64) ;
+		\draw [shift={(244.57,190.64)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+		%Straight Lines [id:da9063548393327128] 
+		\draw    (165.43,190.21) -- (165.43,217.64) -- (284.43,217.64) -- (284.3,194.5) ;
+		\draw [shift={(284.29,191.5)}, rotate = 89.69] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+		%Straight Lines [id:da09579212789908009] 
+		\draw    (255.29,170.21) -- (255.29,152.07) -- (296.14,152.07) -- (296.14,166.21) ;
+		\draw [shift={(296.14,169.21)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
+
+		% Text Node
+		\draw (161,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (171,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (181,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+		% Text Node
+		\draw (211,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+		% Text Node
+		\draw (201,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (191,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (271,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+		% Text Node
+		\draw (261,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (251,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (241,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+		% Text Node
+		\draw (231,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+		% Text Node
+		\draw (221,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
+		% Text Node
+		\draw (291,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+		% Text Node
+		\draw (281,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
+	\end{tikzpicture}
+
+	\caption{Divisione in blocchi di una stringa parentesizzata.}
+	\label{fig:paren_blocks}
+\end{figure}
+
+Assumiamo che $w$ sia la parola da rappresentare e assumiamo che $|w| = n$.
+Per rappresentare la parola memorizziamo, oltre a $w$ stessa, un vettore $\mathbf{p}$ di $n$ bit
+con $1$ nelle posizioni delle pioniere; il vettore $\mathbf{E}$, che per ogni blocco $i$
+da l'eccesso all'inizio del blocco e ha un elemento per ogni blocco; il vettore $\mathbf{M}$, che per ogni
+blocco $i$ mantiene la posizione della parentesi corrispondente all'$i$-esima pioniera e, infine, il vettore
+$\mathbf{O}$ che per ogni blocco $i$ mantiene la posizione della prima aperta a sinistra dell'inizio del blocco
+avente eccesso $x-1$, dove $x$ è il minimo eccesso del blocco. Per la rappresentazione, definiamo $l = \log_2(n)$.
 \begin{theorem}
 	Se ci sono $k$ blocchi, vi sono al massimo $2^k - 3$ coppie di pionieri.
 \end{theorem}
 \begin{proof}
-	Costruiamo un grafo $G = (V, E)$ dove $V$ sono i blocchi; esiste un arco tra un blocco $x$ e $y$ se
+	Costruiamo un grafo $G = (V, E)$ dove $V$ sono i blocchi ed esiste un lato tra un blocco $x$ e $y$ se
 	e solo se $x$ contiene una pioniera cha ha in $y$ la sua corrispondente.
 	Dimostriamo per induzione su $k$: vi sono due casi.
 	\begin{itemize}
 		\item se l'insieme di blocchi è separabile, ossia esiste una posizione nella parola sulla quale
-		      ``non passano archi'', la parola è scomponibile in due diverse parole ben formate;
-		      allora il numero di pioniere nella prima parte è $\text{pioniere}_1 \leq 2p - 3$ e il
-		      numero di pioniere nella seconda parte è $\text{pioniere}_2 \leq 2(k - p + 1) - 3$;
-		      allora $\text{pioniere} \leq 2p - 3 + 2 k - 2p + 2 - 3 = 2k - 4$.
-		\item se l'insieme di blocchi non è separabile, ossia la parola non è scomponibile in due
-		      parole diverse,
+		      ``non passano archi'', la parola è debolmente bilanciate ed è scomponibile in due diverse
+		      parole ben formate. Allora, per ipotesi induttiva, il numero di pioniere nella prima
+		      parte è al più $2p - 3$ e il numero di pioniere nella seconda parte è al più $2(k - p + 1) - 3$;
+		      allora il numero di pioniere è al più
+		      $$
+			      2p - 3 + 2 k - 2p + 2 - 3 = 2k - 4 \leq 2k - 3
+		      $$
+		\item se l'insieme di blocchi non è separabile, ossia la parola è fortemente
+		      bilanciate e non è scomponibile in due parole diverse, si prende la
+		      prima coppia di parentesi lontane che si trova in $w$ e si rimuove. La parola risultante,
+		      che chiamiamo $w'$, gode della proprietà che si vuole dimostrare. Il numero
+		      di pioniere in $w$ è quindi al più la somma delle pioniere in $w'$ e la pioniera rimossa
+		      $$
+			      2k - 4  = 2k - 3
+		      $$
+
 	\end{itemize}
 \end{proof}
 
-Sommando, lo spazio occupato è $2n + o(n) + 6k \log_2(n) = 2n + 6n + o(n) = 8n + o(n)$.
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.45\textwidth}
+		\centering
+		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
 
-\texttt{findClosed}: trovata una parentesi $i$ aperta, si vuole sapere dove si chiude.
-\begin{itemize}
-	\item calcolare gli eccessi nel blocco di $i$ con $E$ (tempo logaritmico)
-	\item se $i$ è vicina, find completa. Altrimenti, $j = rank_p(i)$ è l'indice della pioniera
-	      che precede $i$; si può usare $M[j] = i'$ per calcolare dove si chiude la pioniera che precede $i$.
-	      Si può ora ripetere $1$ per il blocco di $i'$.
+			%Shape: Rectangle [id:dp5751448069992374] 
+			\draw   (100,130) -- (170,130) -- (170,150) -- (100,150) -- cycle ;
+			%Shape: Rectangle [id:dp8956649728081978] 
+			\draw   (190,130) -- (230,130) -- (230,150) -- (190,150) -- cycle ;
+			%Shape: Rectangle [id:dp8836798951210239] 
+			\draw   (250,130) -- (290,130) -- (290,150) -- (250,150) -- cycle ;
+			%Shape: Rectangle [id:dp07169651712981018] 
+			\draw   (300,130) -- (380,130) -- (380,150) -- (300,150) -- cycle ;
+			%Straight Lines [id:da8396678932783305] 
+			\draw    (110,130) -- (110,100) -- (260,100) -- (260,128) ;
+			\draw [shift={(260,130)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da8376287767119306] 
+			\draw    (120,130) -- (120,110) -- (220,110) -- (220,128) ;
+			\draw [shift={(220,130)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da7343053938900628] 
+			\draw    (200,150) -- (200,170) -- (260,170) -- (260,152) ;
+			\draw [shift={(260,150)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da02843704523195245] 
+			\draw    (280,130) -- (280,110) -- (330,110) -- (330,128) ;
+			\draw [shift={(330,130)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da4532725638041315] 
+			\draw  [dash pattern={on 3.75pt off 3pt on 7.5pt off 1.5pt}]  (270,90) -- (270,180) ;
+			%Straight Lines [id:da17944476616348748] 
+			\draw    (100,180) -- (100,190) -- (290,190) -- (290,180) ;
+			%Straight Lines [id:da1753890360224526] 
+			\draw    (250,200) -- (250,210) -- (380,210) -- (380,200) ;
 
-\end{itemize}
+			% Text Node
+			\draw (181,192.4) node [anchor=north west][inner sep=0.75pt]    {$p$};
+			% Text Node
+			\draw (281,212.4) node [anchor=north west][inner sep=0.75pt]    {$k\ -\ p\ +\ 1$};
+		\end{tikzpicture}
+		\subcaption{Caso $1$.}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}{0.45\textwidth}
 
-Se siamo in questo caso, anche le parantesi precedenti hanno
+		\tikzset{
+			pattern size/.store in=\mcSize,
+			pattern size = 5pt,
+			pattern thickness/.store in=\mcThickness,
+			pattern thickness = 0.3pt,
+			pattern radius/.store in=\mcRadius,
+			pattern radius = 1pt}
+		\makeatletter
+		\pgfutil@ifundefined{pgf@pattern@name@_y43ms7xnt}{
+			\pgfdeclarepatternformonly[\mcThickness,\mcSize]{_y43ms7xnt}
+			{\pgfqpoint{0pt}{-\mcThickness}}
+			{\pgfpoint{\mcSize}{\mcSize}}
+			{\pgfpoint{\mcSize}{\mcSize}}
+			{
+				\pgfsetcolor{\tikz@pattern@color}
+				\pgfsetlinewidth{\mcThickness}
+				\pgfpathmoveto{\pgfqpoint{0pt}{\mcSize}}
+				\pgfpathlineto{\pgfpoint{\mcSize+\mcThickness}{-\mcThickness}}
+				\pgfusepath{stroke}
+			}}
+		\makeatother
 
-Per calcolare l'information-theoretical lower bound sarà necessario passare attraverso alcuni isomorfismi
-interessanti. Siano quindi $D_n$ l'insieme delle parole di Dyck di lunghezza $n$, $B_n$ l'insieme degli
-alberi binari con $n$ nodi interni e $F_n$ l'insieme delle foreste ordinate con $n$ nodi in tutto.
+		% Pattern Info
 
+		\tikzset{
+			pattern size/.store in=\mcSize,
+			pattern size = 5pt,
+			pattern thickness/.store in=\mcThickness,
+			pattern thickness = 0.3pt,
+			pattern radius/.store in=\mcRadius,
+			pattern radius = 1pt}
+		\makeatletter
+		\pgfutil@ifundefined{pgf@pattern@name@_mifsyi5bu}{
+			\pgfdeclarepatternformonly[\mcThickness,\mcSize]{_mifsyi5bu}
+			{\pgfqpoint{0pt}{0pt}}
+			{\pgfpoint{\mcSize+\mcThickness}{\mcSize+\mcThickness}}
+			{\pgfpoint{\mcSize}{\mcSize}}
+			{
+				\pgfsetcolor{\tikz@pattern@color}
+				\pgfsetlinewidth{\mcThickness}
+				\pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
+				\pgfpathlineto{\pgfpoint{\mcSize+\mcThickness}{\mcSize+\mcThickness}}
+				\pgfusepath{stroke}
+			}}
+		\makeatother
+		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+			%Shape: Rectangle [id:dp5339690558371227] 
+			\draw   (120,150) -- (190,150) -- (190,170) -- (120,170) -- cycle ;
+			%Straight Lines [id:da850734740747954] 
+			\draw    (140,150) -- (140,120) -- (280,120) -- (280,148) ;
+			\draw [shift={(280,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da9735874841202442] 
+			\draw    (150,150) -- (150,130) -- (240,130) -- (240,148) ;
+			\draw [shift={(240,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da863983070784418] 
+			\draw    (220,170) -- (220,190) -- (280,190) -- (280,172) ;
+			\draw [shift={(280,170)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da6442133803721162] 
+			\draw    (300,150) -- (300,130) -- (350,130) -- (350,148) ;
+			\draw [shift={(350,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Shape: Rectangle [id:dp881091443202814] 
+			\draw   (190,150) -- (260,150) -- (260,170) -- (190,170) -- cycle ;
+			%Shape: Rectangle [id:dp2693088037465775] 
+			\draw   (260,150) -- (330,150) -- (330,170) -- (260,170) -- cycle ;
+			%Shape: Rectangle [id:dp6243374270107382] 
+			\draw   (330,150) -- (400,150) -- (400,170) -- (330,170) -- cycle ;
+			%Straight Lines [id:da11664171795224454] 
+			\draw    (150,170) -- (150,190) -- (210,190) -- (210,172) ;
+			\draw [shift={(210,170)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Straight Lines [id:da43843554948583285] 
+			\draw    (130,150) -- (130,140.71) -- (130,110) -- (390,110) -- (390,148) ;
+			\draw [shift={(390,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
+			%Shape: Rectangle [id:dp45540530016238834] 
+			\draw  [pattern=_y43ms7xnt,pattern size=2.0999999999999996pt,pattern thickness=0.75pt,pattern radius=0pt, pattern color={rgb, 255:red, 0; green, 0; blue, 0}][dash pattern={on 0.84pt off 2.51pt}] (130,150) -- (120,150) -- (120,170) -- (130,170) -- cycle ;
+			%Shape: Rectangle [id:dp21031590903119124] 
+			\draw  [pattern=_mifsyi5bu,pattern size=2.0999999999999996pt,pattern thickness=0.75pt,pattern radius=0pt, pattern color={rgb, 255:red, 0; green, 0; blue, 0}][dash pattern={on 0.84pt off 2.51pt}] (400,150) -- (390,150) -- (390,170) -- (400,170) -- cycle ;
+		\end{tikzpicture}
+
+		\subcaption{Caso $2$.}
+	\end{subfigure}
+	\caption{Dimostrazione induttiva del numero di pioniere in una parola ben parentesizzata.}
+	\label{fig:proof_pioneers}
+\end{figure}
+
+Quindi, lo spazio occupato da queste strutture è:
+$$
+	\begin{aligned}
+		 & w          &  & n                                                                                          \\
+		 & p          &  & n + o(n) \text{ (sarà necessario introdurre la struttura di rango)}                        \\
+		 & \mathbf{E} &  & k  \log_2(n)                                                                               \\
+		 & \mathbf{O} &  & k  \log_2(n)                                                                               \\
+		 & \mathbf{M} &  & \text{pioniere} \cdot \log_2(n) < 2(2k - 3) \log_2(n) = (4k - 6) \log_2(n) \le 4k\log_2(n)
+	\end{aligned}
+$$
+Sommando, lo spazio occupato è $D_n = 2n + o(n) + 6k \log_2(n) = 2n + 6n + o(n) = 8n + o(n)$ bit.
+
+\subsubsection{Implementrazione}
+Per implementare la funzione $\mathbf{find\_close}$ che, trovata una parentesi aperta in posizione $p$, restituisce
+la posizione in cui si chiude, si deve:
+\begin{enumerate}
+	\item calcolare gli eccessi di tutte le posizioni del blocco al quale appartiene $p$ con $E$ (tempo logaritmico);
+	\item se $p$ è vicina, ossia esiste un'altra posizione nel blocco con lo stesso eccesso,
+	      la funzione è completa. Altrimenti, $p$ è la posizione di una parentesi lontana e
+	      $j = \mathbf{rank_p}(p)$ è l'indice della pioniera che precede $p$; si può usare $M[j] = p'$ per
+	      calcolare la posizione in cui si chiude la pioniera che precede $p$, che diciamo essere in un
+	      blocco $b$. Scorrendo indietro, per trovare la chiusa corrispondente, basta trovare la
+	      posizione con eccesso uguale all'eccesso di $p$.
+\end{enumerate}
+
+Tutto questo richiede tempo $\log_2(n)$ e analogamente per l'implementazione di $\mathbf{find\_open}$.
+Per l'implementazione di $\mathbf{enclosed}$, che cerca la prima parentesi aperta che racchiude la parentesi
+in posizione $p$, ipotizziamo di aver già trovato la corrispondente $\bar{p}$ con una find e ammettiamo che
+l'eccesso di entrambe sia $e$. Inizialmente, si cerca alla sinistra della posizione della parentesi aperta
+se c'è una posizione con eccesso $e-1$, che segna l'aperta precedente. Se, nel blocco al quale appartiene
+l'aperta, tutte le posizioni hanno eccesso $\ge e-1$, si cerca per una chiusa di eccesso $e-1$ nella parte
+a destra del blocco in cui giace la chiusa. Se anche in questo caso non si trova, significa che la parentesi
+che si cerca è di eccesso $e-1$ che giace nel blocco a sinistra a quello della parentesi aperta, che ha
+come valore di eccesso minore di tale blocco. In tal caso, basta usare il vettore $\mathbf{O}$ per trovare
+la posizione della parentesi cercata.
+
+\subsection{Lower bound per parentesi ben bilanciate}
+\subsubsection{Foreste ordinate}
 Una foresta ordinata è una sequenza ordinata (per numero di nodi) di alberi ordinati (corrispondenti
 ad alberi radicati).
-$$
-	\phi(<>) = \blacktriangledown
-$$
-%phi di una foresta...
-Sia $\psi: D_{2n} \rightarrow F_n$.
-Definiamo $\psi(\epsilon) = <>$; $\psi(w_1 \cdots w_k) =  <\psi(w_1), \cdots, \psi(w_k)>$, $\psi((w)) = <\circ < \psi(w) >$
-Sappiamo che $D_{2n} \approxeq F_n \approxeq B_n \implies |B_n| = C_n \rightarrow 2n + o (\log_2(n))$.
-Noi usiamo $8n + o(n)$, quindi la struttura è compatta.
+\begin{figure}[h]
+	\centering
+	\begin{tikzpicture}
+		\draw (0,1)	node[fill,circle, inner sep=1pt] {} -- (0,0) node[fill,circle,inner sep=1pt] {};
 
+		\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (2,0) node[fill,circle,inner sep=1pt] {};
+		\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (1,0) node[fill,circle,inner sep=1pt] {};
+		\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (3,0) node[fill,circle,inner sep=1pt] {};
+
+		\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (4,0) node[fill,circle,inner sep=1pt] {};
+		\draw (4,0)	node[fill,circle, inner sep=1pt] {} -- (4,-1) node[fill,circle,inner sep=1pt] {};
+		\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (5,0) node[fill,circle,inner sep=1pt] {};
+		\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (6,0) node[fill,circle,inner sep=1pt] {};
+		\draw (6,0)	node[fill,circle, inner sep=1pt] {} -- (6,-1) node[fill,circle,inner sep=1pt] {};
+	\end{tikzpicture}
+	\caption{Foresta ordinata di alberi.}
+	\label{fig:ordered_forest}
+\end{figure}
+Formalmente, definiamo induttivamente una foresta ordinata:
+\begin{itemize}
+	\item $\langle \rangle$ indica la lista vuota di alberi ed è una foresta ordinata;
+	\item se $\langle T_1, \cdots, T_k\rangle$ sono alberi, allora $\langle T_1, \cdots, T_k\rangle$ è una
+	      foresta ordinata
+	\item se $F$ è una foresta ordinata, $tree(F)$ è un albero radicato in un
+	      nuovo nodo che ha come figli tutti gli alberi di $F$.
+\end{itemize}
+
+\subsubsection{Isomorfismo tra foreste ordinate e alberi binari}
+Definiamo una funzione $\phi$ che associa ad ogni foresta ordinata un preciso albero binario.
+Induttivamente,
+$$
+	\phi(\langle \rangle) = \cdot
+$$
+ossia $\phi$ di una foresta vuota è un albero costituito da una singola radice.
+$$
+	\phi(\langle tree(F), T_1, \cdots, T_k>\rangle) = (\phi(F), \phi(\langle T_1, \cdots, T_k\rangle))
+$$
+
+\begin{figure}[h]
+	\centering
+	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+		%Straight Lines [id:da1467409507063523] 
+		\draw    (144.93,41.07) -- (144.93,71.07) ;
+		\draw [shift={(144.93,71.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(144.93,41.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Shape: Circle [id:dp48951213847038366] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (154.57,54.79) .. controls (154.57,52.93) and (156.07,51.43) .. (157.93,51.43) .. controls (159.78,51.43) and (161.29,52.93) .. (161.29,54.79) .. controls (161.29,56.64) and (159.78,58.14) .. (157.93,58.14) .. controls (156.07,58.14) and (154.57,56.64) .. (154.57,54.79) -- cycle ;
+
+		%Straight Lines [id:da5368285010745462] 
+		\draw    (226.43,55) -- (208.31,76.91) -- (201.86,84.71) ;
+		\draw [shift={(226.43,55)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Shape: Triangle [id:dp5019688866391238] 
+		\draw   (201.86,84.71) -- (236.86,124.71) -- (166.86,124.71) -- cycle ;
+		%Shape: Triangle [id:dp12657672899601724] 
+		\draw   (273.64,93.29) -- (318.57,145) -- (228.71,145) -- cycle ;
+		%Straight Lines [id:da934069022901869] 
+		\draw    (226.43,55) -- (273.64,93.29) ;
+		%Straight Lines [id:da2898443038516424] 
+		\draw    (277.71,123) -- (277.86,139.14) ;
+		\draw [shift={(277.86,139.14)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(277.71,123)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da8113066852584067] 
+		\draw    (354.98,55.5) -- (336.86,77.41) -- (330.4,85.21) ;
+		\draw [shift={(354.98,55.5)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da7241289121021388] 
+		\draw    (354.98,55.5) -- (402.19,93.79) ;
+		%Shape: Circle [id:dp6494084453696087] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (325.1,87.83) .. controls (325.1,86.18) and (326.44,84.83) .. (328.1,84.83) .. controls (329.76,84.83) and (331.1,86.18) .. (331.1,87.83) .. controls (331.1,89.49) and (329.76,90.83) .. (328.1,90.83) .. controls (326.44,90.83) and (325.1,89.49) .. (325.1,87.83) -- cycle ;
+		%Straight Lines [id:da4037066529287967] 
+		\draw    (403.26,95.5) -- (385.15,117.41) -- (377.98,125.79) ;
+		\draw [shift={(403.26,95.5)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Shape: Triangle [id:dp04881880314765141] 
+		\draw   (445.69,115.21) -- (480.69,155.21) -- (410.69,155.21) -- cycle ;
+
+		%Shape: Triangle [id:dp12559883893437063] 
+		\draw   (377.98,125.79) -- (422.9,177.5) -- (333.05,177.5) -- cycle ;
+		%Straight Lines [id:da48087885685526743] 
+		\draw    (379.19,155.5) -- (379.33,171.64) ;
+		\draw [shift={(379.33,171.64)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(379.19,155.5)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da02388870469608051] 
+		\draw    (403.26,95.5) -- (445.69,115.21) ;
+		%Straight Lines [id:da6273665141516217] 
+		\draw    (536.48,54.83) -- (518.36,76.74) -- (511.9,84.55) ;
+		\draw [shift={(536.48,54.83)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da5905284436508569] 
+		\draw    (536.48,54.83) -- (583.69,93.12) ;
+		%Straight Lines [id:da2030740854922638] 
+		\draw    (584.76,94.83) -- (566.65,116.74) -- (559.48,125.12) ;
+		\draw [shift={(584.76,94.83)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da49066689108397754] 
+		\draw    (584.76,94.83) -- (627.19,114.55) ;
+		%Straight Lines [id:da38720603069737713] 
+		\draw    (557.87,127.72) -- (539.76,149.63) -- (532.59,158.01) ;
+		\draw [shift={(557.87,127.72)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da1048947282900694] 
+		\draw    (560.76,129.5) -- (603.19,149.21) ;
+		%Shape: Circle [id:dp32417892244375524] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (533.82,160.09) .. controls (533.82,158.2) and (532.3,156.67) .. (530.41,156.67) .. controls (528.53,156.67) and (527,158.2) .. (527,160.09) .. controls (527,161.97) and (528.53,163.5) .. (530.41,163.5) .. controls (532.3,163.5) and (533.82,161.97) .. (533.82,160.09) -- cycle ;
+		%Shape: Circle [id:dp9675952466326133] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (513.6,86.53) .. controls (513.6,84.65) and (512.07,83.12) .. (510.19,83.12) .. controls (508.3,83.12) and (506.78,84.65) .. (506.78,86.53) .. controls (506.78,88.42) and (508.3,89.94) .. (510.19,89.94) .. controls (512.07,89.94) and (513.6,88.42) .. (513.6,86.53) -- cycle ;
+
+		%Shape: Circle [id:dp5658104800173653] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (609.38,151.2) .. controls (609.38,149.31) and (607.85,147.79) .. (605.97,147.79) .. controls (604.08,147.79) and (602.55,149.31) .. (602.55,151.2) .. controls (602.55,153.08) and (604.08,154.61) .. (605.97,154.61) .. controls (607.85,154.61) and (609.38,153.08) .. (609.38,151.2) -- cycle ;
+		%Shape: Circle [id:dp12193907009892957] 
+		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (634.27,115.64) .. controls (634.27,113.76) and (632.74,112.23) .. (630.86,112.23) .. controls (628.97,112.23) and (627.44,113.76) .. (627.44,115.64) .. controls (627.44,117.53) and (628.97,119.06) .. (630.86,119.06) .. controls (632.74,119.06) and (634.27,117.53) .. (634.27,115.64) -- cycle ;
+
+
+		% Text Node
+		\draw (125.12,44.91) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ \ \ \ \ \ ) \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ $};
+		% Text Node
+		\draw (427.26,134.33) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \langle \rangle )$};
+		% Text Node
+		\draw (183.43,103.83) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \langle \rangle )$};
+		% Text Node
+		\draw (257.75,120.69) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ )$};
+		% Text Node
+		\draw (360.33,153.19) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ )$};
+
+
+	\end{tikzpicture}
+	\caption{Esempio di calcolo isomorfismo tra foreste e alberi binari.}
+	\label{fig:iso_forest_bintree_example}
+\end{figure}
+
+
+
+\begin{figure}[h]
+	\centering
+
+
+
+	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+
+	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+		%Straight Lines [id:da7390170116429094] 
+		\draw    (220,90) -- (330,120) ;
+		\draw [shift={(330,120)}, rotate = 15.26] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(220,90)}, rotate = 15.26] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da039244879101243746] 
+		\draw    (220,90) -- (280,120) ;
+		\draw [shift={(280,120)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(220,90)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da9807403722275164] 
+		\draw    (220,90) -- (240,120) ;
+		\draw [shift={(240,120)}, rotate = 56.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(220,90)}, rotate = 56.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da03267007977703551] 
+		\draw    (220,90) -- (210,120) ;
+		\draw [shift={(210,120)}, rotate = 108.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(220,90)}, rotate = 108.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da3117293837981189] 
+		\draw    (220,90) -- (140,120) ;
+		\draw [shift={(140,120)}, rotate = 159.44] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(220,90)}, rotate = 159.44] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da5543598400532516] 
+		\draw    (220,90) -- (180,120) ;
+		\draw [shift={(180,120)}, rotate = 143.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(220,90)}, rotate = 143.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da6616928412892461] 
+		\draw    (140,120) -- (130,140) ;
+		\draw [shift={(130,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(140,120)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da5001878304038733] 
+		\draw    (140,120) -- (110,140) ;
+		\draw [shift={(110,140)}, rotate = 146.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(140,120)}, rotate = 146.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da35297443192918876] 
+		\draw    (140,120) -- (150,140) ;
+		\draw [shift={(150,140)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(140,120)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da30077845664351066] 
+		\draw    (110,140) -- (100,160) ;
+		\draw [shift={(100,160)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(110,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da5436015840206943] 
+		\draw    (110,140) -- (120,160) ;
+		\draw [shift={(120,160)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(110,140)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da3418649793206039] 
+		\draw    (240,120) -- (230,140) ;
+		\draw [shift={(230,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(240,120)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da5537357380053466] 
+		\draw    (240,120) -- (250,140) ;
+		\draw [shift={(250,140)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(240,120)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da596511628614987] 
+		\draw    (330,120) -- (330,140) ;
+		\draw [shift={(330,140)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(330,120)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da9692313360351018] 
+		\draw    (250,140) -- (250,160) ;
+		\draw [shift={(250,160)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(250,140)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da3464424144057545] 
+		\draw    (230,140) -- (230,160) ;
+		\draw [shift={(230,160)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(230,140)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da9449001958581409] 
+		\draw    (460,80) -- (510,100) ;
+		\draw [shift={(510,100)}, rotate = 21.8] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(460,80)}, rotate = 21.8] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da5101057369964663] 
+		\draw    (460,80) -- (440,100) ;
+		\draw [shift={(440,100)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(460,80)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da7168760346038819] 
+		\draw    (440,100) -- (480,120) ;
+		\draw [shift={(480,120)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(440,100)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da7536172846092781] 
+		\draw    (480,120) -- (520,140) ;
+		\draw [shift={(520,140)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(480,120)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da06546573584424464] 
+		\draw    (520,140) -- (560,160) ;
+		\draw [shift={(560,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(520,140)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da31121333233660786] 
+		\draw    (560,160) -- (600,180) ;
+		\draw [shift={(600,180)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(560,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da9734645903114482] 
+		\draw    (600,180) -- (640,200) ;
+		\draw [shift={(640,200)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(600,180)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da3400373607542443] 
+		\draw    (480,120) -- (470,140) ;
+		\draw [shift={(470,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(480,120)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da8071946852447195] 
+		\draw    (520,140) -- (510,160) ;
+		\draw [shift={(510,160)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(520,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da9920119862914486] 
+		\draw    (600,180) -- (590,200) ;
+		\draw [shift={(590,200)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(600,180)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da6764843933308277] 
+		\draw    (560,160) -- (550,180) ;
+		\draw [shift={(550,180)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(560,160)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da9822121216527463] 
+		\draw    (550,180) -- (530,200) ;
+		\draw [shift={(530,200)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(550,180)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da3765788262191845] 
+		\draw    (550,180) -- (560,200) ;
+		\draw [shift={(560,200)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(550,180)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da057732075656578896] 
+		\draw    (420,140) -- (460,160) ;
+		\draw [shift={(460,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(420,140)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da6702517354459413] 
+		\draw    (460,160) -- (500,180) ;
+		\draw [shift={(500,180)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(460,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		%Straight Lines [id:da6027456046960759] 
+		\draw    (440,100) -- (420,140) ;
+		\draw [shift={(420,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+		\draw [shift={(440,100)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
+
+		% Text Node
+		\draw (70,80) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ) \ =\ $};
+		% Text Node
+		\draw (215,67) node [anchor=north west][inner sep=0.75pt]   [align=left] {a};
+		% Text Node
+		\draw (133,95) node [anchor=north west][inner sep=0.75pt]   [align=left] {b};
+		% Text Node
+		\draw (163,116) node [anchor=north west][inner sep=0.75pt]   [align=left] {c};
+		% Text Node
+		\draw (196,117) node [anchor=north west][inner sep=0.75pt]   [align=left] {d};
+		% Text Node
+		\draw (223,107) node [anchor=north west][inner sep=0.75pt]   [align=left] {e};
+		% Text Node
+		\draw (264,116) node [anchor=north west][inner sep=0.75pt]   [align=left] {f};
+		% Text Node
+		\draw (334,101) node [anchor=north west][inner sep=0.75pt]   [align=left] {g};
+		% Text Node
+		\draw (91,122) node [anchor=north west][inner sep=0.75pt]   [align=left] {h};
+		% Text Node
+		\draw (131,141) node [anchor=north west][inner sep=0.75pt]   [align=left] {i};
+		% Text Node
+		\draw (158,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {j};
+		% Text Node
+		\draw (214,130) node [anchor=north west][inner sep=0.75pt]   [align=left] {k};
+		% Text Node
+		\draw (258,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {l};
+		% Text Node
+		\draw (311,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {m};
+		% Text Node
+		\draw (81,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {n};
+		% Text Node
+		\draw (118,161) node [anchor=north west][inner sep=0.75pt]   [align=left] {o};
+		% Text Node
+		\draw (211,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {p};
+		% Text Node
+		\draw (258,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {q};
+		% Text Node
+		\draw (458,52) node [anchor=north west][inner sep=0.75pt]   [align=left] {a};
+		% Text Node
+		\draw (428,82) node [anchor=north west][inner sep=0.75pt]   [align=left] {b};
+		% Text Node
+		\draw (481,102) node [anchor=north west][inner sep=0.75pt]   [align=left] {c};
+		% Text Node
+		\draw (521,122) node [anchor=north west][inner sep=0.75pt]   [align=left] {d};
+		% Text Node
+		\draw (561,141) node [anchor=north west][inner sep=0.75pt]   [align=left] {e};
+		% Text Node
+		\draw (601,161) node [anchor=north west][inner sep=0.75pt]   [align=left] {f};
+		% Text Node
+		\draw (641,181) node [anchor=north west][inner sep=0.75pt]   [align=left] {g};
+		% Text Node
+		\draw (538,162) node [anchor=north west][inner sep=0.75pt]   [align=left] {k};
+		% Text Node
+		\draw (521,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {p};
+		% Text Node
+		\draw (564,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {l};
+		% Text Node
+		\draw (398,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {h};
+		% Text Node
+		\draw (438,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {i};
+		% Text Node
+		\draw (478,171) node [anchor=north west][inner sep=0.75pt]   [align=left] {j};
+		% Text Node
+		\draw (411,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
+	\end{tikzpicture}
+	\caption{Funzionamento, in generale, dell'isomorfismo tra foreste ordinate e alberi binari.}
+	\label{fig:iso_forest_bintree}
+\end{figure}
+
+Ciò che abbiamo dimostrato è che le foreste ordinate sono tante quante gli alberi binari: 
+$\phi$ `manda' una foresta ordinata con $n$ nodi interni in un albero binario con altrettanti nodi. 
+
+\subsubsection{Isomorfismo tra foreste ordinate e parole di Dyck.}
+Definiamo $\psi: D_{2n} \rightarrow F_n$ un isomorfismo tra parole ben parentesizzate di lunghezza $2n$ e 
+foreste ordinate con $n$ nodi induttivamente: 
+$$
+\psi(\epsilon) = \langle \rangle
+$$ 
+$$
+\psi(w_1 \cdots w_k) =  \langle\psi(w_1), \cdots, \psi(w_k)\rangle
+$$
+e 
+$$
+\psi((w)) = \langle \text{ albero radicato con figli tutti e soli gli alberi della foresta} \phi(w)  \rangle
+$$
+
+\noindent
+Sappiamo che $D_{2n} \approxeq F_n \approxeq B_n$ e sappiamo quanti sono i possibili alberi binari 
+con $n$ nodi sono $|B_n| = C_n  \approx 2n + o (\log_2(n))$; di conseguenza, 
+le parole di Dyck di lunghezza $2n$ hanno come information-theoretical lower bound 
+$$
+Z_n = n + o(\log_2(n)) \text{ bit}
+$$
+Quindi
+$$
+D_n - Z_n =  8n + o(n) - n - o(\log_2(n)) = 7n - o(n) - o(\log_2(n))  = O(n) \implies D_n \approx Z_n + O(Z_n)
+$$
+pertanto la struttura descritta è compatta. 
 
 % lezione 15-12-2021
 \section{Hash minimali perfetti}

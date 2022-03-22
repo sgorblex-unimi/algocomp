@@ -397,23 +397,23 @@ Passiamo alla dimostrazione del \cref{thm:gbal_2_approx}.
 	dell'esecuzione, ossia $L = L_{\hat{i}}$. Sia $\hat{j}$ l'ultimo task assignato
 	alla macchina $\hat{i}$. Prima di ricevere $\hat{j}$, il suo carico è tale per cui
 	$$
-		\forall i = 1..m ~ L'_i \geq L_{\hat{i}} - t_{\hat{j}}
+		\forall i = 1..m ~ L_{\hat{i}} - t_{\hat{j}} \leq L'_i \leq L_i
 	$$
 	dove $L'_{i}$ è il carico della macchina $i$ quando il task $\hat{j}$ è
 	deve essere assegnato. Sommiamo quindi su tutti gli $i$:
 	$$
-		m \cdot (L_{\hat{i}} - t_{\hat{i}}) \leq \sum_{i = 1}^{m} L'_i = \sum_{j = 0}^{n-1} t_j
+		m \cdot (L_{\hat{i}} - t_{\hat{i}}) \leq \sum_{i = 1}^{m} L_i = \sum_{j = 0}^{n-1} t_j
 	$$
 	poiché tutte le task sono state assegnate. Grazie al \cref{lem:gbal_opt_gt_frac_sum}
 	possiamo affermare
 	$$
-		L_{\hat{i}} - t_{\hat{i}} \leq \frac{1}{m} \sum_i L'_i \leq L^*
+		L_{\hat{i}} - t_{\hat{i}} \leq \frac{1}{m} \sum_i L_i \leq L^*
 	$$
-	\`E ovvio che $L = L_{\hat{i}} = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{k}}$ e
-	sappiamo anche che $t_{\hat{k}} \leq L^*$  dal \cref{lem:gbal_opt_gt_max};
+	\`E ovvio che $L = L_{\hat{i}} = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{j}}$ e
+	sappiamo anche che $t_{\hat{j}} \leq L^*$ dal \cref{lem:gbal_opt_gt_max};
 	possiamo quindi concludere
 	$$
-		L = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{k}} \leq L^* + t_{\hat{j}} \leq L^* + L^* = 2L^*
+		L = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{j}} \leq L^* + t_{\hat{j}} \leq L^* + L^* = 2L^*
 	$$
 \end{proof}
 

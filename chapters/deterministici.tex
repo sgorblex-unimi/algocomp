@@ -707,7 +707,76 @@ nell'algoritmo \ref{algo:GreedyCenterSelection}.
 	ancora fare almeno un'iterazione, e allora l'algoritmo emetterà ``impossibile''.
 	Questo è assurdo poiché per la proprietà $2$ di \textsc{CenterSelectionPlus}
 	se $r \geq \rho^*$  allora l'algoritmo termina.
+\end{proof}
 
+\begin{theorem}
+	Ammesso che $\mathbf{P} \neq \mathbf{NP}$, non esiste alcun algoritmo $\alpha$-approssimante
+	per \textsc{CenterSelection} con $\alpha < 2$
+\end{theorem}
+\begin{proof}
+	Per dimostrare questo teorema introduciamo brevemente il problema del \textsc{DominatingSet},
+	un famoso problema di decisione NP-Completo.
+
+	\prob {DominatingSet}
+		{$G=(V, E)$ non orientato, $k \in \mathbb{N}$}
+		{$\{0, 1\} = 2$}
+		{Esiste $D \subseteq V$ con $|D| \leq k$ tale che sia un dominating set?}
+
+	Diciamo che, dato un grafo $G=(V, E)$, un sottoinsieme $D \subseteq V$ è un \textsc{DominatingSet}
+	di $G$ se e solo se $\forall x \in (V \setminus D)$ esiste un $y \in D$ vicino di $x$.
+
+	\bigbreak
+
+	Per assurdo, supponiamo che esista un algoritmo $\alpha$-approssimanete per \textsc{CenterSelection}
+	con $\alpha < 2$.
+	Sia $(G=(V, E), k)$ una istanza di \textsc{DominatingSet}, costruiamo una istanza di \textsc{CenterSelection}
+	dove $S=V$, $k=k$ e la funzione distanza è definita in questo modo:
+	$$
+	d(x, y) =
+	\begin{cases}
+	 0 & \text{ se } x = y \\
+	 1 & \text{ se } x \neq y \text{ e } (x, y) \in E \\
+	 2 & \text{ altrimenti }
+	\end{cases}
+	$$
+
+	È facile dimostrare che questa funzione rispetta le proprietà di uno spazio metrico: osservando la disuguaglianza
+	triangolare abbiamo sul lato sinistro un valore che può essere 1 o 2, dal lato destro invece abbiamo la somma
+	di due valori che possono essere entrambi anche loro o 1 o 2, dunque sempre maggiore o uguale al lato sinistro
+
+	$$
+		\underbrace{d(x, y)}_{\text{1 o 2}} <= \underbrace{\underbrace{d(x, z)}_{\text{1 o 2}} + \underbrace{d(z, y)}_{\text{1 o 2}}}_{\text{2 o 3 o 4}}
+	$$
+
+	In una istanza di \textsc{DominatingSet} convertita in \textsc{CenterSelection} dunque abbiamo che $\rho^*$ può
+	assumere solo due valori: $1$ o $2$. Se $\rho^*=1$ è possibile dimostrare che $D$, l'insieme di centri scelti,
+	è un dominating set nell'istanza originale del problema, tramite una semplice catena di implicazioni
+
+	\begin{align*}
+		\rho^*=1 &\leftrightarrow \forall x \in (V \setminus D) d(x, D) = 1 \\
+				 &\leftrightarrow \forall x \in (V \setminus D), \exists y \in D \text{ tale che } d(x, y) = 1 \\
+				 &\leftrightarrow \forall x \in (V \setminus D), \exists y \in D \text{ tale che } (x, y) \in E \\
+				 &\leftrightarrow D \text{ è un \textsc{DominatingSet}}
+	\end{align*}
+
+	Eseguiamo il nostro algoritmo $\alpha$-approssimante per \textsc{CenterSelection}, con $\alpha < 2$ per ipotesi,
+	sull'istanza convertita da \textsc{DominatingSet}. Abbiamo dunque che
+
+	\begin{align*}
+		1 \leq \frac{\rho}{\rho^*} \leq 2 - \varepsilon \\
+		\rho^* \leq \rho \leq (2 - \varepsilon) * \rho^*
+	\end{align*}
+
+	Dato che $\rho^*$ può essere solamente $1$ o $2$, allora il nostro $\rho$ può ricadere in uno solo di due casi disgiunti:
+
+	\begin{align*}
+		1 \leq \rho \leq 2 - \varepsilon \implies \text{ esiste DominatingSet} \\
+		2 \leq \rho \leq 4 - 2 \varepsilon \implies \text{ non esiste DominatingSet}
+	\end{align*}
+
+	Osservando quale delle due disequazioni il nostro $\rho$ soddisfa, potremmo decidere in tempo polinomiale
+	se esiste o meno un \textsc{DominatingSet} per la nostra istanza. Questo sappiamo essere impossibile, dunque
+	concludiamo che non possiamo approssimare di più \textsc{CenterSelection}.
 \end{proof}
 
 

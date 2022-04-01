@@ -1425,7 +1425,7 @@ nell'output e $\bar{I} \subseteq I$ l'insieme delle coppie collegate da tali cam
 
 \begin{lemma}\label{lem:priceddpaths_sum_l_a_leq_bc_i_m}
 	$$
-		\sum_{a \in A} \bar{l}(a) \leq \beta^{c+1} |I_s| + m
+		\sum_{a \in A} \bar{l}(a) \leq \beta^{c+1} |\bar{I}| + m
 	$$
 \end{lemma}
 \begin{proof}
@@ -1449,7 +1449,22 @@ nell'output e $\bar{I} \subseteq I$ l'insieme delle coppie collegate da tali cam
 			      + \sum_{a \in \pi}(\beta l_{j}(a) - l_{j}(a)) =                                                      \\
 			       & = \sum_{a \in \pi_i} (\beta -1 ) l_j (a) \leq \beta \sum_{a \in \pi_i}l_j(a)
 		      \end{align*}
+			  Sappiamo dal \cref{lem:priceddpaths_non_included_non_short} che 
+			  tutti i $\pi$ aggiunti fino al passo corrispondente a $\bar{l}$
+			  sono cammini utili e corti, dunque abbiamo che
+			  $$
+			  	  \beta \underbrace{\sum_{a \in \pi_i}l_j(a)}_{\leq \beta^c \text{ dato che è un cammino utile}} \leq \beta^{c + 1}
+			  $$
 	\end{itemize}
+	Abbiamo dunque che alla prima iterazione il peso totale degli archi è $m$
+	mentre in quelle successive abbiamo un incremento nel peso totale degli archi 
+	di un valore $\leq \beta^{c+1}$. Sappiamo che ad ogni iterazione 
+	corrisponde l'aggiunta di un singolo cammino $\pi \in \bar{I}$, dunque $|\bar{I}|$ è
+	anche il numero di iterazioni fatte dall'algoritmo quando la funzione di costo è $\bar{l}$. 
+	Mettendo insieme queste osservazioni concludiamo che
+	$$
+	    \sum_{a \in A} \bar{l}(a) \leq \beta^{c+1} |\bar{I}| + m
+	$$
 \end{proof}
 
 \begin{corollario}\label{cor:priceddpaths_cor_1}
@@ -1461,7 +1476,7 @@ nell'output e $\bar{I} \subseteq I$ l'insieme delle coppie collegate da tali cam
 
 \begin{corollario}\label{cor:priceddpaths_cor_2}
 	\begin{align*}
-		 & \sum_{i \in I^* \setminus I} \bar{l}(\pi_i^*) \leq \sum_{i \in I^*}\bar{l}(\pi_i^*) \leq c \sum_{a \in A} \bar{l}(a) &  & \text{ poiché  } I^* \text{ è una soluzione}           \\
+		 & \sum_{i \in I^* \setminus I} \bar{l}(\pi_i^*) \leq \sum_{i \in I^*}\bar{l}(\pi_i^*) \leq c \sum_{a \in A} \bar{l}(a) &  & \text{ poiché  } I^* \text{ è una soluzione ogni arco è usato al più } c \text { volte}           \\
 		 & \leq c (\beta^{c+1}|\bar{I}|+m)                                                                                      &  & \text{ dal \cref{lem:priceddpaths_sum_l_a_leq_bc_i_m}}
 	\end{align*}
 \end{corollario}
@@ -1485,11 +1500,15 @@ nell'output e $\bar{I} \subseteq I$ l'insieme delle coppie collegate da tali cam
 		 & \implies \beta^c |I^*| \leq \beta^c |I| + c (\beta^{c+1}|I|+m) \label{eqn:priceddpaths_approx_1}
 	\end{align}
 	dividendo entrambi i membri dell'\cref{eqn:priceddpaths_approx_1} per $\beta^c$ si ottiene
-	\begin{align*}
-		 & |I^*| \leq |I| + c\beta|I| + c \beta^{-c}m                                              \\
-		 & \implies |I^*| \leq |I| + c\beta|I| + c \beta^{-c}m|I| \text{    poiché    } |I| \leq 1
-	\end{align*}
-	dividento entrambi i memberi per $|I|$ si ottiene
+	$$
+		|I^*| \leq |I| + c\beta|I| + c \beta^{-c}m
+	$$
+	sostituiamo $c \beta^{-c}m$ con $c \beta^{-c}m |I|$ per semplificare i calcoli, possiamo farlo 
+	perchè $|I| \geq 1$. Otteniamo
+	$$
+		|I^*| \leq |I| + c\beta|I| + c \beta^{-c}m|I|
+	$$
+	dividendo entrambi i membri per $|I|$ si ottiene
 	$$
 		\frac{|I^*|}{|I|} \leq 1 + c\beta + c\beta^{-c}m = 1 + c(\beta + \beta^{-c}m)
 	$$

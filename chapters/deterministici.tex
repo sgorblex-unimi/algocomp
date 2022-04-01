@@ -671,6 +671,7 @@ nell'algoritmo \ref{algo:GreedyCenterSelection}.
 	}
 
 	$\hat{c} = extractRandomNode(S)$
+
 	$C = \{\hat{c}\}$
 
 	\While{$|C| \leq k$}
@@ -997,14 +998,14 @@ ammesso che $\mathbf{P} \neq \mathbf{NP}$.
 	%disegno insiemi...
 \end{proof}
 La particolarità tecnica interessante risiede nell'analisi di complessità:
-abbiamo attribuito ad ogni singolo elemento un costo; questa technica, che
+abbiamo attribuito ad ogni singolo elemento un costo; questa tecnica, che
 si chiama \textit{pricing}, è a volte utile anche per il design degli algoritmi.
 
 \section{Problema della copertura dei vertici}
 \popt {VertexCover} {$G = (V,E)$ non diretto, con pesi
 	$\forall i \in V ~ w_i \in \mathbb{Q}^{>0}$}
 {Insieme di vertici $X \subseteq V$}
-{Quanl è il numero minimo di vertici da selezionare per coprire ogni lato?}
+{Quale è il numero minimo di vertici da selezionare per coprire ogni lato?}
 {$X \subseteq V$ tale che $\forall e \in E ~ e \cap X \neq \emptyset$}
 {$Min$}{$w = \sum_{i \in X} w_i$}
 

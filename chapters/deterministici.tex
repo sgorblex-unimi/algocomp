@@ -1966,21 +1966,21 @@ tuttavia l'algoritmo risulterà esponenziale in tale tasso.
 	\label{algo:partitionbalance}
 	\KwInput{$m_1, m_2, t_0, ..., t_{n-1}, \epsilon$}
 
-	\If {$\epsilon > 1$}
+	\If {$\epsilon \geq 1$}
 	{
 		$m_1.tasks = \{t_0, \cdots, t_{n-1}\}$
 
 		\Return
 	}
 
-	$tasks = [t_0,\cdots, t_{n-1}].nonDecrescingSort()$
+	$tasks = [t_0,\cdots, t_{n-1}].nonDecreasingSort()$
 
 	$k = \lceil \frac{1}{\epsilon} -1 \rceil$
 
 	\tcc{Esegui l'algoritmo esaustivo sui primi $k$ task}
 	$optPartition = findOptimalPartition(tasks[0\cdots k-1])$
 
-	$GreedyBalance(m_1, m_2, tasks[k-1\cdots])$
+	$GreedyBalance(m_1, m_2, tasks[k\cdots])$
 
 \end{algorithm}
 
@@ -1995,26 +1995,35 @@ tuttavia l'algoritmo risulterà esponenziale in tale tasso.
 	Altrimenti, proseguiamo seguendo l'esecuzione dell'algoritmo.
 	I primi $k$ task vengono assegnati in modo ottimale. I seguenti $n - k$ task
 	vengono assegnati in maniera greedy. Assumiamo, senza perdita di generalità,
-	che $w(m_1) > w(m_2)$. Sia $h$ l'indice dell'ultimo task assegnato alla
+	che $w(m_1) \geq w(m_2)$. Sia $h$ l'indice dell'ultimo task assegnato alla
 	macchina $m_1$. Abbiamo due casi:
 	\begin{itemize}
 		\item $h < k$. Tutti i task assegnati in maniera greedy appartengono alla
 		      macchina $m_2$. Siccome i task assegnati a $m_1$ sono assegnati in
 		      modo ottimale, il costo massimo $w(m_1)$ è ottimale.
 		\item $h \geq k$. Dopo la fase ottima la macchina $m_1$ riceve altri task.
-		      Sia $L = \sum_{i} t_i$.
+		      Sia $L = \frac{\sum_{i} t_i}{2}$, facciamo due osservazioni che ci 
+			  torneranno utili:
 		      \begin{align*}
-			       & w(m_1) - t_h  \geq w(m_2) \text{ nel momento in cui si assegna } h                                    \\
-			       & \implies 2*w(m1) - t_h \leq w(m_1) + w(m_2) \implies 2w(m_1) - t_j \leq 2L                            \\
-			       & \implies w(m_1) - \frac{t_h}{2} \leq L                                                                \\
-			       & 2L  = 2 * ( t_0 + t_1 + \cdots + t_k + t_h + \cdots + t_{n-1}) \geq t_h (k+1)                         \\
-			       & \implies \frac{w(m_1)}{w^*} \leq \frac{w(m_1)}{L} \leq \frac{\frac{t_h}{2}+L}{L} = 1 + \frac{t_h}{2L}
-			      \leq 1 + \frac{t_h}{t_h \cdot (k+1)}
+			       & w(m_1) - t_h  \leq w(m_2) \text{ nel momento in cui si assegna } h \leq w(m_2)                        \\
+			       & \implies 2*w(m1) - t_h \leq w(m_1) + w(m_2) = 2L                                                      \\
+			       & \implies w(m_1) - \frac{t_h}{2} \leq L
+			  \end{align*}
+			  e
+			  \begin{align*}
+				   & 2L  = t_0 + t_1 + \cdots + t_k + t_h + \cdots + t_{n-1} \geq t_h (k+1)                                \\
+			  \end{align*}
+			  Ora consideriamo il rapporto tra il valore restituito dall'algoritmo,
+			  cioè il carico della macchina più carica (dunque $w(m_1)$). Ricordiamo che
+			  $w^* \geq L$
+			  \begin{align*}
+				   & \frac{w}{w^*} = \frac{w(m_1)}{w^*} \leq \frac{w(m_1)}{L} \leq                                         \\
+				   & \leq \frac{\frac{t_h}{2}+L}{L} = 1 + \frac{t_h}{2L} \leq & \text{per la prima osservazione}           \\
+				   & \leq 1 + \frac{t_h}{2 \frac{t_h}{2} \cdot (k + 1)} = 1 + \frac{1}{1 + k} & \text{per la seconda osservazione} \\
 		      \end{align*}
-		      Ma $k = \lceil \frac{1}{\epsilon}\rceil -2$, quindi $k + 1 \geq \frac{1}{\epsilon}$:
+		      Ma $k = \lceil \frac{1}{\epsilon}\rceil - 1 \geq \frac{1}{\epsilon} - 1$, quindi:
 		      \begin{align*}
-			       & \frac{\frac{t_h}{2}+L}{L} = 1 + \frac{t_h}{2L} \leq 1 + \frac{t_h}{t_h \cdot (k+1)}
-			      \leq 1 + \frac{1}{1 + k} \leq 1 + \frac{1}{\frac{1}{\epsilon}} = 1 + \epsilon
+				   & 1 + \frac{1}{1 + k} \leq 1 + \frac{1}{1 + \frac{1}{\epsilon} - 1} = 1 + \epsilon
 		      \end{align*}
 	\end{itemize}
 \end{proof}

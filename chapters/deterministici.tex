@@ -1816,7 +1816,11 @@ completi dotati di una distanza metrica.
 	Sia $\pi^*$ un circuito hamiltoniano ottimo.
 	Dal \cref{lem:handshaking} sappiamo che un numero pari di vertici appare in $D$ come costruito
 	nell'algoritmo: sia quindi $\pi'$ un qualunque circuito sui vertici di $D$.
-	Chiaramente, siccome $\delta$ è una metrica,
+	Questo circuito $\pi'$ attraverserà un numero minore o uguale di vertici attraversati da $\pi^*$,
+	per ogni vertice in meno che deve attraversare dunque, invece di avere un lato che lo raggiunge
+	ed uno da cui esce, ci sarà un solo lato che lo salta.
+	Essendo $\delta$ una metrica dunque "saltare" un vertice dovrà costare per forza meno di prenderlo,
+	quindi
 	$$
 		\delta(\pi') \leq \delta(\pi^*)
 	$$
@@ -1884,7 +1888,7 @@ completi dotati di una distanza metrica.
 	L'algoritmo di Christofides seleziona il \textsc{MinimumSpanningTree} $T$, ossia il cammino composto da
 	lati di costo $1$, quindi $\delta(T) = n - 1$. I nodi di grado dispari in $T$ sono
 	i due estremi, quindi $D = \{v_1, v_n\}$. Il cammino minimo che li collega è
-	un singolo arco che ha peso $\delta(M) = (1 + \epsilon) \frac{n}{2} + 1$.
+	un singolo lato che ha peso $\delta(M) = (1 + \epsilon) \frac{n}{2} + 1$.
 
 	Al termine dell'algoritmo, il costo del circuito hamiltoniano ottenuto è
 	$$
@@ -1892,14 +1896,14 @@ completi dotati di una distanza metrica.
 	$$
 	Il costo del cammino ottimo è
 	$$
-		\delta^* = (1 + \epsilon) \frac{n}{2} + (1 + \epsilon) \frac{n}{2} +2
+		\delta^* = (1 + \epsilon) \frac{n}{2} + (1 + \epsilon) \frac{n}{2} +2 = (1 + \epsilon) n + 2
 	$$
 	quindi
 	$$
 		\frac{\delta}{\delta^*} = \frac{\frac{3}{2}n + \frac{\epsilon n}{2}}{(1 + \epsilon)n +2}
 		= \frac{\frac{3}{2} n + \frac{n}{2}\epsilon}{n + 2 + \epsilon n} = \frac{3}{2}
 	$$
-	per $n \rightarrow \infty$, indipendentemente da $\epsilon$.
+	per $n \rightarrow \infty$ e $\epsilon \rightarrow 0$.
 \end{proof}
 
 % lezione 9 - 27/10/2021

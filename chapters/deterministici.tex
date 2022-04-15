@@ -943,7 +943,7 @@ durante la $j$-esima iterazione.
 \end{proof}
 \begin{lemma}\label{lem:gsetcov_cu_leq_harmoskwk}
 	$$
-		\forall k ~~ \sum_{u \in S_u} c_u \leq H(|S_k|) \cdot w_k
+		\forall k ~~ \sum_{u \in S_k} c_u \leq H(|S_k|) \cdot w_k
 	$$
 \end{lemma}
 \begin{proof}
@@ -987,18 +987,21 @@ durante la $j$-esima iterazione.
 	$$
 		w_i \geq \frac{\sum_{u \in S_i} c_u}{H(|S_i|)} \geq \frac{\sum_{u \in S_i} c_u}{H(M)}
 	$$
-	Quindi
+	Consideriamo il valore ottenuto sommando, per ogni insieme della copertura ottima $S^*$, la somma
+	dei costi dei singoli elementi in ogni insieme. Questo valore è maggiore o uguale alla somma
+	dei costi degli elementi nell'universo $U$, poichè nel primo valore potremmo sommare più volte
+	il costo di alcuni elementi che compaiono in più insiemi scelti.
+	Per il \cref{lem:gsetcov_w_sum_c_u} la seconda sommatoria è uguale al costo della soluzione ottima.
 	$$
 		\sum_{S_i \in S^*}\sum_{u \in S_i} c_u \geq \sum_{u \in U} c_u = w
 	$$
-	(poiché ogni elemento di $U$ compare nella soluzione ottimale almeno una volta).
-	Ma abbiamo che
+	Applicando queste due osservazioni alla definizione di costo della soluzione ottima otteniamo
 	\begin{align}
 		 & w^* = \sum_{S_i \in S^*} w_i \geq \frac{\sum_{S_i \in S^*} \sum_{u \in S_i} c_u}{H(M)} \geq \frac{w}{H(M)} \\
 		 & \implies \frac{w}{w^*} \leq H(M)
 	\end{align}
 
-	Inoltre
+	Inoltre, osservando che $M \leq |U| = n$, possiamo anche dire che:
 	$$
 		H(M) \leq H(n) = O(\ln(n))
 	$$
@@ -1089,9 +1092,10 @@ si chiama \textit{pricing}, è a volte utile anche per il design degli algoritmi
 \end{theorem}
 \begin{proof}
 	Supponiamo di avere un'istanza $(G=(V,E), w_i, w_{max})$ di
-	$\hat{\Pi}_{VC}$; per si può trasformare nell'istanza
-	$(S= \{S_1, S_2, \cdots\}, w_i, w_{max})$ di $\hat{\Pi}_{SC}$ creando
-	un $S_i$ per ogni vertice $i \in V$ tale che $S_i = \{e \in E | e \text{ incide su } i\}$.
+	$\hat{\Pi}_{VC}$; si può trasformare nell'istanza
+	$(S= \{S_1, S_2, \cdots, S_n\}, w_i, w_{max})$ di $\hat{\Pi}_{SC}$ 
+	definendo l'universo $U=E$ e creando un $S_i$ per ogni vertice $i \in V$ tale che 
+	$S_i = \{e \in E | e \text{ incide su } i\}$.
 \end{proof}
 
 Di fatto, se abbiamo un algoritmo per
@@ -1115,9 +1119,9 @@ $\langle P_e \rangle_{e \in E}$ è \textbf{equo} se e solo se
 $$
 	\forall i \in V \sum_{e \text{ incidente su } i} P_e \leq w_i
 $$
-e l'assegnamento si definisce \textit{stretto} su $i$ se
+e l'assegnamento si definisce \textit{stretto} su un vertice $i$ se
 $$
-	\forall i \in V \sum_{e \text{ incidente su } i} P_e = w_i
+	\sum_{e \text{ incidente su } i} P_e = w_i
 $$
 \begin{lemma}\label{lem:vcov_pricing_eq_sum_p_e_w_opt}
 	Se $\langle P_e \rangle_{e \in E}$ è un sistema di prezzi equo, allora
@@ -1132,9 +1136,19 @@ $$
 	$$
 		\forall i \in V ~ \sum_{e \text{ incidente su } i} P_e \leq w_i
 	$$
-	Sia quindi $X^*\subseteq V$ una soluzione ottima:
+	Sia quindi $X^*\subseteq V$ una soluzione ottima, sommiamo tutti i prezzi 
+	degli archi incidenti sui vertici di $X^*$:
 	$$
 		\sum_{i \in X^*} \sum_{e \text{ incidente su } i} P_e \leq \sum_{i \in X^*} w_i = w^*
+	$$
+	Dato che $X^*$ è una soluzione, tutti i lati del grafo incidono su almeno
+	uno dei suoi vertici, possiamo dunque dire
+	$$
+		\sum_{e \in E} P_e \leq \sum_{i \in X^*} \sum_{e \text{ incidente su } i} P_e
+	$$
+	Osservando i lati della disuguaglianza completa otteniamo il lemma:
+	$$
+		\sum_{e \in E} P_e \leq \sum_{i \in X^*} \sum_{e \text{ incidente su } i} P_e \leq \sum_{i \in X^*} w_i = w^* \\
 	$$
 \end{proof}
 \begin{algorithm}
@@ -1168,13 +1182,22 @@ $$
 \begin{proof}
 	Abbiamo che
 	$$
-		w = \sum_{i \in S} w_i \text { e } w_i = \sum_{e \text{ inc. su } i} P_e
+		w = \sum_{i \in S} w_i \text { e } 
+	$$
+	inoltre, dato che l'insieme $S$ dato in output dall'algoritmo contiene per definizione
+	solo vertici stretti, vale anche
+	$$
+		\forall i \in S ~ w_i = \sum_{e \text{ inc. su } i} P_e
 	$$
 	quindi
 	$$
 		w = \sum_{i \in S} \sum_{e \text{ inc. su } i} P_e
 	$$
-	Per come è fatta la somma, ogni $e$ appare al massimo $2$ volte.
+	Per come è fatta la somma, ogni $e$ appare 1 o 2 volte in base a se solo uno o entrambi
+	dei suoi vertici sono stretti. Approssimando per eccesso dunque possiamo dire che
+	$$
+		w \leq 2 \sum_{e \in E} P_e
+	$$
 \end{proof}
 
 \begin{theorem}
@@ -1205,7 +1228,7 @@ Per poter utilizzare questa tecnica, è necessario introdurre alcune nozioni
 aggiuntive.
 \subsubsection{Programmazione lineare}
 \popt {LinearProgramming}
-{una matrice $A \in \mathbb{Q}^{m \times n}$ che rappresenta gli $m$ vincoli
+{Una matrice $A \in \mathbb{Q}^{m \times n}$ che rappresenta gli $m$ vincoli
 	per $n$ variabili, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$ che rappresenta i
 	termini noti e un terzo vettore $\mathbf{c} \in \mathbb{Q}^m$ usato per la
 	funzione obiettivo}
@@ -1217,7 +1240,7 @@ aggiuntive.
 
 \subsubsection{Programmazione lineare intera}
 \popt {IntegerLinearProgramming}
-{una matrice $A \in \mathbb{Q}^{m \times n}$, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$
+{Una matrice $A \in \mathbb{Q}^{m \times n}$, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$
 	e un vettore $\mathbf{c} \in \mathbb{Q}^b$}
 {Un vettore $\mathbf{x} \in \mathbb{Z}^n$}
 {Qual è il vettore $\mathbf{x}$ che implica il costo minore?}
@@ -1226,12 +1249,13 @@ aggiuntive.
 { $\mathbf{c}^T \mathbf{x}$ }
 
 \`E chiaro che, per lo stesso input, una soluzione per \textsc{IntegerLinearProgramming}
-è maggiore o uguale ad ogni soluzione \textsc{LinearProgramming}, in quanto una
-soluzione per quest'ultimo potrebbe cadere in un valore frazionario.
-questa condizione si chiama \textit{rilassamento}.
+è peggiore o uguale ad ogni soluzione per \textsc{LinearProgramming}, in quanto una
+soluzione per quest'ultimo potrebbe utilizzare anche lo spazio di valori frazionari
+per ottenere una soluzione migliore. La trasformazione di un problema da \textsc{IntegerLinearProgramming}
+in un problema in \textsc{LinearProgramming} è detto \textit{rilassamento}.
 
 Per lungo tempo non si è saputo se \textsc{LinearProgramming} fosse risolvibile in tempo polinomiale:
-oggi, si sa che è risolvibile in tempo polinomiale in $n$.
+oggi, si sa che è risolvibile in tempo polinomiale nella dimensione dell'input e nel numero di vincoli.
 \begin{theorem}\label{thm:LinearProgramming_PO}
 	\textsc{LinearProgramming} $\in \mathbf{PO}$.
 \end{theorem}
@@ -1246,37 +1270,52 @@ Per quanto riguarda ILP, invece, la situazione è diversa.
 	\textsc{IntegerLinearProgramming} $\in \mathbf{NPO-completi}$.
 \end{theorem}
 
-\noindent
+\begin{proof}
+	Per assurdo, assumiamo che esista un algoritmo che risolva 
+	\textsc{IntegerLinearProgramming} in tempo polinomiale, e di conseguenza
+	anche il suo problema di decisione associato.
+	Possiamo dare una riduzione in tempo polinomiale di una istanza del problema
+	di decisione \textsc{VertexCover} in una istanza del problema di decisione
+	\textsc{IntegerLinearProgramming}.
+
+	Dati $n$ nodi con costi $v_0, \cdots, v_n$ e $m$ archi, vogliamo scegliere
+	il numero massimo di nodi tale che il costo sia minimo e tutti gli archi
+	siano coperti. Per tradurre questo in un problema di programmazione lineare
+	intera, generiamo una variabile binaria per ogni nodo:
+	$$
+		x_i = \begin{cases} 0 & \text{ il vertice } i \text{ non è stato scelto} \\
+              	1 & \text{ il vertice } i \text{ è stato scelto}\end{cases}
+	$$
+	Imponiamo i seguenti vincoli sulle variabili $x_i$:
+	$$
+		\begin{cases}
+			x_i + x_j \geq 1 & \forall i, j \in E \\
+			x_i \geq 0       & \forall i \in V    \\
+			x_i \leq 1       & \forall i \in V
+		\end{cases}
+	$$
+	La funzione obiettivo per il problema \textsc{IntegerLinearProgramming}$(G,w)$
+	così costruito sarà
+	$$
+		\sum_{i \in V} w_i x_i
+	$$
+
+	Se riuscissimo a risolvere tutti i problemi di $\hat{\textsc{IntegerLinearProgramming}}$
+	in tempo polinomiale allora potremmo risolvere anche $\hat{\textsc{VertexCover}}$ in tempo
+	polinomiale. Dato che $\hat{\textsc{VertexCover}} \in \mathbf{NP-Completi}$ concludiamo
+	che anche $\hat{\textsc{IntegerLinearProgramming}} \in \mathbf{NP-Completi}$ e dunque
+	anche $\textsc{IntegerLinearProgramming} \in \mathbf{NPO-Completi}$.
+\end{proof}
+
 Essendo nell'insieme $\mathbf{NPO}-completi$, ogni problema è polinomialmente riducibile
 ad un'istanza di \textsc{IntegerLinearProgramming}; ciò che a volte accade è
 che anche la versione rilassata, ossia un'istanza di \textsc{LinearProgramming},
 abbia una relazione col problema originale: questo è ciò che faremo con
 \textsc{VertexCover}.
 
-Dati $n$ nodi con costi $v_0, \cdots, v_n$ e $m$ archi, vogliamo scegliere
-il numero massimo di nodi tale che il costo sia minimo e tutti gli archi
-siano coperti. Per tradurre questo in un problema di programmazione lineare
-intera, generiamo una variabile binaria per ogni nodo:
-$$
-	x_i = \begin{cases} 0 & \text{ il vertice } i \text{ non è stato scelto} \\
-              1 & \text{ il vertice } i \text{ è stato scelto}\end{cases}
-$$
-devono necessariamente sussistere le condizioni
-$$
-	\begin{cases}
-		x_i + x_j \geq 1 & \forall i, j \in E \\
-		x_i \geq 0       & \forall i \in V    \\
-		x_i \leq 1       & \forall i \in V
-	\end{cases}
-$$
-La funzione obiettivo per il problema \textsc{IntegerLinearProgramming}$(G,w)$
-così costruito sarà
-$$
-	\sum_{i \in V} w_i x_i
-$$
 Data un'istanza $\Pi_{VC}$, una soluzione per la sua riduzione $\Pi_{ILP}$ è
 una soluzione \textbf{esatta} anche per l'istanza originale (per la $\mathbf{NP}-$completezza
-di quest'ultimo problema.)
+di quest'ultimo problema).
 Se, ora, si rilassa il vincolo di interezza, ossia
 $$
 	\forall x, x_i \in \mathbb{Q}
@@ -1291,7 +1330,7 @@ $$
 $$
 si ottiene  un'istanza \textit{rilassata}, ossia \textsc{LinearProgramming}$(G,w)$,
 che è risolvibile polinomialmente (ma non è detto che la soluzione sia
-esatta anche per il problema originale.))
+esatta anche per il problema originale).
 
 Abbiamo, da quanto detto precedentemente
 \begin{lemma}\label{lem:lp_leq_ilp}
@@ -1316,7 +1355,7 @@ $$
 	La soluzione $\mathbf{r}$ è ammissibile per \textsc{IntegerLinearProgramming}.
 \end{lemma}
 \begin{proof}
-	Deve essere $\forall i, j \in E r_i+r_j \geq 1$.
+	Deve essere $\forall i, j \in E ~ r_i+r_j \geq 1$.
 	Per assurdo, assumiamo che $\exists i, j \in E$ tali che $r_i + r_j < 1$.
 	Allora deve necessariamente essere che $r_i = r_j = 0$, poiché altrimenti
 	la somma sarebbe già uguale a $1$. Quindi

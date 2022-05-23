@@ -441,11 +441,11 @@ ora che \textit{spesso} è ammissibile e che quando è ammissibile è una soluzi
 
 % lezione 13 - 10-11-2021 
 \section{Problema MaxEkSat}
-\textsc{MaxEkSat} è la versione $k$-indicizzata di \textsc{MaxSat}: date $n$ clausole
+\textsc{MaxEkSat} è la versione $k$-indicizzata di \textsc{MaxSat}: date $t$ clausole
 di $k$ letterali ciascuna, l'obiettivo è massimizzare il numero di clausole
 soddisfatte.
 
-Definiamo $x_1, \cdots, x_n$ le formule che compaiono nella formula
+Definiamo $x_1, \cdots, x_n$ le variabili che compaiono nella formula
 e $c_1, \cdots, c_t$ le clausole della formula.
 
 \begin{theorem}\label{thm:maxeksatnp}
@@ -454,48 +454,80 @@ e $c_1, \cdots, c_t$ le clausole della formula.
 
 \subsection{Algoritmo probabilistico}
 \begin{theorem}\label{thm:probassgn}
-	Un assegnamento casuale soddisfa, in media,
+	Assegnando casualmente le variabili, il valore atteso di clausole soddisfatte è
 	$$
-		E[T] = \frac{2^k-1}{k} t
-	$$
-	clausole.
-\end{theorem}
-
-Per la dimostrazione definiamo
-$$
-	X_i ~ Unif\{0,1\}
-$$
-il valore assegnato ad ogni $x_i$ probabilisticamente;
-$$
-	C_i =
-	\begin{cases}
-		0 & C_i \text{ non soddisfatto} \\
-		1 & \text{ altrimenti}
-	\end{cases}
-$$
-mentre $T$ è il numero di clausole soddisfatte.
-E l'algoritmo si svolge, banalmente, estraendo un valore per ogni $x_i$ e restituendo il numero
-di clausole soddisfatte.
-Prima di procedere con la dimostrazione, ricordiamo
-la seguende legge statistica:
-\begin{theorem}\label{thm:leggevat}
-	Sia $\{\mathcal{E}_i\}_{i=1..k}$ una partizione dell'universo degli eventi.
-	Allora
-	$$
-		E[X] = \sum_{i = 1}^{k} E[X|\mathcal{E}_i]P[\mathcal{E}_i]
+		E[T] = \frac{2^k-1}{2^k} t
 	$$
 \end{theorem}
-
 \begin{proof}
+	Per la dimostrazione definiamo
+	$$
+		X_i \sim Unif(\{0,1\})
+	$$
+	il valore assegnato ad ogni $x_i$ probabilisticamente;
+	$$
+		C_i =
+		\begin{cases}
+			1 & C_i \text{ soddisfatto} \\
+			0 & \text{ altrimenti}
+		\end{cases}
+	$$
+	mentre $T=\sum_i^t C_i$ è il numero di clausole soddisfatte.
+	L'algoritmo si svolge, banalmente, estraendo un valore per ogni $x_i$
+	e restituendo il numero di clausole soddisfatte.
+
+	\begin{oss}\label{oss:ciatteso}
+		$$
+			\forall i ~ \sum_{b_1 \in 2} \sum_{b_2 \in 2} \cdots \sum_{b_n \in 2} E[C_i | X_1=b_1 \cdots x_n=b_n] = 2^n - 2^{n - k}
+		$$
+	\end{oss}
+	\begin{proof}
+		Consideriamo una generica clausola $c_i$ e la sua variabile aleatoria
+		associata $C_i$. Una volta che è stato fissato un assegnamento di
+		valori di verità $b_1 \cdots b_n$, il valore di
+		$E[C_i | X_1=b_1 \cdots x_n=b_n]$ sarà semplicemente $1$ o $0$, in base
+		a se quell'assegnamento soddisfa la clausola $c_i$ o meno.
+
+		Possiamo dunque vedere
+		$$
+			\sum_{b_1 \in 2} \sum_{b_2 \in 2} \cdots \sum_{b_n \in 2} E[C_i | X_1=b_1 \cdots x_n=b_n]
+		$$
+		semplicemente come il numero di assegnamenti che soddisfano la clausola
+		$c_i$.
+		Per contare questo numero, consideriamo che il valore di verità di una
+		clausola dipende solamente dai valori delle $k$ variabili che contiene
+		al suo interno, le altre $n-k$ variabili non sono importanti.
+		Essendo questi $k$ letterali tutti in $\vee$ tra di loro, se uno di
+		questi è \textit{True} allora l'intera clausola è soddisfatta.
+
+		Vedendo questa osservazione all'opposto, per rendere la clausola falsa
+		dobbiamo fissare le $k$ variabili con un assegnamento specifico per
+		rendere tutti i loro letterali \textit{False}, e le rimanenti $n-k$
+		variabili possono assumere qualunque valore. Da questo otteniamo
+		che ci sono $2^{n-k}$ assegnamenti che \textit{non} soddisfano la
+		clausola, dunque ne esistono $2^n - 2^{n-k}$ che la soddisfano.
+	\end{proof}
+
+	Prima di procedere con la dimostrazione, ricordiamo la seguente legge
+	statistica:
+	\begin{theorem}\label{thm:leggevat}
+		Sia $\{\mathcal{E}_i\}_{i=1..k}$ una partizione dell'universo degli eventi.
+		Allora
+		$$
+			E[X] = \sum_{i = 1}^{k} E[X|\mathcal{E}_i]P[\mathcal{E}_i]
+		$$
+	\end{theorem}
+
 	La partizione $\{\mathcal{E}_i\}_i$ nel contesto di \textsc{MaxEkSat} è l'insieme
 	dei possibili assegnamenti $X_1 = b_1, \cdots, X_n = b_n$; pertanto
 	\begin{align*}
-		E[T] & = \sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[T|X_i = b_1, \cdots, X_n = b_n]P[X_1 = b_1, \cdots, X_n = b_n]   \\
-		     & = \sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[T|X_i = b_1, \cdots, X_n = b_n]P[X_1 = b_1] \cdots P[X_n = b_n]  \\
-		     & = \frac{1}{2^n}\sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[T|X_i = b_1, \cdots, X_n = b_n]                     \\
-		     & = \frac{1}{2^n}\sum_{j = 1}^{t}(\sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[C_j|X_i = b_1, \cdots, X_n = b_n]) \\
-		     & = \frac{1}{2^n} \sum_{j = 1}^t (2^n - 2^{n -k}) = \frac{2^n - 2^{n-l}}{2^n}t =
-		\frac{2^k - 1}{k}t
+		E[T] & = \sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[T|X_i = b_1, \cdots, X_n = b_n]P[X_1 = b_1, \cdots, X_n = b_n]   											\\
+		     & = \sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[T|X_i = b_1, \cdots, X_n = b_n]P[X_1 = b_1] \cdots P[X_n = b_n]  											\\
+		     & = \frac{1}{2^n}\sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[T|X_i = b_1, \cdots, X_n = b_n]                     											\\
+			 & = \frac{1}{2^n}\sum_{b_1 \in 2} \cdots \sum_{b_n \in 2} E[C_1 + ... + C_t | X_i = b_1, \cdots, X_n = b_n] & \text{Per definizione di T}					\\
+		     & = \frac{1}{2^n}\sum_{j = 1}^{t}(\sum_{b_1 \in 2} \cdots \sum_{b_n\in 2} E[C_j|X_i = b_1, \cdots, X_n = b_n]) & \text{Per linearità del valore atteso} 	\\
+		     & = \frac{1}{2^n} \sum_{j = 1}^t (2^n - 2^{n -k}) = \frac{2^n - 2^{n-k}}{2^n}t & \text{Applico \cref{oss:ciatteso}} 										\\
+			& = \frac{2^k - 1}{2^k}t
 	\end{align*}
 \end{proof}
 
@@ -511,29 +543,26 @@ possiamo inoltre fissare le prime $j$ variabili in modo che questa proprietà
 continui ad essere preservata.
 \begin{proof}
 	Per induzione su $j$.
-	Base: per $j = 0$ verificato dal \cref{thm:probassgn}.
-	Passo induttivo: per ipotesi induttiva vale
+	Il caso base $j = 0$ è verificato dal \cref{thm:probassgn}.
+	Nel passo induttivo partiamo dall'ipotesi
 	$$
-		E[T|X_1 = b_1, \cdots, X_{j-1} = b_{j-1}] \geq \frac{2^k-1}{k}
+		E[T|X_1 = b_1, \cdots, X_j = b_j] \geq \frac{2^k-1}{2^k}t
 	$$
 	Per il \cref{thm:leggevat} vale
 	\begin{align*}
-		 & E[T|X_1 = b_1, \cdots, X_{j-1} = b_{j-1}] =                         \\
-		 & = E[T | X_1 = b_1, \cdots X_{j-1} = b_{j-1}, X_j = 0]P[X_j = 0] +
-		E[T | X_1 = b_1, \cdots X_{j-1} = b_{j-1}, X_j = 1]P[X_j = 1]          \\
-		 & = \frac{1}{2} E[T | X_1 = b_1, \cdots X_{j-1} = b_{j-1}, X_j = 0] +
-		\frac{1}{2} E[T | X_1 = b_1, \cdots X_{j-1} = b_{j-1}, X_j = 1]        \\
-		 & = \frac{1}{2} \alpha_0 + \frac{1}{2} \alpha_1
+		&E[T|X_1 = b_1, \cdots, X_j = b_j] = \\
+		&= E[T | X_1 = b_1, \cdots X_j = b_j, X_{j+1} = 0] P[X_{j+1} = 0] + E[T | X_1 = b_1, \cdots X_j = b_j, X_{j+1} = 1]P[X_{j+1} = 1]	\\
+		&= \frac{1}{2} E[T | X_1 = b_1, \cdots X_j = b_j, X_{j+1} = 0] + \frac{1}{2} E[T | X_1 = b_1, \cdots X_j = b_j, X_{j+1} = 1]		\\
+		&= \frac{1}{2} \alpha_0 + \frac{1}{2} \alpha_1
 	\end{align*}
-	Deve essere che per qualche $i \in 2$
+	Per assurdo, supponiamo che entrambi $\alpha_0$ e $\alpha_1$ siano
+	strettamente minori di $\frac{2^k-1}{2^k}t$: allora
 	$$
-		\alpha_i \geq \frac{2^k -1 }{2^k} t
+		E[T|X_1 = b_1, \cdots, X_j = b_j] = \frac{1}{2} \alpha_0 + \frac{1}{2} \alpha_1 < \frac{1}{2}\frac{2^k -1 }{2^k} t + \frac{1}{2} \frac{2^k -1 }{2^k} t = \frac{2^k -1 }{2^k} t
 	$$
-	supponiamo $\alpha_0$ e $\alpha_1$ minori: allora
-	$$
-		\frac{1}{2} \alpha_0 + \frac{1}{2} \alpha_1 < \frac{1}{2}\frac{2^k -1 }{2^k} t + \frac{1}{2} \frac{2^k -1 }{2^k} t = \frac{2^k -1 }{2^k} t
-	$$
-	contraddicendo l'ipotesi induttiva.
+	ma questo contraddice l'ipotesi induttiva, concludiamo dunque che almeno
+	uno tra $\alpha_0$ e $\alpha_1$ è $\geq \frac{2^k-1}{2^k}t$, soddisfacendo
+	il passo induttivo.
 \end{proof}
 
 \begin{algorithm}[h]
@@ -563,9 +592,9 @@ continui ad essere preservata.
 				\textbf{continue}
 			}
 
-			$h = findGeq(i, c_j)$ \tcp*{variabili con indice $\geq i$ in $c_j$}
+			$h = |\{x_k | k \geq i \land (x_k \in c_j \lor \neg x_k \in c_j)\}|$ \tcp*{num variabili con indice $\geq i$ in $c_j$}
 
-			\If {$x_i \in c_j \land x_i = 1$}
+			\If {$x_i$ non compare negata in $c_j$}
 			{
 
 				$\Delta_0 = \Delta_0 - \frac{1}{2^h}$

@@ -1300,10 +1300,10 @@ Per poter utilizzare questa tecnica, è necessario introdurre alcune nozioni
 aggiuntive.
 \subsubsection{Programmazione lineare}
 \popt {LinearProgramming}
-{Una matrice $A \in \mathbb{Q}^{m \times n}$ che rappresenta gli $m$ vincoli
-	per $n$ variabili, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$ che rappresenta i
-	termini noti e un terzo vettore $\mathbf{c} \in \mathbb{Q}^m$ usato per la
-	funzione obiettivo}
+{Una matrice $A \in \mathbb{Q}^{m \times n}$ che rappresenta gli $m$ vincoli per
+$n$ variabili, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$  che
+rappresenta i termini noti e un terzo vettore $\mathbf{c} \in \mathbb{Q}^m$
+usato per la funzione obiettivo}
 {Un vettore $\mathbf{x} \in \mathbb{Q}^n$}
 {Qual è il vettore $\mathbf{x}$ che implica il costo minore?}
 {$\mathbf{x}\in \mathbb{Q}^{n}$ tale che $A \mathbf{x} \geq \mathbf{b}$}
@@ -1319,7 +1319,6 @@ aggiuntive.
 {$\mathbf{x}\in \mathbb{Z}^{n}$ tale che $A \mathbf{x} \geq \mathbf{b}$}
 {$Min$}
 { $\mathbf{c}^T \mathbf{x}$ }
-
 \`E chiaro che, per lo stesso input, una soluzione per \textsc{IntegerLinearProgramming}
 è peggiore o uguale ad ogni soluzione per \textsc{LinearProgramming}, in quanto una
 soluzione per quest'ultimo potrebbe utilizzare anche lo spazio di valori frazionari

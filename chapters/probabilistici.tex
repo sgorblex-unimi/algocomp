@@ -298,7 +298,7 @@ $$
 $$
 definiamo $n = |U|$; vogliamo trovare un $S \subseteq m$ tale che
 $$
-	\cup_{i \in S} S_i = U
+	\bigcup_{i \in S} S_i = U
 $$
 e il suo costo $ \sum_{i \in S} w_i$ sia minimo.
 
@@ -312,12 +312,15 @@ tali che
 $$
 	\begin{cases}
 		x_j \leq 1                     & \forall j = 1, \cdots, m \\
-		x_k \geq 0                     & \forall j = 1, \cdots, m \\
+		x_j \geq 0                     & \forall j = 1, \cdots, m \\
 		\sum_{i: u \in S_i} x_i \geq 1 & \forall u \in U
 	\end{cases}
 $$
-Chiamiamo questo problema associato a $\Pi$  $\Pi_{IPL}$. \`E
-importante richiamare ora alcune proprietà statistiche.
+Come sappiamo, i problemi di programmazione lineare intera appartengono alla
+classe \textbf{NP-Completi}. Consideriamo dunque il problema $\Pi$ nella
+sua versione non intera, $\Pi_{PL}$.
+
+\`E importante richiamare ora alcune proprietà statistiche.
 \begin{theorem}[Disuguaglianza di Markov]\label{thm:markov}
 	Per ogni variabile aleatoria $X$ non negativa e per ogni $\alpha > 0$
 	$$
@@ -327,7 +330,7 @@ importante richiamare ora alcune proprietà statistiche.
 
 \begin{theorem}[Union bound o disuguaglianza di Boole]\label{thm:boole}
 	$$
-		P[\cup_{i} E_i] \leq \sum_i P[E_i]
+		P[\bigcup_{i} E_i] \leq \sum_i P[E_i]
 	$$
 \end{theorem}
 
@@ -369,19 +372,20 @@ ora che \textit{spesso} è ammissibile e che quando è ammissibile è una soluzi
 	$$
 	chiamiamo $B_u$ l'evento per cui $u$ non è coperto nella soluzione. Allora
 	$$
-		P[\text{soluzione ammissibile}] = 1 - P[\cup_{u \in U} B_u]
+		P[\text{soluzione ammissibile}] = 1 - P[\bigcup_{u \in U} B_u]
 	$$
 	Possiamo quindi usare il \cref{thm:boole}:
 	$$
-		1 - P[\cup_{u \in U} B_u] \geq 1 - \sum_{u \in U} P[B_u]
+		1 - P[\bigcup_{u \in U} B_u] \geq 1 - \sum_{u \in U} P[B_u]
 	$$
 	L'elemento $u$ non è coperto quando nessuno degli elementi che contentono
-	$u$ non è stato scelto:
+	$u$ non è stato scelto. Ad ogni iterazione, che sono
+	$\lceil k + \log(n) \rceil$ in totale, ogni insieme ha probabilità
+	$\hat{x_i}$ di essere scelto:
 	\begin{align*}
-		 & 1 - \sum_{u \in U} \Pi_{i: u \in S_i} P[S_i \text{ non è stato scelto}] =
-		1 - \sum_{u \in U} \Pi_{i: u \in S_i} (1 - \hat{x_i})^{\lceil k + \log(n) \rceil} \geq \\
-		 & \geq 1 - \sum_{u \in U} \Pi {i : u \in S_i} e^{-\hat{x_i} (k + \log(n))}
-		= 1 - \sum_{u \in U} \exp(- (k + \log (n)) \sum_{i: u \in S_i} \hat{x_i})
+		1 - \sum_{u \in U} \prod_{i: u \in S_i} P[S_i \text{ non è stato scelto}] & = 1 - \sum_{u \in U} \prod_{i: u \in S_i} (1 - \hat{x_i})^{\lceil k + \log(n) \rceil}	\\
+		& \geq 1 - \sum_{u \in U} \prod_{i : u \in S_i} e^{-\hat{x_i} (k + \log(n))} & \text{nota che } 1 - x \leq e^{-x}													\\
+		& = 1 - \sum_{u \in U} \exp(- (k + \log (n)) \sum_{i: u \in S_i} \hat{x_i})
 	\end{align*}
 	Siccome $S_i$ è ammissibile, deve essere $\sum_{i: u \in S_i} \hat{x_i}  \geq 1$, quindi
 	\begin{align*}
@@ -397,20 +401,26 @@ ora che \textit{spesso} è ammissibile e che quando è ammissibile è una soluzi
 	la probabilità che $S_i$ venga scelto è
 
 	\begin{align*}
-		 & P[ S_i \text{ sia scelto}] = P[ \cup_{t} S_i \text{ sia scelto durante l'iterazione } t] \\
-		 & \leq \sum_t P[S_i \text{ sia scelto durante l'iterazione } t] = (k + \log (n))\hat{x}_I
+		P[ S_i \text{ sia scelto}] & = P[ \bigcup_{t} S_i \text{ sia scelto durante l'iterazione } t] 	\\
+		& \leq \sum_t P[S_i \text{ sia scelto durante l'iterazione } t] & \text{per \cref{thm:boole}}	\\ 
+		& = (k + \log (n))\hat{x}_i
 	\end{align*}
 
 	Per poter utilizzare il \cref{thm:markov} calcoliamo il valore atteso di $v_{out}$:
 	\begin{align*}
-		 & E[v_{out}]  = E[\sum_{i \in S} w_i] =
-		\sum_{i} w_i P[S_i \text{ sia nell'output}] \text{ (per la linearità del valore atteso) } \\
-		 & \leq \sum_i w_i (k + \log(n)) \hat{x_i} = \hat{v} (k + \log(n))
+		E[v_{out}] & = \sum_{i} w_i P[S_i \text{ sia scelto}] 							\\
+		& \leq \sum_i w_i (k + \log(n)) \hat{x_i} & \text{per osservazione precedente} 	\\
+		& = \hat{v} (k + \log(n)) & \text{ricorda che } \hat{v}=\sum_i w_i \hat{x_i} 	\\
+		& \leq v^* (k + \log(n))
 	\end{align*}
 
+	Infine utilizziamo questa osservazione per determinare la probabilità che
+	la nostra soluzione approssimi bene il problema:
 	\begin{align*}
-		 & P  [ \frac{v_{out}}{v^*} \geq\alpha (k + \log(n))] \leq \frac{E[v_{out}]}{\alpha (k + \log(n))v^*}
-		\leq \frac{v^* (k + \log(n))}{\alpha (k + \log(n))v^*} = \frac{1}{\alpha}
+		P [ \frac{v_{out}}{v^*} \geq \alpha (k + \log(n))] & = P [ v_{out} \geq v^* \alpha (k + \log(n)) ] 	\\
+		& \leq \frac{E[v_{out}]}{\alpha (k + \log(n))v^*} & \text{applico Markov} 							\\
+		& \leq \frac{v^* (k + \log(n))}{\alpha (k + \log(n))v^*} & \text{applico l'osservazione precedente}	\\ 
+		& = \frac{1}{\alpha}		
 	\end{align*}
 \end{proof}
 

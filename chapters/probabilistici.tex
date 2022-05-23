@@ -194,7 +194,7 @@ i lati paralleli rimanenti vengono contratti.
 		\tcc*{Estrai un lato con una distribuzione uniforme e contrailo}
 		$e = uniformExtraction(E)$
 
-		$G = G\downarrow l$
+		$G = G\downarrow e$
 
 	}
 
@@ -217,24 +217,28 @@ operata dall'algoritmo.
 	Il grado minimo in $G_i$ è maggiore o uguale a $k^*$.
 \end{oss}
 
-Dimostriamo l'\cref{oss:kargermindeg}.
+\begin{lemma}\label{lem:kargeredges}
+	$m - i  +1 \geq \frac{(n - i + 1) \cdot k^*}{2}$
+\end{lemma}
 \begin{proof}
-	$$
-		2(m - i +1) \geq 2 * |G_i(E)| = \sum_{v \in G_i(V)} d_{G_i}(v) \geq k^* (n - i + 1) \implies m - i  +1 \geq \frac{(n - i + 1) * k^*}{2}
-	$$
+$$
+	2(m - i +1) \geq 2 \cdot |G_i(E)| = \sum_{v \in G_i(V)} d_{G_i}(v) \geq k^* (n - i + 1) \implies m - i  +1 \geq \frac{(n - i + 1) \cdot k^*}{2}
+$$
 \end{proof}
 
-\begin{lemma}
-
+\begin{lemma}\label{lem:kargerprob_ei}
 	Sia $E_i$ l'evento ``al passo $i$-esimo un lato $e \notin E_{S^*}$ viene contratto''.
 	$$
-		\forall i ~~ P[E_i | E_1, \cdots, E_{i-1}] \leq \frac{n-i-1}{n-1+1}
+		\forall i ~~ P[E_i | E_1, \cdots, E_{i-1}] \leq \frac{n-i-1}{n-i+1}
 	$$
 \end{lemma}
 \begin{proof}
 	\begin{align*}
-		 & P[E_i | E_1, \cdots, E_{i -1}]  = 1 - P[\neg E_i | E_1, \cdots, E_{i -1}]                        \\
-		 & \leq 1 - \frac{2\cdot k^*}{(n - i +1 ) k^*} = 1 - \frac{2}{n - i +1} = \frac{n - i -1}{n -i + 1}
+		P[E_i | E_1, \cdots, E_{i -1}] & = 1 - P[\neg E_i | E_1, \cdots, E_{i -1}]           		\\
+		 & = 1 - \frac{k^*}{|G_i(V)|}  																\\
+		 & \geq 1 - \frac{k^*}{m - i + 1} && \text{per \cref{oss:kargercontraction}} 				\\
+		 & \geq 1 - \frac{2 \cdot k^*}{k^* \cdot (n - i  + 1)} && \text{per \cref{lem:kargeredges}} \\
+		 & = 1 - \frac{2}{n - i + 1} = \frac{n - i -  1}{n - i + 1}
 	\end{align*}
 \end{proof}
 
@@ -242,10 +246,15 @@ Dimostriamo l'\cref{oss:kargermindeg}.
 	L'algoritmo di Karger emette l'ottimo con probabilità $p \geq \frac{1}{{n\choose{2}}}$.
 \end{theorem}
 \begin{proof}
+	Una esecuzione dell'algoritmo che emette l'ottimo vuol dire che, ad ogni
+	passo, ha selezionato un lato da contrarre $e \notin E_{S^*}$. Siamo dunque
+	interessati alla probabilità dell'evento
+	$E_1 \land E_2 \land \cdots \land E_{n-2}$:
 	\begin{align*}
-		 & P[E_1 \land E_2 \land \cdots \land E_{n-2}] = P[E_1] \cdot P[E_2|E_1] \cdot \cdots \cdot P[E_{n-2}| E_{n-3}, \cdots, E_1]                                                                       \\
-		 & = \frac{n-1-1}{n-1+1} \cdot \frac{n - 2 - 1}{n - 2  +1}\cdot \cdots \cdot \frac{n - (n-2) -1}{n - (n-2) +1}                                                                                     \\
-		 & = \frac{n-2}{n} \cdot \frac{n-3}{n-1} \cdot \cdots \cdot \frac{1}{3} = \frac{\Pi_{i = 1}^{n -2} i}{\Pi_{i = 3}^{n} i} = \frac{2 \cdot 1}{n (n-1)} = \frac{2}{n (n-1)} = \frac{1}{{n\choose{2}}}
+		P[E_1 \land E_2 \land \cdots \land E_{n-2}] & = P[E_1] \cdot P[E_2|E_1] \cdot \cdots \cdot P[E_{n-2}| E_{n-3}, \cdots, E_1] 				\\
+		& \geq \frac{n-1-1}{n-1+1} \cdot \frac{n-2-1}{n-2+1} \cdot \cdots \cdot \frac{n-(n-2)-1}{n-(n-2)+1} & \text{applico \cref{lem:kargerprob_ei}}  \\
+		& = \frac{n-2}{n} \cdot \frac{n-3}{n-1} \cdot \cdots \cdot \frac{1}{3}																		\\
+		& = \frac{\Pi_{i = 1}^{n-2} i}{\Pi_{i = 3}^{n} i} = \frac{2 \cdot 1}{n \cdot (n-1)} = \frac{2}{n (n-1)} = \frac{1}{{n\choose{2}}}
 	\end{align*}
 \end{proof}
 
@@ -253,16 +262,28 @@ Dimostriamo l'\cref{oss:kargermindeg}.
 	Si esegua l'algoritmo di Karger ${n\choose{2}} \log(n)$ volte.
 	L'ottimo si ottiene con probabilità $p \geq 1 - \frac{1}{n}$.
 \end{oss}
-Serve una proprietà delle funzioni esponenziali:
-$$
-	\forall x \geq 1 ~~ \frac{1}{4} \leq ( 1 - \frac{1}{x})^x \leq \frac{1}{e}
-$$
-
 \begin{proof}
-	La probabilità di non trovare l'ottimo in nessuna esecuzione è
+	Ad ogni esecuzione dell'algoritmo, la probabilità di non trovare l'ottimo è
 	$$
-		p \leq (1 - \frac{1}{{n \choose 2}})^{{n \choose 2} \log (n)} \leq \frac{1}{e}^{\log(n)} = \frac{1}{n}
+		p \leq \left(1 - \frac{1}{{n \choose{2}}}\right)
 	$$
+	Di conseguenza, se eseguiamo l'algoritmo ${n \choose{2}} log(n)$ volte,
+	la probabilità che nessuna di queste esecuzioni trovi l'ottimo è
+	$$
+		p \leq \left(1 - \frac{1}{{n \choose 2}}\right)^{{n \choose{2}}log(n)}
+	$$
+	\'E facilmente dimostrabile, osservando il grafico della funzione, che vale
+	la seguente proprietà:
+	$$
+		\forall x \geq 1 \text{ interi } ~~ \frac{1}{4} \leq ( 1 - \frac{1}{x})^x \leq \frac{1}{e}
+	$$
+	Applicando la disuguaglianza alla nostra proprietà, con $x={n \choose{2}}$
+	ed elevando entrambi i lati per $log(n)$, otteniamo
+	$$
+		p \leq \left( 1 - \frac{1}{{n \choose 2}}\right) ^{{n \choose 2} \log (n)} \leq \left(\frac{1}{e}\right)^{\log(n)} = \frac{1}{n}
+	$$
+	In questo caso $p$ è la probabilità di \textit{non} trovare l'ottimo,
+	dunque la probabilità di trovarlo è $\geq 1 - \frac{1}{n}$
 \end{proof}
 
 \section{Problema della copertura d'insiemi}

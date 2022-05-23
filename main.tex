@@ -95,17 +95,18 @@
 
 % -- Definizione di problemi
 \newcommand{\prob}[4]{
-	\begin{tabular}{ll}
+	\begin{tabularx}{\textwidth}{lX}
 		\multicolumn{2}{l}{\textsc{#1}} \\
 		\textbf{Input}:    & #2         \\
 		\textbf{Output}:   & #3         \\
 		\textbf{Problema}: & #4
-	\end{tabular}
+	\end{tabularx}
+	\\ \noindent
 }
 
 
 \newcommand{\popt}[7]{
-	\begin{tabular}{ll}
+	\begin{tabularx}{\textwidth}{lX}
 		\multicolumn{2}{l}{\textsc{#1}} \\
 		\textbf{Input}:       & #2      \\
 		\textbf{Output}:      & #3      \\
@@ -113,7 +114,8 @@
 		\textbf{Ammissibili}: & #5      \\
 		\textbf{Tipo}:        & #6      \\
 		\textbf{Costo}:       & #7
-	\end{tabular}
+	\end{tabularx}
+	\\ \noindent
 }
 
 % -- Teoremi, lemmi, corollari, osservazioni

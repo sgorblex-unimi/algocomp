@@ -2103,10 +2103,10 @@ se la capacità è $0$, deve essere $vOPT[\_, 0]  = 0$.
 L'entry della $i+1$-esima riga nella $w+1$-esima colonna
 si costruisce decidendo se inserire o meno l'$i$-esimo oggetto:
 $$
-	vOPT[i+1, w] =
+	vOPT[i+1, w] = max
 	\begin{cases}
-		vOPT[i, w]             & w_i > w    \\
-		vOPT[i, w - w_i] + v_i & w_i \leq w
+		vOPT[i, w]             & \text{non prendo l'oggetto} \\
+		vOPT[i, w - w_i] + v_i & \text{prendo l'oggetto } i \text{ (solo se } w_i \leq w \text{)}
 	\end{cases}
 $$
 
@@ -2120,20 +2120,25 @@ lunghezza binaria dell'input $W$, bensì è esponenziale, rendendo quindi l'algo
 Per cercare di ovviare al problema della pseudopolinomialità del metodo precedente,
 scomponiamo il problema in termini di oggetti e valore (invece che peso):
 $$
-	wOPT[i, v] = \text{minimo peso necessario per i primi } i \text{ oggetti con valore } \geq v
+	wOPT[i, v] = \text{minimo peso necessario per avere un valore totale } \geq v \text{ usando solo i primi } i \text { oggetti }
 $$
 In $wOPT$ le colonne rappresentano valori tra $[0, \sum_{i}v_i]$ - in realtà,
 approssimiamo questo range con $[0, n\cdot v_{max}]$, con $v_{max} = \max_i v_i$.
 
 Sull'ultima riga troveremo il minimo peso necessario per scegliere $n$ oggetti;
-potrà accadere che per molte colonne $wOPT[i,v] > W$, che rappresentanos
-soluzioni non accettabilil; dovremo quindi cercare la prima entry che non sfora
-la capacità $W$. La prima colonna sarà $wOPT[\_,0] = 0$, mentre, inizialmente,
+potrà accadere che per molte colonne $wOPT[i,v] > W$, cioè rappresentano
+soluzioni non accettabili; dovremo quindi cercare la entry con massimo valore $v$
+sull'ultima riga ma con capacità $w \leq W$, ergo la entry più "a destra" che
+non sfori $W$. La prima colonna sarà $wOPT[\_,0] = 0$, mentre, inizialmente,
 si imposta $wOPT[0,\geq1] = \infty$.
 
 La regola di riempimento che definiamo è
 $$
-	wOPT[i+1, v] = \min(wOPT[i, v], wOPT[i, \max(v-v_i, 0)] + w_i)
+	wOPT[i+1, v] = min
+	\begin{cases}
+		wOPT[i, v]						& \text{non prendo l'oggetto } i \\
+		wOPT[i, \max(v-v_i, 0)] + w_i	& \text{prendo l'oggetto } i
+	\end{cases}
 $$
 
 Benché apparentemente sembra non ci sia alcun vantaggio, in questo frangente
@@ -2171,15 +2176,15 @@ da insiemi $S^*, \bar{S}^*$ e $\hat{S}^*$.
 \begin{lemma}
 	Sia S una soluzione ammissibile per il problema. Allora
 	$$
-		(1+\epsilon)\sum_{i \in \hat{S}^*} v_i \geq \sum_{i \in \bar{S}^*} v_i
+		(1+\epsilon)\sum_{i \in \hat{S}^*} v_i \geq \sum_{i \in S^*} v_i
 	$$
 \end{lemma}
 \begin{proof}
 	\begin{align*}
-		 & \sum_{i \in S} v_i \leq \sum_{i \in S} \bar{v}_i  \text{ grazie all'arrotondamento per eccesso}                      \\
+		 \sum_{i \in S^*} v_i & \leq \sum_{i \in S^*} \bar{v}_i  \text{ grazie all'arrotondamento per eccesso}                      \\
 		 & \leq \sum_{ i \in \bar{S}^*} \bar{v}_i  \text{ poiché è la soluzione ottima}                                         \\
 		 & = \sum_{ i \in \hat{S}^*} \bar{v}_i \text{ poiché } \hat{S}^* = \bar{S}^* \text{ da \cref{oss:knapsack_barv_t_hatv}} \\
-		 & = \sum_{i \in \bar{S}^*} \bar{v}_i \leq \sum_{i \in \hat{S}^*} (v_i + v) \leq
+		 & = \sum_{i \in \bar{S}^*} \bar{v}_i \leq \sum_{i \in \hat{S}^*} (v_i + \theta) \leq
 		\sum_{i \in \hat{S}^*} v_i + n \theta = \sum_{i \in \hat{S}^*} v_i + n \frac{\epsilon v_{max}}{2 n}
 	\end{align*}
 	quindi
@@ -2187,8 +2192,10 @@ da insiemi $S^*, \bar{S}^*$ e $\hat{S}^*$.
 		\sum_{i \in S} v_i  \leq \sum_{i \in \hat{S}^*} v_i + \frac{\epsilon v_{max}}{2}
 	$$
 
-	In particolare, questo vale per la soluzione composta
-	solamente dall'oggetto con valore massimo $S = \{max\}$, da cui segue
+	Assumendo che l'input non contenga oggetti di peso maggiore dello zaino,
+	dunque impossibili da prendere, consideriamo la soluzione composta
+	solamente dall'oggetto con valore massimo $S = \{max\}$;
+	da questa segue
 	\begin{align*}
 		 & v_{max} \leq \sum_{i \in \hat{S}^*} v_i + \frac{\epsilon v_{max}}{2}
 		\leq \sum_{i \in \hat{S}^*} v_i + \frac{v_{max}}{2} \text{ poiché } \epsilon \leq 1         \\
@@ -2225,8 +2232,8 @@ Dobbiamo ora convincerci che \cref{algo:FPTASKnapsack} termini
 in tempo polinomiale: l'ultima colonna sarà $n \hat{v}_{max}$;
 sappiamo che
 $$
-	v_{max} = \lceil \frac{v_{max}}{\theta} \rceil = \lceil \frac{v_{max} n}{\epsilon v_{max}} \rceil
-	=\lceil \frac{n}{\epsilon}\rceil
+	\hat{v}_{max} = \lceil \frac{v_{max}}{\theta} \rceil = \lceil \frac{v_{max} n}{\epsilon v_{max}} \rceil
+	=\lceil \frac{n}{\epsilon}\rceil \leq \frac{n}{\epsilon} + 1
 $$
 pertanto il numero di colonne
 $$

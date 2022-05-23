@@ -1013,6 +1013,89 @@ Si può inoltre dimostrare che non esiste nessun algoritmo
 $(1 - O(1))\ln(n)$-approssimante per il \textsc{SetCoverProblem},
 ammesso che $\mathbf{P} \neq \mathbf{NP}$.
 
+% lezione 6 - 15/10/2021
+\begin{theorem}
+	Il lower bound $O(\log(n))$ è \textit{stretto}.
+\end{theorem}
+\begin{proof}
+	\begin{figure}[h]
+		\centering
+
+		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt
+		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+			%Shape: Ellipse [id:dp6765246556575552] 
+			\draw   (150,155) .. controls (150,80.44) and (174.62,20) .. (205,20) .. controls (235.38,20) and (260,80.44) .. (260,155) .. controls (260,229.56) and (235.38,290) .. (205,290) .. controls (174.62,290) and (150,229.56) .. (150,155) -- cycle ;
+			%Shape: Circle [id:dp25664405112317257] 
+			\draw   (190,245) .. controls (190,236.72) and (196.72,230) .. (205,230) .. controls (213.28,230) and (220,236.72) .. (220,245) .. controls (220,253.28) and (213.28,260) .. (205,260) .. controls (196.72,260) and (190,253.28) .. (190,245) -- cycle ;
+			%Shape: Circle [id:dp365326528573394] 
+			\draw   (190,185) .. controls (190,176.72) and (196.72,170) .. (205,170) .. controls (213.28,170) and (220,176.72) .. (220,185) .. controls (220,193.28) and (213.28,200) .. (205,200) .. controls (196.72,200) and (190,193.28) .. (190,185) -- cycle ;
+			%Shape: Circle [id:dp6253156343816739] 
+			\draw   (190,125) .. controls (190,116.72) and (196.72,110) .. (205,110) .. controls (213.28,110) and (220,116.72) .. (220,125) .. controls (220,133.28) and (213.28,140) .. (205,140) .. controls (196.72,140) and (190,133.28) .. (190,125) -- cycle ;
+			%Shape: Circle [id:dp31124337530452395] 
+			\draw   (190,65) .. controls (190,56.72) and (196.72,50) .. (205,50) .. controls (213.28,50) and (220,56.72) .. (220,65) .. controls (220,73.28) and (213.28,80) .. (205,80) .. controls (196.72,80) and (190,73.28) .. (190,65) -- cycle ;
+			%Shape: Ellipse [id:dp2508338002239776] 
+			\draw   (270,155) .. controls (270,80.44) and (294.62,20) .. (325,20) .. controls (355.38,20) and (380,80.44) .. (380,155) .. controls (380,229.56) and (355.38,290) .. (325,290) .. controls (294.62,290) and (270,229.56) .. (270,155) -- cycle ;
+			%Shape: Circle [id:dp9420035211644501] 
+			\draw   (310,245) .. controls (310,236.72) and (316.72,230) .. (325,230) .. controls (333.28,230) and (340,236.72) .. (340,245) .. controls (340,253.28) and (333.28,260) .. (325,260) .. controls (316.72,260) and (310,253.28) .. (310,245) -- cycle ;
+			%Shape: Circle [id:dp3760188464261045] 
+			\draw   (310,185) .. controls (310,176.72) and (316.72,170) .. (325,170) .. controls (333.28,170) and (340,176.72) .. (340,185) .. controls (340,193.28) and (333.28,200) .. (325,200) .. controls (316.72,200) and (310,193.28) .. (310,185) -- cycle ;
+			%Shape: Circle [id:dp168355019540958] 
+			\draw   (310,125) .. controls (310,116.72) and (316.72,110) .. (325,110) .. controls (333.28,110) and (340,116.72) .. (340,125) .. controls (340,133.28) and (333.28,140) .. (325,140) .. controls (316.72,140) and (310,133.28) .. (310,125) -- cycle ;
+			%Shape: Circle [id:dp5145571449426466] 
+			\draw   (310,65) .. controls (310,56.72) and (316.72,50) .. (325,50) .. controls (333.28,50) and (340,56.72) .. (340,65) .. controls (340,73.28) and (333.28,80) .. (325,80) .. controls (316.72,80) and (310,73.28) .. (310,65) -- cycle ;
+			%Shape: Ellipse [id:dp4243150165053027] 
+			\draw   (130,215) .. controls (130,184.62) and (190.44,160) .. (265,160) .. controls (339.56,160) and (400,184.62) .. (400,215) .. controls (400,245.38) and (339.56,270) .. (265,270) .. controls (190.44,270) and (130,245.38) .. (130,215) -- cycle ;
+			%Shape: Ellipse [id:dp11852663897458593] 
+			\draw   (130,125) .. controls (130,111.19) and (190.44,100) .. (265,100) .. controls (339.56,100) and (400,111.19) .. (400,125) .. controls (400,138.81) and (339.56,150) .. (265,150) .. controls (190.44,150) and (130,138.81) .. (130,125) -- cycle ;
+			%Shape: Ellipse [id:dp343848974124522] 
+			\draw   (160,65) .. controls (160,51.19) and (180.15,40) .. (205,40) .. controls (229.85,40) and (250,51.19) .. (250,65) .. controls (250,78.81) and (229.85,90) .. (205,90) .. controls (180.15,90) and (160,78.81) .. (160,65) -- cycle ;
+			%Shape: Ellipse [id:dp2343711231016622] 
+			\draw   (280,65) .. controls (280,51.19) and (300.15,40) .. (325,40) .. controls (349.85,40) and (370,51.19) .. (370,65) .. controls (370,78.81) and (349.85,90) .. (325,90) .. controls (300.15,90) and (280,78.81) .. (280,65) -- cycle ;
+			
+			% Text Node
+			\draw (119,102) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
+			% Text Node
+			\draw (121,181) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
+			% Text Node
+			\draw (159,32) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
+			% Text Node
+			\draw (369,32) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
+			% Text Node
+			\draw (188.33,2.67) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1 + \varepsilon$};
+			% Text Node
+			\draw (306.67,3) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1 + \varepsilon$};
+		\end{tikzpicture}
+
+		\caption{Esempio di input ``cattivo'' per $n=8$}
+		\label{fig:setcover_tightness}
+	\end{figure}
+	
+	Il teorema si dimostra creando un input ``cattivo''.
+
+	Fissato un $n$ costruiamo un input composto da due grandi insiemi disgiunti
+	$A$ e $B$, entrambi di costo $1 + \varepsilon$ e contenenti $n / 2$
+	elementi ciascuno. Gli elementi di questi due insiemi compongono
+	l'universo. Costruiamo inoltre $log(n)$ insiemi disgiunti
+	$S_1, S_2, ..., S_{log(n)}$ come in \cref{fig:setcover_tightness}.
+	Questi insiemi hanno tutti costo $1$ ed hanno dimensioni $n/2, n/4, n/8$
+	e così via. Ci riferiremo a questi insiemi con i nomi $S_1, S_2, ...$ in
+	ordine decrescente di dimensione.
+
+	Alla prima iterazione dell'algoritmo abbiamo i due grandi insiemi $A$ e $B$
+	che hanno costo $\frac{1 + \varepsilon}{n / 2}$, mentre l'insieme $S_1$ ha
+	costo $\frac{1}{n / 2}=2/n$, di conseguenza l'algoritmo sceglie
+	quest'ultimo. Nella prossima iterazione il costo degli insiemi $A$ e $B$ è
+	aumentato a $\frac{1 + \varepsilon}{n / 4}$, mentre il costo dell'insieme
+	$S_2$ è $\frac{1}{n / 4}$, di conseguenza l'algoritmo sceglie quest'ultimo.
+	Questo processo si ripete fino a quando l'algoritmo avrà utilizzato tutti i
+	$log(n)$ insiemi $S_i$ per coprire tutto l'universo, di conseguenza la
+	soluzione trovata avrà costo $w=log(n)$, seppur la soluzione ottima
+	consiste semplicemente nel prendere i due insiemi $A$ e $B$,
+	entrambi di costo $1 + \varepsilon$ e dunque $w^*=2 + 2\varepsilon$
+\end{proof}
+
 \begin{figure}[h]
 	\centering
 
@@ -1058,17 +1141,6 @@ ammesso che $\mathbf{P} \neq \mathbf{NP}$.
 	\label{fig:setcoverapx}
 \end{figure}
 
-
-
-% lezione 6 - 15/10/2021
-\begin{theorem}
-	Il lower bound $O(\log(n))$ è \textit{stretto}.
-\end{theorem}
-\begin{proof}
-	Il teorema si dimostra creando un input ``cattivo'':
-	% TODO!
-	%disegno insiemi...
-\end{proof}
 La particolarità tecnica interessante risiede nell'analisi di complessità:
 abbiamo attribuito ad ogni singolo elemento un costo; questa tecnica, che
 si chiama \textit{pricing}, è a volte utile anche per il design degli algoritmi.

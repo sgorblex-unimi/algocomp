@@ -9,7 +9,7 @@ stesso, chiamate \textbf{primitive}:
   void  pop()
   void  push(T)
 \end{lstlisting}
-Il comportamento cosa facciano i metodi si può descrivere in molti modi: si può
+Il cosa facciano i metodi si può descrivere in molti modi: si può
 utilizzare un metodo discorsivo, spiegando a parole, o utilizzare un metodo
 analitico:
 $$
@@ -50,21 +50,20 @@ Questo teorema vale anche per rappresentazioni di dimensione
 variabile, ossia vale anche per codifiche: si supponga di avere un
 algoritmo in grado di comprimere tre immagini ognuna in $100$ bit.
 La conseguenza di questo teorema è che ci saranno delle altre immagini che
-utlizzeranno più di $10000$ bit, in modo che la media rimanga $10000$.
+utilizzeranno più di $10000$ bit, in modo che la media rimanga $10000$.
 
 In generale, dati $v$ valori rappresentabili con $x_1, x_2, \cdots, x_v$ bit
 rispettivamente; il Teorema afferma che
 $$
 	\frac{\sum_{i} x_i}{v} \geq \log_2(v)
 $$
-%(
-di così e che esiste un sistema di compressione che riesce a rappresentare
-in realtà il \cref{thm:shannon} dice di più, ossia che non si può fare meglio
-i $v$ valori utilizzando un numero di bit medio tra $[\log_2(v), 1 + \log_2(v))$,
-assumendo che tutti i $v$ valori siano equiprobabili\footnote{
+
+In realtà il \cref{thm:shannon} dice di più, ossia che è possibile creare un
+sistema di compressione per i $v$ valori utilizzando un numero di bit medio
+tra $[\log_2(v), 1 + \log_2(v))$, assumendo che tutti i $v$ valori siano
+equiprobabili\footnote{
 	\cite{shannon_1948} è il lavoro di C. Shannon che ha dato vita al campo della
 	teoria dell'informazione; un approccio più moderno è \cite{cover_2006}. }.
-%]
 
 Ci confronteremo spesso con questo \textbf{information-theoretical lower bound}:
 immaginiamo tutte le possibili istanze $v_i$ di ADT di taglia $i$;
@@ -610,7 +609,8 @@ questa struttura è \textbf{succinta} e ha la stessa efficienza della struttura 
 
 \subsection{Struttura di Clarke per la selezione}
 La struttura di Clarke per la selezione è succinta teoricamente, ma in pratica
-è raramente utilizzata perché la sua implementazione è molto complessa.
+è raramente utilizzata come descritta perché la sua implementazione è molto
+complessa.
 L'obiettivo è, dato un vettore $\mathbf{b}$ di valori binari fissato, calcolare
 la funzione di selezione
 $$
@@ -620,7 +620,7 @@ La struttura di Clarke utilizza dei \textit{livelli}, simili a quelli utilizzati
 dalla struttura di Jacobson.
 
 \subsubsection{Primo livello}
-Il primo livello della struttura di Clarke si è un insieme
+Il primo livello della struttura di Clarke è un insieme
 di valori che rappresentano le posizioni degli $1$ di ordinalità multipla di
 $\log_2(n) \cdot \log_2(\log_2(n))$, ossia
 $$
@@ -656,7 +656,7 @@ I due casi che si considerano dipendono dal valore di $r_i$.
 
 \paragraph{Caso sparso}
 Se $r_i \geq (\log_2(n) \cdot \log_2(\log_2(n)))^2$, significa che in $\mathbf{b}$ ci
-sono pochi $1$ tra le posizioni $P_{i}$ e $P_{i+1}$; in questo caso
+sono molti $0$ tra gli $1$ contenuti nelle posizioni tra $P_{i}$ e $P_{i+1}$; in questo caso
 definiamo $S_i$ come la lista esplicita delle posizioni di tutti gli $1$
 in $\mathbf{b}$ tra le due posizioni rappresentate come differenza tra $P_i$.
 
@@ -700,7 +700,7 @@ $$
 $$
 Per ognuna di queste posizioni calcoliamo la differenza tra $S^i_j$:
 $$
-	\forall j \bar{r}^i_j = S^i_{j+1} - S^i_j
+	\forall j ~~ \bar{r}^i_j = S^i_{j+1} - S^i_j
 $$
 Come nel caso precedente, abbiamo due possibilità in base al valore di $\bar{r}^i_j$, il quale
 gode comunque della proprietà
@@ -756,7 +756,7 @@ $$
 	\leq \frac{n}{\log_2(\log_2(n))} = o(n) \text{ bit}
 $$
 più $o(n)$ bit per il terzo livello. Quindi, la struttura di Clarke occupa
-spazio $n + o(n)$ e ha accesso tempo di accesso costante, pertanto è
+spazio $n + o(n)$ e ha tempo di accesso costante, pertanto è
 una struttura \textbf{succinta}.
 
 \begin{figure}
@@ -1165,7 +1165,7 @@ $$
 $$
 e, intuitivamente, deve essere
 $$
-	q = |int(T')| + |ext(T')| = 2 |int(T')| + 1 = 2 |E_{T,p}| + 1 ) = 2 \mathbf{rank_v}(p) + 1.
+	q = |int(T')| + |ext(T')| = 2 |int(T')| + 1 = 2 |E_{T,p}| + 1 = 2 \mathbf{rank_v}(p) + 1
 $$
 poiché $|E_{T,p}|$ è uguale al numero di `$1$' presenti in $\mathbf{v}$ con indice
 strettamente minore a $p$, concludendo, chiaramente se e solo se
@@ -1234,8 +1234,8 @@ una tecnica in grado di contare il \texttt{rank} per gli $0$.
 
 \section{Struttura di Elias-Fano per sequenze monotone}
 La struttura (o codifica, rappresentazione) di Elias-Fano che andiamo
-a presentare occupa sulle sequenze monotone di interi, ossia
-una sequenza di $n$ numeri interni
+a presentare si occupa delle sequenze monotone di interi, ossia
+delle sequenze di $n$ numeri interi
 $$
 	0 \leq x_0, x_1, \cdots, x_{n+1}
 $$
@@ -1254,7 +1254,7 @@ ossia
 $$
 	\forall i ~ \mathbf{project}(i) = x_i
 $$
-La rappresentazione di seqenze monotone di interi è molto utile.
+La rappresentazione di sequenze monotone di interi è molto utile.
 Per esempio, per rappresentare un grafo, si può attribuire ad ogni
 nodo un numero: l'idea classica è quella di utilizzare poi, per esempio,
 liste di adiacenza per elencare i nodi raggiungibili da un certo noto
@@ -1268,7 +1268,7 @@ La rappresentazione banale sarebbe utilizare un vettore di $n$ numeri
 utilizzando per ognuno $\log_2(u)$ bit; la rappresentazione di Elias-Fano
 utilizza meno spazio basandosi sulla seguente idea: si definisce
 $$
-	l = \max\{0, \lfloor\log_2(\frac{u}{n})|\rfloor\}
+	l = \max\{0, \lfloor\log_2(\frac{u}{n})\rfloor\}
 $$
 e gli $l$ bit meno significativi di ogni $x_i$ vengono salvati
 esplicitamente, mentre i rimanenti bit vengono rappresentati
@@ -1315,7 +1315,7 @@ $$
 $$
 che identifica una serie telescopica; pertanto, il consumo in spazio è
 $$
-	n - (\lfloor{\frac{x_{n-1}}{2^l}}\rfloor -\lfloor{\frac{x_{-1}}{2^l}}\rfloor) \leq n + \frac{u}{2^l}
+	n + (\lfloor{\frac{x_{n-1}}{2^l}}\rfloor -\lfloor{\frac{x_{-1}}{2^l}}\rfloor) \leq n + \frac{u}{2^l}
 	= n + \frac{u}{2^{\lfloor \log_2(\frac{u}{n})\rfloor}} \text{ bit}
 $$
 Se $u/n$ è una potenza di $2$, allora il consumo è
@@ -1342,17 +1342,17 @@ $$
 	D_n = (2 + \lceil \log_2(u/n) \rceil) n \text{ bit}
 $$
 che però non tiene conto dello spazio occupato dalla struttura di rango e selezione,
-che infatti sono necessiarie: supponiamo di volere la posizione dell'$i$-esimo $1$ in $\mathbf{d}$:
-$$
-	\mathbf{select_d}(i) = d_0 + d_1 + \cdots + d_{i-1} + i
-$$
+che infatti sono necessarie: supponiamo di volere la posizione dell'$i$-esimo $1$ in $\mathbf{d}$:
+\begin{align*}
+	\mathbf{select_d}(i) = d_0 + d_1 + \cdots + d_{i-1} + i & "i" \text{ è il numero di '1' in mezzo ai valori}
+\end{align*}
 quindi
 $$
-	\mathbf{select_d}(i) - i = \sum_{j = 0}^i \lfloor{\frac{x_{j}}{2^l}}\rfloor -\lfloor{\frac{x_{j-1}}{2^l}}\rfloor  = \lfloor \frac{x_i}{2^l} \rfloor
+	\mathbf{select_d}(i) - i = \sum_{j = 0}^i \lfloor{\frac{x_{j}}{2^l}}\rfloor -\lfloor{\frac{x_{j-1}}{2^l}}\rfloor = \lfloor \frac{x_i}{2^l} \rfloor
 $$
 di conseguenza
 $$
-	x_i =  \lfloor \frac{x_i}{2^l} \rfloor 2^l + (x_i ~ \mathrm{mod}{2^l}) = (\mathbf{select_d}(i) - i ) 2^l + l_i
+	x_i =  \lfloor \frac{x_i}{2^l} \rfloor 2^l + (x_i ~ \mathrm{mod} {2^l}) = (\mathbf{select_d}(i) - i ) 2^l + l_i
 $$
 Contando anche le strutture di rank e select, che quindi sono necessarie, si occupa uno spazio
 $$
@@ -1454,11 +1454,11 @@ in pratica è che questa uguaglianza vale quando $n \leq \sqrt{u}$.
 
 \section{Struttura per parentesi ben formate}
 \subsection{Linguaggi di Dyck}
-Un linguaggio di Dyck $L$ è un linguaggio sull'alfabeto $D={(,)}$ tale che $L\subseteq D^*$
+Un linguaggio di Dyck $L$ è un linguaggio sull'alfabeto $D=\{(,)\}$ tale che $L \subseteq D^*$
 e una stringa $w \in D^*$ appartiene a $L$ se e solo se
 \begin{enumerate}
 	\item $|w|_{(} = |w|_{)}$; e
-	\item $\forall w_1, w_2 ~~ w = w_1w_2 \implies|w_1|_{(} \geq |w_2|_{)}$
+	\item $\forall w_1, w_2 \text{ tali che } w = w_1w_2 \implies|w_1|_{(} \geq |w_2|_{)}$
 \end{enumerate}
 Un modo interessante per studiare una parola $w$ di Dyck è studiarne la
 \textit{funzione di eccesso}, definita
@@ -1548,7 +1548,7 @@ parentesi chiusa è sicuramente prima della chiusa stessa; basta quindi cercare 
 alla prima parentesi aperta che ha la stessa funzione di eccesso. Analogamente si fa per $\mathbf{find\_close}$.
 La cosa più semplice, quindi, sarebbe calcolare anticipatamente la funzione di eccesso e usarla
 facendo ricerche lineari, utilizzando uno spazio $n \log_2(n)$.
-Faremo meglio creando una struttura succinta con tempo di interrogazione logaritmico.
+Faremo meglio creando una struttura compatta con tempo di interrogazione logaritmico.
 
 \subsubsection{Rappresentazione}
 La prima operazione sulle parentesi da eseguire nella costruzione della struttura è dividere, nuovamente,
@@ -1696,7 +1696,7 @@ avente eccesso $x-1$, dove $x$ è il minimo eccesso del blocco. Per la rappresen
 		      che chiamiamo $w'$, gode della proprietà che si vuole dimostrare. Il numero
 		      di pioniere in $w$ è quindi al più la somma delle pioniere in $w'$ e la pioniera rimossa
 		      $$
-			      2k - 4  = 2k - 3
+			      2k - 4  + 1 = 2k - 3
 		      $$
 
 	\end{itemize}
@@ -1847,7 +1847,7 @@ $$
 $$
 Sommando, lo spazio occupato è $D_n = 2n + o(n) + 6k \log_2(n) = 2n + 6n + o(n) = 8n + o(n)$ bit.
 
-\subsubsection{Implementrazione}
+\subsubsection{Implementazione}
 Per implementare la funzione $\mathbf{find\_close}$ che, trovata una parentesi aperta in posizione $p$, restituisce
 la posizione in cui si chiude, si deve:
 \begin{enumerate}
@@ -2234,7 +2234,7 @@ $$
 
 \noindent
 Sappiamo che $D_{2n} \approxeq F_n \approxeq B_n$ e sappiamo quanti sono i possibili alberi binari
-con $n$ nodi sono $|B_n| = C_n  \approx 2n + o (\log_2(n))$; di conseguenza,
+con $n$ nodi grazie al numero di Catalano, sono $|B_n| = C_n  \approx 2n + o (\log_2(n))$; di conseguenza,
 le parole di Dyck di lunghezza $2n$ hanno come information-theoretical lower bound
 $$
 	Z_n = n + o(\log_2(n)) \text{ bit}
@@ -2249,14 +2249,14 @@ pertanto la struttura descritta è compatta.
 \section{Struttura per hash minimali perfetti}
 \subsection{Funzioni di hash}
 Le funzioni di hash compaiono in molti contesti diversi e un'applicazione
-`famose' sono le \textit{tabelle di hash}.
+`famosa' sono le \textit{tabelle di hash}.
 Nel modo più generale, dato un universo $U$ infinito o \textit{molto grande} e un numero $m \in \mathbb{N}$,
 che è il \textit{numero di bucket}, una funzione di hash è
 $$
 	h: U \rightarrow m
 $$
 
-le funzioni di hash, che denominiamo $H_{U,m}$ è infinito se $U$ è infinito, mentre è finito
+Le funzioni di hash, che denominiamo $H_{U,m}$, sono infinite se $U$ è infinito, mentre sono finite
 se $U$ è finito, in particolare $|H_{U,m}| = m^{|U|}$.
 La funzione $h$ deve avere alcune proprietà: prendiamo come esempio proprio le tabelle di hash,
 utilizzate per memorizzare un sottoinsieme $S \subseteq U$, per esempio delle stringhe su un certo
@@ -2268,10 +2268,10 @@ vedendo i simboli in $\Sigma$ come un'enumerazione $a = 0, b = 1, c =2, d = 3$,
 una funzione di hash potrebbe semplicemente sommare i simboli di una stringa e
 operarne il modulo in $m$, in modo che il valore risultante sia $0 \leq h \le m-1 $.
 
-Lo scopo è mantenere una tabella, spesso realizzata come un vettore di list di
+Lo scopo è mantenere una tabella, spesso realizzata come un vettore di liste di
 elementi, i cui indici sono esattamente gli hash possibili che la funzione $h$
-calcola. In questo modo, è possibile accedere in modo (quasi) diretto alle
-parole nella tabella\footnote{Vi sono principalmente due  modi per costruire
+calcola. In questo modo, è possibile accedere (quasi) direttamente alle
+parole nella tabella\footnote{Vi sono principalmente due modi per costruire
 	tabelle di hash: \textit{open addressing} e \textit{separate chaining}.
 	In questo frangente stiamo analizzando la versione con separate chaining.}.
 In termini pratici, partendo da una tabella vuota, quando
@@ -2345,11 +2345,11 @@ ad un indice $h_1$ di $M$ corrisponde una lista di stringhe.
 \subsubsection{Requisiti}
 La tabella $M$ funziona con qualsiasi funzione di hash $h$ (anche $h(\cdot) = 0$),
 ma l'efficienza di $M$ cambia al suo variare, fino al denegenerare in una lista.
-Per far funzionare ``bene'' $M$, $h$ deve essere
+Per far funzionare ``bene'' $M$ è necessario che
 \begin{itemize}
 	\setlength\itemsep{0pt}
 	\item $h$ sia veloce da calcolare; e
-	\item $h$ divide l'universo $U$ in \textit{buckets} in modo tale che le
+	\item $h$ divida l'universo $U$ in \textit{buckets} in modo tale che le
 	      controimmagini siano più o meno \textit{grandi uguali}.
 	      In altri termini, se guardiamo $\Sigma^*$ e guardiamo come
 	      $h$ ne partiziona gli elementi, vorremmo che i blocchi (o bucket)
@@ -2372,13 +2372,14 @@ minori di $m$, che sono infinite e tra le quali ce ne sono anche di non calcolab
 
 \subsubsection{Rappresentazione}
 Ciò che si può fare è invece considerare un universo limitato con un
-upper bound dipendende da un qualche intero $k$.
+upper bound dipendente da un qualche intero $k$.
 Chiaramente si perde della `randomness', ma il vantaggio è che molto spesso
 i risultati che si ottengono sotto l'assunzione di completa casualità si possono
 portare anche sotto $U$ così definito, magari con qualche approssimazione.
 
 Supponiamo quindi di avere $U = \Sigma^{\leq k}$; vogliamo scrivere delle
-funzioni $h: U \rightarrow m$ e un modo per descriverle è il seguente.
+funzioni $h: U \rightarrow m$, alcune di esse possono essere descritte nel
+seguente modo.
 Si usa un array $\mathbf{p}$ chiamato \textit{array dei pesi} contenente $k$ valori,
 inizializzandolo a valori pseudocasuali nell'insieme $\{0, \cdots, m-1\}$.
 Quando si vuole calcolare l'hash di una stringa $s = "foo"$ si considera il valore
@@ -2395,7 +2396,7 @@ $$
 $$
 Il calcolo dell'hash è
 $$
-	h("foo") = ((5 * 15) + (5 * 86) + (14*90)) \mod m
+	h("foo") = ((5 * 15) + (14 * 86) + (14*90)) \mod m
 $$
 ottendo un valore che si calcola in un tempo lineare nella lunghezza della stringa
 diverso per ogni possibile scelta dei pesi. Cioè, non stiamo
@@ -2475,7 +2476,7 @@ Non tutti i grafi ammettono una sequenza di peeling:
 Vogliamo ora generalizzare la nozione di sequenza di peeling agli ipergrafi.
 
 \paragraph{Definizione}
-Un $r$-ipergrafo è $G = (V, E)$ di vertici e \textit{iperlati} dove ogni lato è un
+Un $r$-ipergrafo è $G = (V, E)$ di vertici e \textit{iperlati} dove ogni iperlato è un
 insieme di $r$ vertici, ossia $E \subseteq {V \choose r}$. Un esempio è
 in \cref{fig:example:hypergraph}.
 
@@ -2689,7 +2690,7 @@ D_n = 1.23nr = O(Z_n) \text{ bit}
 $$
 pertanto la struttura è compatta.
 
-\subsubsection{Struttura succinta}
+\subsubsection{Struttura compressa}
 Si può osservare che nel vettore $\mathbf{w}$ molte entry sono uguali a $0$: il numero 
 di entry diverse da zero è pari al numero di hinge nella sequenza di peeling 
 che risolve il sistema generato dal grafo, quindi $\mathbf{w}$ che (assumendo 

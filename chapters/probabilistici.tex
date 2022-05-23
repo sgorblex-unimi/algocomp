@@ -621,47 +621,71 @@ continui ad essere preservata.
 		$D = D \cup \Delta D_u$
 	}
 \end{algorithm}
+% lezione 14 - 12-11-2021
+L'idea di questo algoritmo è quella di assegnare le variabili passo per passo
+in modo tale da far valere sempre
+$$
+	E[T|X_1 = x_1, \cdots, X_i = x_i] \geq \frac{2^k-1}{2^k}t
+$$
+A tal proposito ad ogni iterazione del ciclo più esterno vengono calcolati due
+valori $\Delta_0$ e $\Delta_1$ che rappresentano la differenza tra il valore
+atteso attuale e quello che si otterrebbe fissando la variabile $x_i$
+rispettivamente a $0$ oppure a $1$.
+
+Alla fine di ogni ciclo sceglieremo sempre di assegnare ad $x_i$ il valore
+con il rispettivo $\Delta$ maggiore tra i due, in modo tale da mantenere
+$E[T|X_1 = x_1, \cdots, X_i = x_i]$ sempre sopra la soglia.
+
+Analizziamo ora il calcolo di $\Delta_0$ e $\Delta_1$.
+Ricordiamo per prima cosa che
+$$
+	E[T|X_1 = x_1, \cdots] = E[C_1 + \cdots + C_t | X_1=x_1, \cdots] = E[C_1 | X_1=x_1, \cdots] + \cdots + E[C_t | X_1=x_1, \cdots]
+$$
+In un determinato momento ogni $E[C_j | X_1=x_1, \cdots, X_i=x_i]$ può trovarsi
+in una di due situazioni: potrebbe avere un valore costante $0$ o $1$ perchè la
+clausola $c_j$ è ormai determinata; in questa situazione il valore atteso non
+potrà più cambiare in futuro dunque possiamo trascurarla nel calcolo delle
+differenze.
+
+Il secondo caso è quello in cui il valore atteso ha un valore dipendente dal
+numero $h$ di variabili non ancora assegnate nella clausola. Questo valore
+sarà $\frac{2^h - 1}{2^h}$ (perchè esiste un solo assegnamento che può
+falsificare la clausola).
+Osservando i possibili modi in cui può cambiare il valore atteso quando
+assegniamo una variabile $x_i$ possiamo scoprire che la differenza tra
+il valore atteso prima di assegnare $x_i$ e dopo averlo assegnato è sempre
+$\frac{1}{2^h}$.
+\begin{itemize}
+	\item Se assegnando $x_i$ la clausola viene soddisfatta allora il valore
+	atteso $E[T|X_1 = x_1, \cdots X_i=x_i] = 1$. In questa situazione
+	$$
+		1 - \frac{2^h - 1}{2^h} = \frac{2^h - 2^h + 1}{2^h} = \frac{1}{2^h}
+	$$
+
+	\item Se assegnando $x_i$ la clausola viene definitivamente falsificata,
+	dunque non contiene più variabili libere, allora il valore atteso
+	$E[T|X_1 = x_1, \cdots X_i=x_i] = 0$ e $h=1$, dunque
+	$$
+		\frac{2^h - 1}{2^h} - 0 = \frac{2^h - 1}{2^h} = \frac{1}{2^h}
+	$$
+
+	\item Se assegnando $x_i$ la clausola è ancora indeterminata allora
+	la differenza tra i valori attesi prima e dopo l'assegnamento è
+	$$
+		\frac{2^h - 1}{2^h} - \frac{2^{h-1} - 1}{2^{h-1}} = \frac{2^h - 1 - 2^h + 2}{2^h} = \frac{1}{2^h}
+	$$
+\end{itemize}
 
 \begin{theorem}
 	L'\cref{algo:DerandomMaxEkSat} trova un assegnamento che soddisfa
 	$$
-		\frac{2^k -1}{2^k} t
+		\geq \frac{2^k -1}{2^k} t
 	$$
 	clausole.
 \end{theorem}
 \begin{proof}
-	Banale dal \cref{thm:maxsatderandomexv}.
-\end{proof}
-% lezione 14 - 12-11-2021
-\begin{lemma}
-	L'\cref{algo:DerandomMaxEkSat} garantisce che quando l'$i$-esima variabile
-	viene assegnata vale
-	$$
-		E[T|X_1 = x[1], \cdots, X_{i-1}[x_{i-1}]] \geq \frac{2^k -1}{2^k}t
-	$$
-\end{lemma}
-\begin{proof}
-	Per $i = 0$, questo è vero per il \cref{thm:maxsatderandomexv}.
-	Per il passo induttivo, supponiamo
-	$E[T|X_1 = x_1, \cdots, X_{i-1}= x_{i-1}] \geq \frac{2^k -1}{2^k}t$.
-	Che valore assegnare a $X_i$?
-	Supponiamo che la clausola alla quale appartiene $X_i$ abbia $h$ variabili
-	non assegnate $X_j$ con $j \geq i$ (le rimanenti hanno assegnato il valore $0$);
-	ci sono allora $2^h$ possibili assegnamenti:
-	di questi $2^h$, soltanto uno (tutte le $X_j$ false) rende falsa la clausola, mentre
-	$\frac{2^h - 1}{2^h}$ rendono la clausola vera.
-	Se si assegna $1$ a $X_i$ allora avrà contributo $1$. L'incremento di
-	valore atteso sarà
-	$$
-		\Delta E[T] = 1 - \frac{2^h -1}{2^h} = \frac{1}{2^h}
-	$$
-	Viceversa, se si assegna a $X_i$ il valore $0$ la clausola rimarrà incerta e le
-	variabili libere si riducono di uno: le possibili combinazioni che renderanno
-	vera la clausola saranno $2^{h-1} -1 $. In questo caso, l'incremento nel valore
-	atteso è
-	$$
-		\Delta E[T] = \frac{2^{h-1} -1}{2^{h-1}}  - \frac{2^h -1}{2^h} = - \frac{1}{2^h}
-	$$
+	Abbiamo dimostrato che l'algoritmo mantiene valido il
+	\cref{thm:maxsatderandomexv} ad ogni iterazione, dunque anche all'ultima.
 \end{proof}
 \begin{corollario}
 	L'\cref{algo:DerandomMaxEkSat} fornisce una $\frac{2^k}{2^k -1}$-approssimazione per

@@ -860,20 +860,21 @@ un linguaggio $L$ è  in $\mathbf{PCP}[r,q]$ se e solo se esiste una macchina
 $v \in \mathbf{PCP}[r,q]$ tale che
 \begin{enumerate}
 	\item $v(x,R,W)$ funziona in tempo polinomiale in $|x|$,
-	\item $v(x,R,W)$ effettua al massimo un numero proporzionale
-	      a $q$ e $|x|$ query,
-	\item $v(x,R,W)$ legge al massimo un numero proporzionale a
-	      $r$ e $|x|$ bit casuali, infine
+	\item $v(x,R,W)$ effettua al massimo $q(|x|)$ query,
+	\item $v(x,R,W)$ legge al massimo $r(|x|)$ bit casuali, infine
 	\item se $x \in L$ esiste una $w \in 2^*$ tale che $v$ accetta $x$ con probabilità
 	      $1$ -- cioè $v(x, -, W) = True$. Viceversa, se $x \notin L$, $v$ rifiuta
 	      con probabilità $\geq \frac{1}{2}$ per qualunque $w$.
 \end{enumerate}
-In altre parole, fissando $x$ e $w$, a seconda di quale delle $2^{r(|x|)}$\footnote{Accadrà
-	di utilizzare la notazione $r(|x|)$ o $q(|x|)$ nonostante $r$ e $q$ siano
-	state definite come costanti e non come funzioni: l'interpretazione è considerarle come
-	funzioni che restituiscono un naturale proporzionale sia a $x$ che a $r$  (o $q$).}
+In altre parole, fissando $x$ e $w$, a seconda di quale delle $2^{r(|x|)}$\footnote{
+	Accadrà certe volte di scrivere direttamente $r$ o $q$ come se fossero
+	costanti, nonostante in verità siano funzioni: l'interpretazione è
+	considerarle come delle funzioni che restituiscono un valore costante
+	per qualunque parametro, e dunque non è utile specificare quale quest
+	ultimo sia.
+}
 possibili stringhe casuali è a disposizione la macchina $v$ accetta o rifiuta:
-la probablità di accettazione è il numero di sequenze random per cui per gli specifici
+la probabilità di accettazione è il numero di sequenze random per cui per gli specifici
 $x$ e $w$ si accetta sul numero totale di sequenze possibli.
 
 Alcune sottoclassi sono interessanti: $\mathbf{PCP}[0,0]$ è una normale macchina deterministica,
@@ -963,8 +964,8 @@ Il punto di partenza per questa dimostrazione è scegliere un linguaggio
 $L \in \mathbf{NP-completi}$ (quindi anche $L \in \mathbf{PCP}[O(\log(n), O(1)]$ se $\mathbf{P} \neq \mathbf{NP}$).
 Consideriamo la macchina $v \in \mathbf{PCP}[O(\log(n)), O(1)]$ e consideriamo un
 certo input $z \in 2^*$, per il quale genereremo una sequenza
-di $r(z)$ bit random -- le sequenze possibili, che denotano lo \textit{spazio probabilistico}
-$\mathcal{R}$ su $z$, sono $2^{r(z)}$.
+di $r(|z|)$ bit random -- le sequenze possibili, che denotano lo \textit{spazio probabilistico}
+$\mathcal{R}$ su $z$, sono $2^{r(|z|)}$.
 Per ogni specifica sequenza $R \in \mathcal{R}$, il verificatore produrrà $q$ query all'oracolo:
 $$
 	i_{1}^R, i_{2}^R, \cdots, i_{q}^R
@@ -1138,16 +1139,27 @@ Il seguente teorema conduce all'inapprossimabilità di \textsc{MaxEkSat}.
 	$\leq 2^{r(|z|)-1}$.
 \end{oss}
 \begin{proof}
-    Si immagini un insieme di configurazioni compatibili: nelle configurazioni, la parte delle query può contenere 
-    posizioni richieste più volte con risultati diversi, altrimenti non sarebbero compatibili (e di conseguenza 
-    l'insieme non sarebbe indipendente). Dato un insieme indipendente, si può costruire una stringa $w$ che è 
-    compatibile con tutte le risposte ottenute, dove nelle posizioni di query che non appaiono nell'insieme 
-    indipendente si possono inserire valori arbitrari; tuttavia non ci possono essere contraddizioni. 
-    Qualunque $w$ è adatta per far accettare $z$ dal probabilistic checker; se ci fosse un insieme indipendente 
-    in $G_z$ di cardinalità maggiore di $2^{r(|z|) -1}$ verrebbe contraddetto il \cref{thm:pcp}. 
+	Consideriamo l'insieme indipendente che questo ipotetico algoritmo
+	$2-\epsilon$-approssimante ci ha restituito in output.
+	Essendo un indipendent set allora questi vertici non hanno lati che li
+	collegano; per come abbiamo definito i lati dunque nessuno di questi
+	vertici è in disaccordo sui valori restituiti dalle query fatte da ogni
+	configurazione nelle posizioni. Possiamo dunque costruire una stringa
+	oracolo $w$ che sia compatibile con tutte le query fatte da tutte queste
+	configurazioni, ma allora vuol dire che questo indipendent set non può
+	avere più di $2^{r(|z|) - 1}$ vertici.
+
+	Il motivo è che, per definizione, il verificatore associato dovrebbe
+	rifiutare con probabilità $\geq \frac{1}{2}$ per qualunque testimone $w$.
+	Avendo fissato un singolo testimone $w$ per tutti questi vertici, che
+	rappresentano ognuno un caso in cui il verificatore ha risposto SI, allora
+	questi devono essere meno della metà di tutte le risposte possibili, cioè
+	$\frac{1}{2}\cdot 2^{r(|z|)} = 2^{r(|z|) - 1}$.
 \end{proof}
-Dall'\cref{lem:ind_set_zinl} e dall'\cref{lem:ind_set_znotinl} si arriva alla dimostrazione del \cref{thm:ind_set_inapprox}: 
-qualunque algoritmo che sia in grado di dare un'approssimazione migliore di $2$ riesce a distinguere i due casi, 
-sapendo quindi decidere se $z \in L$ o meno in tempo polinomiale.
+
+Dall'\cref{lem:ind_set_zinl} e dall'\cref{lem:ind_set_znotinl} si arriva alla
+dimostrazione del \cref{thm:ind_set_inapprox}: qualunque algoritmo che sia in
+grado di dare un'approssimazione migliore di $2$ riesce a distinguere i due
+casi, sapendo quindi decidere se $z \in L$ o meno in tempo polinomiale.
 \end{proof}
 

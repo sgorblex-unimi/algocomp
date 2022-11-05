@@ -1,0 +1,11 @@
+\begin{tikzpicture}[set/.style={black,rounded corners=10,thick}]
+	\draw[set] (0,0) rectangle (10,5.5);
+	\draw[set] (4.9,5.1) node {Problemi decidibili};
+	\draw[set] (0.5,0.5) rectangle (9.5,4.7);
+	\draw[set] (5,4.3) node {\NP};
+	\draw[set] (1,1) rectangle (5,4);
+	\draw[set] (3,2.5) node {\P};
+	\draw[set] (5.1,1) rectangle (9,4);
+	\draw[set] (7,3) node {\NP-completi};
+	\draw[set] (7,2) node {\Sat};
+\end{tikzpicture}

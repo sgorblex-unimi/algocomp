@@ -1,0 +1,36 @@
+\documentclass[a4paper]{book-enhanced}
+
+\usepackage{src/preambolo}
+
+\title{Algoritmi e Complessità}
+\subtitle{Appunti delle lezioni tenute dal Prof. Paolo Boldi}
+\author{Marco Cutecchia, Edoardo Marangoni, Alessandro Clerici}
+\university{Università degli Studi di Milano}
+\dept{Dipartimento di Informatica}
+\logo{img/logo.tikz}
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+\tableofcontents
+
+\mainmatter
+
+\include{src/introduzione}
+\include{src/problemi}
+\include{src/deterministici}
+\include{src/probabilistici}
+\include{src/succinte}
+\cleardoublepage
+
+\appendix
+\include{labs/lab1}
+\include{labs/lab2}
+
+\backmatter
+
+\printbibliography[heading=bibintoc]
+
+\end{document}

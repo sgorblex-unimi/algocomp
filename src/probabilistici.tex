@@ -1,4 +1,3 @@
-% lezione 10 - 03/11/2021
 \chapter{Algoritmi probabilistici}
 Fino ad ora abbiamo considerato il modello di calcolo delle macchine di Turing per
 scrivere algoritmi per problemi di ottimizzazione, in particolare algoritmi di
@@ -439,7 +438,6 @@ ora che \textit{spesso} è ammissibile e che quando è ammissibile è una soluzi
 	\end{align*}
 \end{proof}
 
-% lezione 13 - 10-11-2021 
 \section{Problema MaxEkSat}
 \textsc{MaxEkSat} è la versione $k$-indicizzata di \textsc{MaxSat}: date $t$ clausole
 di $k$ letterali ciascuna, l'obiettivo è massimizzare il numero di clausole
@@ -621,7 +619,6 @@ continui ad essere preservata.
 		$D = D \cup \Delta D_u$
 	}
 \end{algorithm}
-% lezione 14 - 12-11-2021
 L'idea di questo algoritmo è quella di assegnare le variabili passo per passo
 in modo tale da far valere sempre
 $$
@@ -916,7 +913,6 @@ Inoltre, assumeremo anche che:
 \end{itemize}
 Un verificatore che si comporta in questo modo è definito \textit{verificatore in forma normale}.
 
-% lezione 15 - 17-11-2021
 % disegno matrice pagina 1 Alg17 Nov 2021
 \subsubsection{Esemplificazione dei probabilistic checkers}
 Sia $L \in \mathbf{PCP}[r(n), q(n)]$. Analizziamo cosa accade, secondo il
@@ -1125,7 +1121,6 @@ Il seguente teorema conduce all'inapprossimabilità di \textsc{MaxEkSat}.
 	Se $z \in L$, $G_z$ ha un insieme indipendente di cardinalità maggiore o
 	uguale a $2^{r(|z|)}$.
 \end{oss}
-% lezione 16 - 19-11-2021
 \begin{proof}
 	Siccome $z \in L$, deve esistere $\bar{w} \in 2^q$ tale che il verificatore
 	accetta con probabilità $1$ - questo significa che tutte le

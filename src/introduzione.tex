@@ -1,0 +1,61 @@
+\chapter{Introduzione}
+Questo corso esplora alcune tra le classi di complessità non trattate nei corsi di base di algoritmi;
+tratteremo gli algoritmi di ottimizzazione, gli algoritmi randomici e le strutture succinte.
+L'obiettivo è studiare delle aree importanti per gli informatici, presentando ``oggetti'' alla base delle
+tecniche informatiche. Iniziamo con un'introduzione alle notazioni matematiche utilizzate.
+
+\section{Notazione matematica}
+\subsection{Insiemi}
+Useremo insiemi numerici come i numeri naturali $\mathbb{N}$,
+i numeri interi $\mathbb{Z}$ e i numeri reali $\mathbb{R}$ e le rispettive
+``versioni positive'' $\mathbb{N}^+$,  $\mathbb{Z}^+$ e $\mathbb{R}^+$.
+
+\subsection{Monoidi e stringhe}
+Avremo spesso a che fare con i {\bf monoidi liberi}. Essi sono delle strutture
+algebriche che rispettano gli assiomi di {\bf chiusura} (un monoide è un \textit{gruppoide}),
+di {\bf associatività} (un monoide è un \textit{semigruppo}) e di esistenza dell'elemento neutro.
+Per ciò che ci interessa, ``istanzieremo'' i monoidi su degli alfabeti finiti $\Sigma$, costruendo
+un monoide \textit{libero}\textit{} $\Sigma^*$ generato da $\Sigma$, ossia un insieme dotato
+di un'operazione binaria associativa $\cdot$ e un elemento neutro $\epsilon$:
+indicheremo il monoide con la tripla $(\Sigma^*, \cdot, \epsilon)$\footnote{
+	Per un'introduzione alla relazione tra strutture algebriche e linguaggi (e la loro
+	chiusura di Kleene) consultare \cite{Sakarovitch:09:automata}.}.
+Data una stringa $w \in \Sigma$, possiamo indicarne la lunghezza con
+$|w|$ e definiamo $w = w_0 w_1\cdots w_n$.
+
+\subsection{Funzioni}
+Dati due insiemi $A$ e $B$ si definisce
+$$
+	B^A = \{f | f: A \rightarrow B\}
+$$
+l'insieme di tutte le funzioni che hanno dominio $A$ e codominio $B$.
+Se $k$ è un numero intero, si definisce, introducendo una lieve ambiguità,
+$$
+	k = \{0,1,\cdots,k-1\}
+$$
+l'insieme con cardinalità $k$ contenente i naturali da $0$ a $k-1$;
+ad esempio, $0 = \emptyset$, $1 = \{0\}$ e così via.
+
+Risulta quindi che $2^*$ è il monoide libero basato su tutte le stringhe binarie -
+solitamente equipaggiato con $\cdot$ come operazione di concatenazione e $\epsilon$ la
+stringa vuota. Definiamo
+$$
+	2^A = \{f | f: A \rightarrow \{0,1\}\}
+$$
+Possiamo interpretare i valori delle immagini di queste funzioni come dei booleani
+che descrivono l'appartenenza ad $A$: per esempio, se
+$$
+	\forall a \in A ~~ f_A (a) = 1
+$$
+$f_A$ è la \textit{funzione caratteristica} dell'insieme $A$. Allargando il
+ragionamento a tutte le $f \in 2^A$, possiamo definire quest'ultimo come l'insieme
+delle funzioni caratteristiche di tutti i possibili sottoinsiemi di $A$.
+
+Seguendo la definizione, abbiamo inoltre che
+$$
+	A^2 = \{f| f: \{0,1\} \rightarrow A\}
+$$
+ogni funzione associa a $0$ un elemento di $A$ e a $1$ un elemento di $A$ - a meno di isomorfismi,
+l'insieme delle immagini delle funzioni in $A^2$ è $A \times A$.
+Come ultimo esempio, abbiamo che $2^{2^*}$ è l'insieme di tutti i linguaggi
+binari.

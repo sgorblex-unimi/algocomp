@@ -1,5 +1,6 @@
 ## Core latex/pdflatex auxiliary files:
 *.aux
+*.auxlock
 *.lof
 *.log
 *.lot
@@ -16,10 +17,13 @@
 *.dvi
 *.xdv
 *-converted-to.*
+/tikz_cache
+*.bak0
 # these rules might exclude image files for figures etc.
 # *.ps
 # *.eps
 # *.pdf
+algocomp.pdf
 
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
@@ -40,3 +44,7 @@
 # minted
 _minted*
 *.pyg
+
+# meta
+TODO.md
+Session.vim

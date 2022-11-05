@@ -61,9 +61,9 @@ $$
 In realtà il \cref{thm:shannon} dice di più, ossia che è possibile creare un
 sistema di compressione per i $v$ valori utilizzando un numero di bit medio
 tra $[\log_2(v), 1 + \log_2(v))$, assumendo che tutti i $v$ valori siano
-equiprobabili\footnote{
-	\cite{shannon_1948} è il lavoro di C. Shannon che ha dato vita al campo della
-	teoria dell'informazione; un approccio più moderno è \cite{cover_2006}. }.
+equiprobabili.\footnote{
+	\cite{Shannon:48:theorycommu} è il lavoro di C. Shannon che ha dato vita al campo della
+	teoria dell'informazione; un approccio più moderno è \cite{Cover:06:informtheory}.}
 
 Ci confronteremo spesso con questo \textbf{information-theoretical lower bound}:
 immaginiamo tutte le possibili istanze $v_i$ di ADT di taglia $i$;
@@ -283,7 +283,6 @@ l'intera matrice. Un esempio è in \cref{fig:frtrick}.
 	\label{fig:frtrick}
 \end{figure}
 
-% lezione 17 - 24-11-2021
 \subsubsection{Implementazione}
 Il vettore $\mathbf{b}$  di $n$ bit viene quindi diviso in blocchi della
 stessa lunghezza, chiamati \textit{superblocchi}, di lunghezza
@@ -809,7 +808,6 @@ una struttura \textbf{succinta}.
 
 
 
-% lezione 19 - 01-12-2021
 \section{Struttura per alberi binari}
 Gli \textit{alberi} possono essere visti in due modi: per i
 matematici, essi sono dei grafi connessi aciclici mentre per gli
@@ -1398,7 +1396,7 @@ Per contare le possibili soluzioni si può utilizzare la tecnica \textit{stars a
 cui si utilizzano delle stringhe costruite utilizzando $n$ stelline e $u-1$ barrette, piazzate
 in qualsiasi posizione:
 $$
-	| \star || \star \star || \star | \star
+	| \starsymb || \starsymb \starsymb || \starsymb | \starsymb
 $$
 
 Il numero di soluzioni è uguale al numero di stringhe costruite in tale modo: i valori nella sequenza
@@ -2245,7 +2243,6 @@ $$
 $$
 pertanto la struttura descritta è compatta.
 
-% lezione 15-12-2021
 \section{Struttura per hash minimali perfetti}
 \subsection{Funzioni di hash}
 Le funzioni di hash compaiono in molti contesti diversi e un'applicazione

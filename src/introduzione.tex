@@ -1,61 +1,57 @@
-\chapter{Introduzione}
-Questo corso esplora alcune tra le classi di complessità non trattate nei corsi di base di algoritmi;
-tratteremo gli algoritmi di ottimizzazione, gli algoritmi randomici e le strutture succinte.
-L'obiettivo è studiare delle aree importanti per gli informatici, presentando ``oggetti'' alla base delle
-tecniche informatiche. Iniziamo con un'introduzione alle notazioni matematiche utilizzate.
+\section*{Notazione}
+\addcontentsline{toc}{section}{Notazione}
 
-\section{Notazione matematica}
-\subsection{Insiemi}
-Useremo insiemi numerici come i numeri naturali $\mathbb{N}$,
-i numeri interi $\mathbb{Z}$ e i numeri reali $\mathbb{R}$ e le rispettive
-``versioni positive'' $\mathbb{N}^+$,  $\mathbb{Z}^+$ e $\mathbb{R}^+$.
 
-\subsection{Monoidi e stringhe}
-Avremo spesso a che fare con i {\bf monoidi liberi}. Essi sono delle strutture
-algebriche che rispettano gli assiomi di {\bf chiusura} (un monoide è un \textit{gruppoide}),
-di {\bf associatività} (un monoide è un \textit{semigruppo}) e di esistenza dell'elemento neutro.
-Per ciò che ci interessa, ``istanzieremo'' i monoidi su degli alfabeti finiti $\Sigma$, costruendo
-un monoide \textit{libero}\textit{} $\Sigma^*$ generato da $\Sigma$, ossia un insieme dotato
-di un'operazione binaria associativa $\cdot$ e un elemento neutro $\epsilon$:
-indicheremo il monoide con la tripla $(\Sigma^*, \cdot, \epsilon)$\footnote{
-	Per un'introduzione alla relazione tra strutture algebriche e linguaggi (e la loro
-	chiusura di Kleene) consultare \cite{Sakarovitch:09:automata}.}.
-Data una stringa $w \in \Sigma$, possiamo indicarne la lunghezza con
-$|w|$ e definiamo $w = w_0 w_1\cdots w_n$.
+\subsection*{Insiemi}
+Indicheremo la cardinalità di un insieme $A$ con $\card{A}$.
+Indichiamo con $\N$ l'insieme dei numeri naturali, con $\Z$ i numeri interi (relativi), con $\Q$ i razionali e con $\R$ i reali.
+Indichiamo con $S^+$, dove $S$ è uno degli insiemi sopracitati, il sottoinsieme dei numeri positivi di $S$.
 
-\subsection{Funzioni}
+
+\subsection*{Parole e linguaggi}
+Se $\Sigma$ è un alfabeto (un insieme di simboli), sia $(\Sigma\star, \cdot, \emptyword)$ il monoide libero\footnote{Per un'introduzione alla relazione tra strutture algebriche e linguaggi (e la loro	chiusura di Kleene), consultare \cite{Sakarovitch:09:automata}.} su $\Sigma$, dove $\Sigma\star$ è l'insieme delle infinite parole su $\Sigma$, $\cdot$ è l'operazione (associativa) di concatenazione di parole e $\emptyword$ la parola vuota (nonché elemento neutro di $\cdot$).
+Indichiamo la lunghezza di una parola $w$ con $\len w$.
+
+
+\subsection*{Funzioni}
 Dati due insiemi $A$ e $B$ si definisce
+\begin{equation*}
+	B^A := \{f : A \to B\}
+\end{equation*}
+l'insieme di tutte le funzioni che hanno dominio $A$ e codominio $B$.\footnote{La notazione deriva dal fatto che se $A$ e $B$ sono insiemi finiti, la cardinalità di $B^A$ è $\card{B}^{\card{A}}$.}
+La notazione di Von Neumann definisce un numero naturale $k$ come l'insieme di cardinalità $k$ dei naturali da $0$ a $k-1$:
 $$
-	B^A = \{f | f: A \rightarrow B\}
+	k := \{0,1,\cdots,k-1\}
 $$
-l'insieme di tutte le funzioni che hanno dominio $A$ e codominio $B$.
-Se $k$ è un numero intero, si definisce, introducendo una lieve ambiguità,
+ad esempio, $0 = \emptyset$, $1 = \{0\}$ e così via. Quindi $2^*$ è l'insieme delle stringhe binarie.
+Dato un insieme $A$, l'insieme dei sottoinsiemi di $A$ può essere definito con
 $$
-	k = \{0,1,\cdots,k-1\}
+	2^A := \{f | f: A \to \{0,1\}\}
 $$
-l'insieme con cardinalità $k$ contenente i naturali da $0$ a $k-1$;
-ad esempio, $0 = \emptyset$, $1 = \{0\}$ e così via.
+in quanto le immagini di una funzione $f_B\in2^A$ rappresentano booleani che descrivono l'appartenenza al sottoinsieme $B$ determinato da $f_B$. $f_B$ si dice funzione caratteristica di $B$
+Seguendo la definizione, si ha inoltre
+$$
+	A^2 = \{f| f: \{0,1\} \to A\}\text.
+$$
+Ogni funzione in $A^2$ associa a $0$ un elemento di $A$ e a $1$ un elemento di $A$, quindi, a meno di un isomorfismo, l'insieme delle immagini delle funzioni in $A^2$ è $A \times A$.
+Come ultimo esempio, si ha che $2^{2^*}$ è l'insieme di tutti i linguaggi binari.
 
-Risulta quindi che $2^*$ è il monoide libero basato su tutte le stringhe binarie -
-solitamente equipaggiato con $\cdot$ come operazione di concatenazione e $\epsilon$ la
-stringa vuota. Definiamo
-$$
-	2^A = \{f | f: A \rightarrow \{0,1\}\}
-$$
-Possiamo interpretare i valori delle immagini di queste funzioni come dei booleani
-che descrivono l'appartenenza ad $A$: per esempio, se
-$$
-	\forall a \in A ~~ f_A (a) = 1
-$$
-$f_A$ è la \textit{funzione caratteristica} dell'insieme $A$. Allargando il
-ragionamento a tutte le $f \in 2^A$, possiamo definire quest'ultimo come l'insieme
-delle funzioni caratteristiche di tutti i possibili sottoinsiemi di $A$.
 
-Seguendo la definizione, abbiamo inoltre che
-$$
-	A^2 = \{f| f: \{0,1\} \rightarrow A\}
-$$
-ogni funzione associa a $0$ un elemento di $A$ e a $1$ un elemento di $A$ - a meno di isomorfismi,
-l'insieme delle immagini delle funzioni in $A^2$ è $A \times A$.
-Come ultimo esempio, abbiamo che $2^{2^*}$ è l'insieme di tutti i linguaggi
-binari.
+\subsection*{Grafi}
+Per i grafi non orientati usiamo i nomi vertice e lato, mentre per i grafi orientati nodo e arco. In un grafo $G=(V,E)$, $V$ è l'insieme dei vertici e $E\subseteq\binom{V}{2}$ è l'insieme dei lati.
+Dato un lato $v=\set{a,b}$, si dice che $v$ incide sui vertici $a$ e $b$. I vertici su cui non incide alcun lato vengono chiamati vertici isolati.
+In un grafo qualsiasi, un cammino da $a$ a $b$ è una sequenza di archi $(a,x_1),(x_1,x_2),\dots,(x,b)$ e la sua lunghezza è il numero di lati che lo compongono. Nella nostra notazione un cammino può percorrere lo stesso vertice più volte. Ci interesseranno tipicamente, però, i cammini semplici (cioè dove ciò non accade). Due vertici $a$ e $b$ sono connessi (si scrive $a\leadsto b$) se e solo se esiste un cammino da $a$ a $b$. Data la relazione di equivalenza
+\begin{equation*}
+	a\sim b \iff a\leadsto b
+\end{equation*}
+le classi di equivalenza si dicono componenti connesse. Un circuito è un cammino da un vertice $a$ ad $a$ (cioè chiuso) di lunghezza maggiore o uguale a $3$.
+
+\subsubsection*{Visite di grafi}
+Una visita di un grafo consiste nello svolgere una qualche operazione su tutti vertici di un grafo o su tutti quelli connessi a un seme iniziale $s$. Per fare ciò si usa una struttura dati $D$ chiamata dispenser. La scelta di una struttura dati per il dispenser ha come conseguenza il tipo di visita. I nodi sconosciuti si considerano bianchi, quelli visti ma non visitati grigi e quelli visitati neri. L'algoritmo \ref{alg:VisitaGrafo} rappresenta una visita generica di un grafo $G=(V,E)$.
+
+\subsubsection{Visite}
+\begin{algorithm}
+	\input{alg/VisitaGrafo.tex}
+	\caption{Visita generica di un grafo $G=(V,E)$}
+	\label{alg:VisitaGrafo}
+\end{algorithm}

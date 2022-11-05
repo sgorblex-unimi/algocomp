@@ -1,0 +1,16 @@
+\DontPrintSemicolon
+\SetKwData{D}{D}
+colora tutti i vertici di bianco\;
+colora $s$ di grigio\;
+$\D\asn\set{s}$\;
+\While{$D\neq\emptyset$}{
+	estrai $x$ da $D$\;
+	visita $x$\;
+	colora $x$ di nero\;
+	\For{$y$ vicini di $x$}{
+		\If{$y$ è bianco}{
+			colora $y$ di grigio\;
+			$D\asn D\cup\set{y}$\;
+		}
+	}
+}

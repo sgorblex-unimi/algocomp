@@ -1,0 +1,10 @@
+\begin{tikzpicture}[thick]
+	\foreach \i in {-30,-28,...,0}{
+			\node[draw,
+				isosceles triangle,
+				isosceles triangle apex angle=60,
+				minimum size=-2*\i mm,
+				rotate=\i,inner sep =0pt] at (0,0){};
+		}
+
+\end{tikzpicture}

@@ -1,0 +1,188 @@
+% STYLE
+
+\usepackage{geometry}
+\geometry{left=3cm,right=3cm,top=3cm,bottom=3cm,includehead}
+
+
+% LANGUAGE
+
+\usepackage[italian]{babel}
+
+
+% MATH
+
+\usepackage{amsmath,amssymb,amsthm}
+\newtheorem{theorem}{Teorema}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollario}[theorem]{Corollario}
+\theoremstyle{definition}
+\newtheorem{defin}{Definizione}[chapter]
+\theoremstyle{remark}
+\newtheorem{examp}{Esempio}[chapter]
+\newtheorem{oss}{Osservazione}[chapter]
+
+
+% CODE
+
+\usepackage{listings}
+
+\usepackage[cache=false]{minted}
+\setminted[python]{mathescape,linenos,numbersep=5pt,frame=lines,framesep=2mm}
+
+\usepackage[italiano,linesnumbered,ruled,vlined]{algorithm2e}
+\DontPrintSemicolon
+\SetKwInput{KwInput}{Input}
+\SetKwInput{KwOutput}{Output}
+
+
+% BIBLIOGRAPHY
+\usepackage[style=alphabetic,isbn=false]{biblatex}
+\addbibresource{bib/db.bib}
+
+
+% TYPOGRAPHY
+\usepackage{multirow}
+\usepackage[italian=quotes]{csquotes}
+\MakeOuterQuote{"}
+\usepackage[shortlabels]{enumitem}
+\setlist{itemsep=0mm}
+\usepackage{microtype}
+
+
+% IMAGES AND TABLES
+
+\usepackage{tabularx,subcaption}
+
+\usepackage{tikz}
+\usetikzlibrary{external}
+\tikzexternalize[prefix=tikz_cache/]
+\usetikzlibrary{angles,arrows,arrows.meta,calc,chains,decorations.pathreplacing,fit,matrix,patterns,positioning,quotes,shapes.geometric,shapes.misc}
+
+\usepackage{tkz-euclide}
+\tikzset{pics/sema/.style args={#1/#2/#3}{code={
+					\ifstrequal{#2}{0}{
+						\node[circle,minimum width=2mm,draw,fill=#1] {};
+					}{
+						\tkzDefPoint(0,0){O}
+						\tkzDrawSector[R,fill=#1](O,2mm)(90,90-#2)
+						\tkzDrawSector[R,fill=#3](O,2mm)(90-#2,90-360)
+					}
+				}},
+}
+
+\usepackage{pgfplots}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.17}
+\newcommand{\pgfenv}{
+	\pgfplotsset{
+		standard/.style={% Axis format
+				axis x line=middle,
+				axis y line=middle,
+				enlarge x limits=0.15,
+				enlarge y limits=0.15,
+				every axis x label/.style={at={(current axis.right of origin)},anchor=north west},
+				every axis y label/.style={at={(current axis.above origin)},anchor=north east},
+				every axis plot post/.style={mark options={fill=white}}
+			}
+	}
+}
+
+
+% REFS
+
+\usepackage[hidelinks,linktoc=all]{hyperref}
+\usepackage[capitalize,italian]{cleveref}
+
+
+% COMMANDS FOR CREATING COMMANDS
+
+\newcommand{\newmathmacro}[2]{
+	\expandafter\newcommand\csname #1\endcsname{\relax\ifmmode {#2} \else $#2$\xspace\fi}
+}
+\newcommand{\newproblemclass}[2]{
+	\newmathmacro{#1}{\mathrm{#2}}
+}
+\newcommand{\newproblemclassq}[1]{
+	\newproblemclass{#1}{#1}
+}
+\newcommand{\newproblem}[1]{
+	\expandafter\newcommand\csname #1\endcsname{\normalfont\textsc{#1}\xspace}
+}
+\newcommand{\newalgo}[1]{
+	\expandafter\newcommand\csname #1\endcsname{\normalfont\textsc{#1}\xspace}
+}
+
+
+% MACROS
+
+% insiemi numerici
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\R}{\mathbb R}
+\newcommand{\card}[1]{\# #1}
+
+% linguaggi
+\renewcommand{\star}{^*} % redefined from amssymb
+\newcommand{\starsymb}{\mathchar"213F} % old \star
+\newcommand{\emptyword}{\varepsilon}
+\newcommand{\len}[1]{|#1|}
+
+% problemi e algoritmi
+\newcommand{\MIN}{\mathrm{MIN}}
+\newcommand{\MAX}{\mathrm{MAX}}
+\newcommand{\amm}{\mathrm{Amm}}
+\newcommand{\sol}{\mathrm{sol}}
+\newcommand{\prid}{\leq_p}
+
+% altri operatori
+\newcommand{\impl}{\Rightarrow}
+\newcommand{\set}[1]{\left\{ #1 \right\}}
+\newcommand{\floor}[1]{\lfloor #1 \rfloor}
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+
+% scheda problema
+\newcommand{\prob}[4]{
+	\begin{description}[labelwidth=2.2cm,labelindent=.5cm]
+		\item[Problema] #1
+		\item[Input] #2
+		\item[Output] #3
+		\item[Semantica] #4
+	\end{description}
+}
+
+% scheda problema di ottimizzazione
+\newcommand{\popt}[7]{
+	\begin{description}[labelwidth=2.2cm,labelindent=.5cm]
+		\item[Problema] #1
+		\item[Input] #2
+		\item[Output] #3
+		\item[Semantica] #4
+		\item[Ammissibili] #5
+		\item[Tipo] #6
+		\item[Costo] #7
+	\end{description}
+}
+
+
+% PROBLEMS, CLASSES AND ALGORITHMS
+\let\P\undefined
+\newproblemclassq{P}
+\newproblemclassq{NP}
+\newproblem{Sat}
+\newproblem{MaxSat}
+\newproblemclassq{PO}
+\newproblemclassq{NPO}
+\newproblemclassq{APX}
+\newproblemclassq{PTAS}
+\newproblemclassq{FPTAS}
+\newproblem{MaxMatching}
+\newproblem{BiMaxMatching}
+\newproblem{PerfectMatching}
+\newcommand{\gAPX}[1]{#1\text-\APX}
+\newproblem{LoadBalancing}
+\newcommand{\asn}{\leftarrow}
+\newalgo{GreedyLoadBalancing}
+\newalgo{SortedGreedyBalance}
+\newproblem{CenterSelection}
+\newproblem{SetCover}

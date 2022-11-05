@@ -1,4 +1,3 @@
-% TEX root = ../main.tex
 \chapter{Algoritmi deterministici}
 
 Come anticipato, in questo corso tratteremo inizialmente gli algoritmi deterministici.
@@ -51,7 +50,6 @@ e il problema è di massimo.
 Questo problema si può risolvere polinomialmente. Esiste anche un algoritmo
 che risolve questo problema anche sui grafi generali, ma sono molto complessi.
 
-% lezione 3 - 06/10/2021
 \subsection{Algoritmo basato su cammini aumentanti}
 Dato un grafo $G$ e un matching $M$ possiamo definire \textit{occupati}
 i lati presenti nel matching. Un vertice \textit{esposto} è un vertice su
@@ -431,7 +429,6 @@ si accompagna un \textit{teorema di strettezza}: c'è uno specifico input per cu
 	$$
 \end{theorem}
 
-% lezione 4 - 08/10/2021
 \begin{proof}
 	Sia $m \geq \lceil\frac{1}{\epsilon}\rceil$. Sia $n = m(m-1) + 1$ dove i
 	primi $m(m-1)$ compiti hanno durata (o costo) $1$, mentre l'ultimo ha durata
@@ -780,7 +777,6 @@ nell'algoritmo \ref{algo:GreedyCenterSelection}.
 \end{proof}
 
 
-% lezione 5 - 13/10/2021
 \section{Problema della copertura d'insiemi}
 Prima di passare a descrivere il problema \textsc{SetCovering} è necessario
 introdurre alcune proprietà delle funzioni armoniche.
@@ -1013,7 +1009,6 @@ Si può inoltre dimostrare che non esiste nessun algoritmo
 $(1 - O(1))\ln(n)$-approssimante per il \textsc{SetCoverProblem},
 ammesso che $\mathbf{P} \neq \mathbf{NP}$.
 
-% lezione 6 - 15/10/2021
 \begin{theorem}
 	Il lower bound $O(\log(n))$ è \textit{stretto}.
 \end{theorem}
@@ -1137,7 +1132,9 @@ ammesso che $\mathbf{P} \neq \mathbf{NP}$.
 			\end{minipage}};
 
 	\end{tikzpicture}
-	\caption{\textsc{SetCover} $\in \ln(n)-\mathbf{APX}$.}
+	% TODO: fix this
+	% \caption{$\SetCover \in \ln(n)-\APX$.}
+	\caption{$\SetCover \in \ln(n)-APX$.}
 	\label{fig:setcoverapx}
 \end{figure}
 
@@ -1699,13 +1696,12 @@ nell'output e $\bar{I} \subseteq I$ l'insieme delle coppie collegate da tali cam
 	$$
 \end{proof}
 
-% lezione 8 - 22/10/2021
 \section{Problema del commesso viaggiatore}
 Il problema del commesso viaggiatore, o \textsc{TravelingSalesman} (problem), è uno
 dei problemi più famosi della teoria dei grafi. Prima di affrontarlo, è utile
 introdurre altre nozioni.
 
-\subsection{Problema dei sette ponti di K\"onisberg}
+\subsection{Problema dei sette ponti di Könisberg}
 K\"onisberg, un tempo facente parte della Prussia Orientale e oggi odierna
 Kaliningrad, Russia, è percorsa dal fiume Pregel, e le aree della città
 sono collegate da sette ponti.
@@ -1713,7 +1709,7 @@ sono collegate da sette ponti.
 	\centering
 	\begin{subfigure}[b]{0.45\textwidth}
 		\centering
-		\includegraphics[width=\textwidth]{images/konigsberg.png}
+		\includegraphics[width=\textwidth]{img/konigsberg.png}
 		\subcaption{Rappresentazione dei ponti come descritta da Eulero.}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.45\textwidth}
@@ -1734,7 +1730,7 @@ sono collegate da sette ponti.
 		\end{tikzpicture}
 		\subcaption{Rappresentazione come multigrafo.}
 	\end{subfigure}
-	\caption{I ponti di K\"onisberg.}
+	\caption{I ponti di Könisberg.}
 	\label{fig:ponti_konigsberg}
 \end{figure}
 
@@ -2016,7 +2012,6 @@ completi dotati di una distanza metrica.
 	per $n \rightarrow \infty$ e $\epsilon \rightarrow 0$.
 \end{proof}
 
-% lezione 9 - 27/10/2021
 \subsection{Inapprossimabilità di TSP}
 La situazione non è altrettanto positiva per il caso generale del TSP:
 \begin{theorem}
@@ -2311,10 +2306,3 @@ $$
 	n\hat{v}_{max} \leq \frac{n^2}{\epsilon} + n
 $$
 polinomiale nell'input e in $\epsilon$.
-
-
-
-
-%%% Local Variables:
-%%% TeX-master: "../main"
-%%% End:

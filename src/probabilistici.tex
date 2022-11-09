@@ -1,243 +1,139 @@
 \chapter{Algoritmi probabilistici}
-Fino ad ora abbiamo considerato il modello di calcolo delle macchine di Turing per
-scrivere algoritmi per problemi di ottimizzazione, in particolare algoritmi di
-approssimazione:
-% disegno: input x -> MdT A -> output y
-\begin{figure}[h]
-
-
+Il modello di calcolo di riferimento per gli algoritmi deterministici, inclusi quelli approssimanti visti fin'ora, è quello della macchina di Turing, in cui a un input corrisponde un output (\cref{fig:mdtdet}).
+\begin{figure}[ht]
 	\centering
-
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,437); %set diagram left start at 0, and has height of 437
-
-		%Rounded Rect [id:dp7665142760923608] 
-		\draw   (280,152) .. controls (280,145.37) and (285.37,140) .. (292,140) -- (358,140) .. controls (364.63,140) and (370,145.37) .. (370,152) -- (370,188) .. controls (370,194.63) and (364.63,200) .. (358,200) -- (292,200) .. controls (285.37,200) and (280,194.63) .. (280,188) -- cycle ;
-		%Straight Lines [id:da12014265713573546] 
-		\draw    (170,170) -- (277,170) ;
-		\draw [shift={(280,170)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da500409813700509] 
-		\draw    (370,170) -- (477,170) ;
-		\draw [shift={(480,170)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-		% Text Node
-		\draw (311,162) node [anchor=north west][inner sep=0.75pt]   [align=left] {MdT};
-		% Text Node
-		\draw (214,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {input};
-		% Text Node
-		\draw (404,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {output};
-
-
-	\end{tikzpicture}
+	\input{img/TMdet.tikz}
 	\caption{Macchina di Turing deterministica}
 	\label{fig:mdtdet}
 \end{figure}
-gli algoritmi sono quindi \textbf{deterministici}, nonostante in alcune situazioni
-gli algoritmi possano fare scelte ``arbitrarie'', che formalizziamo con la nozione
-di gradi di libertà - abbiamo tuttavia dimostrato che le proprietà sono
-indipendenti da queste scelte arbitrarie.
 
-Dobbiamo riservare il termine di \textbf{non determinismo} per definire
-classi di complessità per modelli di calcolo \textit{non realistici}. Estendiamo
-ora il modello: abbiamo una MdT che è anche in grado di leggere un nastro su
-cui sono scritti dei valori casuali, chiamato \textbf{sorgente aleatoria}.
-%          sorgente aleatoria one way
-%                      |
-%                      v 
-% disegno: input x -> MdT A -> output y
-\begin{figure}[h]
+Un diverso modello di calcolo è quello della macchina di Turing probabilistica (\cref{fig:mdtprob}), che ha accesso a una sorgente aleatoria, cioè un input secondario di bit casuali.
+
+\begin{figure}[ht]
 	\centering
-
-
-
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,437); %set diagram left start at 0, and has height of 437
-
-		%Rounded Rect [id:dp7665142760923608] 
-		\draw   (280,152) .. controls (280,145.37) and (285.37,140) .. (292,140) -- (358,140) .. controls (364.63,140) and (370,145.37) .. (370,152) -- (370,188) .. controls (370,194.63) and (364.63,200) .. (358,200) -- (292,200) .. controls (285.37,200) and (280,194.63) .. (280,188) -- cycle ;
-		%Straight Lines [id:da12014265713573546] 
-		\draw    (170,170) -- (277,170) ;
-		\draw [shift={(280,170)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da500409813700509] 
-		\draw    (370,170) -- (477,170) ;
-		\draw [shift={(480,170)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da29880468042507347] 
-		\draw    (330,62.29) -- (330,137) ;
-		\draw [shift={(330,140)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-		% Text Node
-		\draw (311,162) node [anchor=north west][inner sep=0.75pt]   [align=left] {MdT};
-		% Text Node
-		\draw (214,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {input};
-		% Text Node
-		\draw (404,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {output};
-		% Text Node
-		\draw (347,72) node [anchor=north west][inner sep=0.75pt]   [align=left] {sorgente aleatoria};
-		% Text Node
-		\draw    (178,37) -- (491,37) -- (491,62) -- (178,62) -- cycle  ;
-		\draw (181,41) node [anchor=north west][inner sep=0.75pt]   [align=left] { 0 1 0 1 1 1 0 0 1 1 1 1 1 1 0 0 1 0 1 0 1 1 1 1 ...};
-
-
-	\end{tikzpicture}
+	\input{img/TMprob.tikz}
 	\caption{Macchina di Turing probabilistica}
 	\label{fig:mdtprob}
 \end{figure}
 
-Un algoritmo così costruito è definito \textbf{probabilistico}, in quanto l'output
-sarà in funzione dell'input e del seme casuale. L'algoritmo possiede quindi
-una certa distribuzione associata
-$$
-	P[Y = y | X = x]
-$$
-ossia la probabilità di avere l'output $y$ per un input $x$. Gli algoritmi
-probabilistici si dividono in due famiglie:
-gli algoritmi \textbf{Monte-Carlo} in cui l'output è probabilistico e gli algoritmi
-\textbf{Las Vegas}, in cui l'output è deterministico, ma il tempo di esecuzione
-è probabilistico. In particolare, studieremo la prima famiglia.
-
-Questo modello di calcolo
-si può applicare sia a problemi di decisione che di ottimizzazione; per applicare
-questi algoritmi, vi sono due varianti: nel primo caso l'algoritmo mira ad
-ottenere l'ottimo con una certa probabilità, idealmente alta - essi possono
-tuttavia fallire arbitrariamente male. Alternativamente, l'algoritmo può
-mirare a ottenere un'\textit{approssimazione} dell'ottimo con una certa
-probabilità.
-
-\section{Problema del taglio minimo}
-\popt {MinimumCut} {$G = (V,E)$} {Sottoinsieme $X \subseteq V$}
-{Qual è il \textit{taglio} minore?}
-{
-	$X \subseteq V$ tale che il numero di lati che hanno un vertice in $X$ e un vertice
-	in $X^c$ (\textit{tagliati}) è minimo;
-	definiamo
-	$E_X = \{e | e \cap X \neq \emptyset \land e \cap X^* \neq \emptyset\}$
-}
-{$Min$}{$|E_x|$}
+Un algoritmo basato su questo modello si dice probabilistico, in quanto l'output dipende dall'input e dal seme casuale.
+L'algoritmo possiede quindi una distribuzione associata, che mappa un input $x$ alla probabilità di ottenere l'output $y$:
+\begin{equation*}
+	P(Y = y \mid X = x)
+\end{equation*}
+Gli algoritmi probabilistici possono risolvere problemi di ottimizzazione quanto di decisione e si dividono in due famiglie:
+\begin{description}
+	\item[Monte Carlo] la correttezza dell'output, cioè la giusta decisione per i problemi di decisione e il calcolo della soluzione ottima per i problemi di ottimizzazione, è probabilistica; il tempo di esecuzione è deterministico;
+	\item[Las Vegas] l'output è deterministicamente corretto; il tempo di esecuzione è probabilitico.
+\end{description}
+È possibile combinare algoritmi approssimanti con algoritmi probabilistici ottenendo algoritmi che approssimano entro una certa soglia dall'ottimo con una certa probabilità.
 
 
-Le soluzioni banali sono $X = V$ e $X = \emptyset$; inoltre, una soluzione
-sempre possibile è scegliere $X = \{ v \}$ per un qualsiasi $v \in V$.
 
-\begin{theorem}
-	\textsc{MinimumCutProblem} $\in \mathbf{NPO-completi}$
-\end{theorem}
+\section{\MinCut}
+\MinCut è il problema di determinare il taglio minimo in un grafo non orientato. In un grafo non orientato $G=(V,E)$, un taglio è dato dalla partizione di $V$ in due sottoinsiemi $X, X\compl$. Il costo del taglio è dato dal numero di archi da vertici in $X$ a vertici in $X\compl$.
+\popt{\MinCut}
+{$G = (V,E)$}
+{Taglio $X\subseteq V$}
+{Determinare il taglio minimo in $G$}
+{$X\subset V\mid X\neq\emptyset$}
+{$\MIN$}
+{$\card{\set{e\in E\mid e\cap X\neq\emptyset\land e\setminus X\neq\emptyset}}$}
 
-\subsection{Algoritmo di Karger}
-L'algoritmo di Karger utiliza l'operazione di \textit{contrazione}: dato un
-grafo $G$, l'operazione $G \downarrow e$ su un lato $e = \{u, v\} \in E$
-unisce i due vertici $u$ e $v$, rimuovendo $e$.
-\begin{figure}[h]
-	\begin{center}
-		\begin{tikzpicture}[scale=1, transform shape]
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 2)  (u1) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (-1, 2)  (u2) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (1, 2)  (u3) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle, label={0:u}] at (0, 0)  (a) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle, label={0:v}] at (0, 1)  (b) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, -1)  (l1) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (-1, -1)  (l2) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (1, -1)  (l3) {};
-
-			\draw (u1) -- (b);
-			\draw (u2) -- (b);
-			\draw (u3) -- (b);
-
-			\draw (l1) -- (a);
-			\draw (l2) -- (a);
-			\draw (l3) -- (a);
+\noindent\MinCut è un problema \NPO-completo.
 
 
-			\node at (1.75,0.5) (to) {$\implies$};
-			\draw (a) edge node [left] {e} (b);
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3.5, 1.5)  (lu1) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (2.5, 1.5)  (lu2) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (4.5, 1.5)  (lu3) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,
-			fill, circle, label={0:{u,v}}] 			at (3.5, 0.5)  (la) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3.5, -0.5)  (ll1) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (2.5, -0.5)  (ll2) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (4.5, -0.5)  (ll3) {};
-			\draw (lu1) -- (la);
-			\draw (lu2) -- (la);
-			\draw (lu3) -- (la);
-			\draw (ll1) -- (la);
-			\draw (ll2) -- (la);
-			\draw (ll3) -- (la);
-		\end{tikzpicture}
-	\end{center}
-	\caption{Contrazione $G\downarrow e$.}
+\subsection{L'algoritmo di Karger}
+L'algoritmo di Karger è un algoritmo Monte Carlo per il taglio minimo e si basa sull'operazione di contrazione.
+Sia $G=(V,E)$ un multigrafo\footnote{Nei multigrafi sono ammessi lati paralleli, cioè più lati che incidono sulla stessa coppia di vertici. Consideriamo quindi $E$ un insieme dotato di molteplicità. Formalmente, all'insieme è associata una funzione che indica la molteplicità di ogni elemento. Useremo comunque per semplicità le nozioni insiemistiche per insiemi standard.} di input. Si consideri il multigrafo $G'=(V',E')$, dove:
+\begin{itemize}
+	\item $V':=\set{\bar v\mid v\in V}$, dove $\bar v:=\set{v}$;
+	\item $E':=\set{\set{\bar u,\bar v}\mid \set{u,v}\in E}$.
+\end{itemize}
+La contrazione $G'\downarrow e$ del lato $e=\set{\bar u,\bar v}$ (\cref{fig:contrazione}) consiste in una modifica di $V'$ e $E'$ come segue:
+\begin{enumerate}
+	\item viene aggiunto a $V'$ un nuovo supervertice $\bar z=\bar u\cup\bar v$;
+	\item ogni arco $\set{\bar u,\bar w}\in E'$, con $w\neq v$, è sostituito da un arco $\set{\bar z,\bar w}$;
+	\item ogni arco $\set{\bar w,\bar v}\in E'$, con $w\neq u$, è sostituito da un arco $\set{\bar w,\bar z}$;
+	\item gli archi del tipo $\set{\bar u,\bar v}$ vengono rimossi da $E'$;
+	\item i vertici $\bar u,\bar v$ vengono rimossi da $V'$.
+\end{enumerate}
+
+% TODO: questa immagine andrebbe arricchita un po': non fa capire come si fondono gli archi
+\begin{figure}[ht]
+	\centering
+	\input{img/contrazione_arco.tikz}
+	\caption{Contrazione $G'\downarrow e$.}
 	\label{fig:contrazione}
 \end{figure}
 
-\`E necessario che $G$ sia
-un multigrafo, poiché unendo $u$ e $v$ è possibile che un terzo vertice $y$
-fosse collegato sia a $u$ che a $v$; rimarranno quindi dei lati paralleli.
-In caso il lato contratto fosse uno dei lati paralleli tra $u$ e $v$ anche
-i lati paralleli rimanenti vengono contratti.
+In seguito chiameremo semplicemente $G$ il grafo $G'$ derivante dall'input. L'algoritmo \ref{algo:Karger} di Karger effettua contrazioni casuali a partire dal grafo $G$, ottenendo multigrafi $G_0,G_1,\dots$.
 
-\begin{algorithm}[h]
-	\caption{\textsc{KargerMinimumCut}}
+\begin{algorithm}[ht]
+	\caption{Algoritmo di Karger per \MinCut}
 	\label{algo:Karger}
-	\KwInput{$G = (V,E)$}
+	\SetKwFunction{Unif}{uniformExtraction}
+	\SetKwFunction{Connected}{isConnected}
+	\SetKwFunction{FindConnected}{findConnectedComponent}
+	\SetKwFunction{Choose}{ChooseAnElement}
+	\KwInput{grafo $G=(V,E)$}
 
-	\If{$\neg G.isConnected()$}
-	{
-		\Return{$findConnectedComponent(G)$}
+	\If{$\lnot$\Connected{$G$}}{
+		\Return{\FindConnected{$G$}}
 	}
-	\While{$|V| > 2$}
-	{
-		\tcc*{Estrai un lato con una distribuzione uniforme e contrailo}
-		$e = uniformExtraction(E)$
+	\While{$\card V > 2$}{
+		\tcp{Estrai uniformemente a caso un lato e contrailo}
+		$e = \Unif{$E$}$
 
 		$G = G\downarrow e$
 
 	}
-
-	\tcc*{Restituisci uno dei due vertici rimanenti}
-	\Return{$chooseOne(V)$}
-
+	\tcp{Restituisci uno dei due vertici rimanenti}
+	\Return{\Choose{$V$}}
 \end{algorithm}
 
-Chiaramente, l'output dipende dalla scelta dei lati da contrarre, che è casuale.
-Sia quindi $S^*$ il taglio minimo, $k^*$ il numero di lati tagliati da $S^*$ e
-la serie $G_1, \cdots, G_i$ la sequenza di grafi ottenuti per ogni contrazione
-operata dall'algoritmo.
+Chiaramente, l'output dipende dalle scelte dei lati da contrarre, che sono casuali.
+Sia $S\star$ il taglio minimo, $k\star$ il numero di lati tagliati da $S\star$ e $G_0,\dots,G_i,\dots$ la sequenza di grafi ottenuti per ogni contrazione operata dall'algoritmo, dove $G_i$ è ottenuto dopo $i$ passi. Si verificano i seguenti fatti:
 \begin{oss}\label{oss:kargercontraction}
-	$\forall i ~~ |G_i(V)| = n - i + 1 \land |G_i(E)| \leq m - i + 1$
+	\begin{equation*}
+		\forall i \quad \card{V_i} = n-i \land \card{E_i} \leq m-i
+	\end{equation*}
 \end{oss}
 \begin{oss}\label{oss:kargercuts}
 	Per ogni $i$, ogni taglio in $G_i$ è un taglio in $G$ dello stesso costo.
 \end{oss}
 \begin{oss}\label{oss:kargermindeg}
-	Il grado minimo in $G_i$ è maggiore o uguale a $k^*$.
+	Il grado di ogni vertice di $G_i$ è maggiore o uguale a $k\star$.
 \end{oss}
 
+Proviamo ora due lemmi che ci serviranno per dimostrare che l'algoritmo di Karger ottiene la soluzione ottima con buona probabilità.
 \begin{lemma}\label{lem:kargeredges}
-	$m - i  +1 \geq \frac{(n - i + 1) \cdot k^*}{2}$
-\end{lemma}
-\begin{proof}
-$$
-	2(m - i +1) \geq 2 \cdot |G_i(E)| = \sum_{v \in G_i(V)} d_{G_i}(v) \geq k^* (n - i + 1) \implies m - i  +1 \geq \frac{(n - i + 1) \cdot k^*}{2}
-$$
-\end{proof}
-
-\begin{lemma}\label{lem:kargerprob_ei}
-	Sia $E_i$ l'evento ``al passo $i$-esimo un lato $e \notin E_{S^*}$ viene contratto''.
-	$$
-		\forall i ~~ P[E_i | E_1, \cdots, E_{i-1}] \leq \frac{n-i-1}{n-i+1}
-	$$
+	\begin{equation*}
+		E_i \geq \frac{(n-i) \cdot k\star}{2}
+	\end{equation*}
 \end{lemma}
 \begin{proof}
 	\begin{align*}
-		P[E_i | E_1, \cdots, E_{i -1}] & = 1 - P[\neg E_i | E_1, \cdots, E_{i -1}]           		\\
-		 & = 1 - \frac{k^*}{|G_i(V)|}  																\\
-		 & \geq 1 - \frac{k^*}{m - i + 1} && \text{per \cref{oss:kargercontraction}} 				\\
-		 & \geq 1 - \frac{2 \cdot k^*}{k^* \cdot (n - i  + 1)} && \text{per \cref{lem:kargeredges}} \\
-		 & = 1 - \frac{2}{n - i + 1} = \frac{n - i -  1}{n - i + 1}
+		\sum_{v\in V_i} d_i(v) \geq \card{V_i} k\star \qquad & \text{per \cref{oss:kargermindeg}}      \\
+		\sum_{v\in V_i} d_i(v) \geq (n-i) k\star  \qquad     & \text{per \cref{oss:kargercontraction}} \\
+		% TODO: spiegare
+		2\card{E_i} \geq (n-i) k\star                                                                  \\
+		\card{E_i} \geq \frac{(n-i) k\star}{2}                                                         \\
+	\end{align*}
+\end{proof}
+
+\begin{lemma}\label{lem:kargerprob_ei}
+	Sia $E_i$ l'evento "al passo $i$-esimo (i.e. da $G_i$ a $G_{i+1}$) non viene contratto un lato del taglio minimo". Allora:
+	\begin{equation*}
+		\forall i \quad P(E_i \mid E_0, \dots, E_{i-1}) \geq \frac{n-i-2}{n-i}
+	\end{equation*}
+\end{lemma}
+\begin{proof}
+	\begin{align*}
+		P(E_i \mid E_0,\dots,E_{i-1}) & = 1-P(\lnot E_i \mid E_0,\dots,E_{i -1})             \\
+		                              & = 1-\frac{k\star}{\card{E_i}}                        \\
+		                              & \geq 1-\frac{2k\star}{(n-i)k\star} = 1-\frac{2}{n-i} \\
+		                              & = \frac{n-i-2}{n-i}
 	\end{align*}
 \end{proof}
 
@@ -245,44 +141,27 @@ $$
 	L'algoritmo di Karger emette l'ottimo con probabilità $p \geq \frac{1}{{n\choose{2}}}$.
 \end{theorem}
 \begin{proof}
-	Una esecuzione dell'algoritmo che emette l'ottimo vuol dire che, ad ogni
-	passo, ha selezionato un lato da contrarre $e \notin E_{S^*}$. Siamo dunque
-	interessati alla probabilità dell'evento
-	$E_1 \land E_2 \land \cdots \land E_{n-2}$:
+	L'algoritmo emette l'ottimo se non sono stati contratti archi nel taglio ottimo, ossia se si verifica l'evento $E_0\land E_1\land\dots\land E_{n-3}$. La probabilità di tale evento è
 	\begin{align*}
-		P[E_1 \land E_2 \land \cdots \land E_{n-2}] & = P[E_1] \cdot P[E_2|E_1] \cdot \cdots \cdot P[E_{n-2}| E_{n-3}, \cdots, E_1] 				\\
-		& \geq \frac{n-1-1}{n-1+1} \cdot \frac{n-2-1}{n-2+1} \cdot \cdots \cdot \frac{n-(n-2)-1}{n-(n-2)+1} & \text{applico \cref{lem:kargerprob_ei}}  \\
-		& = \frac{n-2}{n} \cdot \frac{n-3}{n-1} \cdot \cdots \cdot \frac{1}{3}																		\\
-		& = \frac{\Pi_{i = 1}^{n-2} i}{\Pi_{i = 3}^{n} i} = \frac{2 \cdot 1}{n \cdot (n-1)} = \frac{2}{n (n-1)} = \frac{1}{{n\choose{2}}}
+		P(E_0\land E_1\land\dots\land E_{n-3}) & =P(E_0)\cdot P(E_1\mid E_0)\cdots P(E_{n-3}\mid E_0,\dots,E_{n-4})                                              \\
+		                                       & \geq\frac{n-2}{n}\cdot\frac{n-3}{n-1}\cdots\frac{n-(n-3)-2}{n-(n-3)} \qquad \text{per \cref{lem:kargerprob_ei}} \\
+		                                       & =\frac{n-2}{n}\cdot\frac{n-3}{n-1}\cdots\frac{1}{3}                                                             \\
+		                                       & =\frac{(n-2)!}{n!/2}=\frac{2}{n(n-1)}=\frac{1}{\binom{n}{2}}
 	\end{align*}
 \end{proof}
 
-\begin{oss}
-	Si esegua l'algoritmo di Karger ${n\choose{2}} \log(n)$ volte.
-	L'ottimo si ottiene con probabilità $p \geq 1 - \frac{1}{n}$.
-\end{oss}
+\begin{corollario}
+	Eseguendo l'algoritmo di Karger ${\binom{n}{2}}\ln n$ volte e scegliendo la migliore soluzione si ottiene l'ottimo con probabilità maggiore o uguale a $1-\frac{1}{n}$.
+\end{corollario}
 \begin{proof}
-	Ad ogni esecuzione dell'algoritmo, la probabilità di non trovare l'ottimo è
-	$$
-		p \leq \left(1 - \frac{1}{{n \choose{2}}}\right)
-	$$
-	Di conseguenza, se eseguiamo l'algoritmo ${n \choose{2}} log(n)$ volte,
-	la probabilità che nessuna di queste esecuzioni trovi l'ottimo è
-	$$
-		p \leq \left(1 - \frac{1}{{n \choose 2}}\right)^{{n \choose{2}}log(n)}
-	$$
-	\'E facilmente dimostrabile, osservando il grafico della funzione, che vale
-	la seguente proprietà:
-	$$
-		\forall x \geq 1 \text{ interi } ~~ \frac{1}{4} \leq ( 1 - \frac{1}{x})^x \leq \frac{1}{e}
-	$$
-	Applicando la disuguaglianza alla nostra proprietà, con $x={n \choose{2}}$
-	ed elevando entrambi i lati per $log(n)$, otteniamo
-	$$
-		p \leq \left( 1 - \frac{1}{{n \choose 2}}\right) ^{{n \choose 2} \log (n)} \leq \left(\frac{1}{e}\right)^{\log(n)} = \frac{1}{n}
-	$$
-	In questo caso $p$ è la probabilità di \textit{non} trovare l'ottimo,
-	dunque la probabilità di trovarlo è $\geq 1 - \frac{1}{n}$
+	Ad ogni esecuzione dell'algoritmo, la probabilità di non trovare l'ottimo è al più
+	\begin{equation*}
+		1-\frac{1}{\binom{n}{2}}\text.
+	\end{equation*}
+	Eseguendo l'algoritmo ${\binom{n}{2}}\ln n$ volte, la probabilità che nessun'esecuzione trovi l'ottimo è al più
+	\begin{equation*}
+		\left(1-\frac{1}{{\binom{n}{2}}}\right)^{{\binom{n}{2}}\ln n}\leq\left(\frac{1}{e}\right)^{\ln n}=\frac{1}{n}\text.
+	\end{equation*}
 \end{proof}
 
 \section{Problema della copertura d'insiemi}

@@ -13,7 +13,8 @@
 
 \usepackage{amsmath,amssymb,amsthm}
 \newtheorem{theorem}{Teorema}[chapter]
-\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{lemma}{Lemma}[section]
+\renewcommand{\thelemma}{\arabic{lemma}}
 \newtheorem{corollario}[theorem]{Corollario}
 \theoremstyle{definition}
 \newtheorem{defin}{Definizione}[chapter]
@@ -92,6 +93,8 @@
 
 \usepackage[hidelinks,linktoc=all]{hyperref}
 \usepackage[capitalize,italian]{cleveref}
+\crefname{oss}{osservazione}{osservazioni}
+\crefname{lemma}{lemma}{lemmi}
 
 
 % COMMANDS FOR CREATING COMMANDS
@@ -120,7 +123,9 @@
 \newcommand{\Z}{\mathbb Z}
 \newcommand{\Q}{\mathbb Q}
 \newcommand{\R}{\mathbb R}
-\newcommand{\card}[1]{\# #1}
+% \newcommand{\card}[1]{\# #1}
+\newcommand{\card}[1]{| #1 |}
+\newcommand{\compl}{^\complement}
 
 % linguaggi
 \renewcommand{\star}{^*} % redefined from amssymb
@@ -186,3 +191,4 @@
 \newalgo{SortedGreedyBalance}
 \newproblem{CenterSelection}
 \newproblem{SetCover}
+\newproblem{MinCut}

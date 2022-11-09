@@ -1,0 +1,31 @@
+\begin{tikzpicture}[vertex/.style={draw,inner sep=0pt,minimum size=5pt,fill, circle}]
+	\node[vertex] at (0, 2)  (u1) {};
+	\node[vertex] at (-1, 2)  (u2) {};
+	\node[vertex] at (1, 2)  (u3) {};
+	\node[vertex,label={0:{$\bar u$}}] at (0, 0)  (a) {};
+	\node[vertex,label={0:{$\bar v$}}] at (0, 1)  (b) {};
+	\node[vertex] at (0, -1)  (l1) {};
+	\node[vertex] at (-1, -1)  (l2) {};
+	\node[vertex] at (1, -1)  (l3) {};
+	\draw (u1) -- (b);
+	\draw (u2) -- (b);
+	\draw (u3) -- (b);
+	\draw (l1) -- (a);
+	\draw (l2) -- (a);
+	\draw (l3) -- (a);
+	\node at (1.75,0.5) (to) {$\implies$};
+	\draw (a) edge node [left] {$e$} (b);
+	\node[vertex] at (3.5, 1.5)  (lu1) {};
+	\node[vertex] at (2.5, 1.5)  (lu2) {};
+	\node[vertex] at (4.5, 1.5)  (lu3) {};
+	\node[vertex,label={0:{$\bar u\cup \bar v$}}] at (3.5, 0.5)  (la) {};
+	\node[vertex] at (3.5, -0.5)  (ll1) {};
+	\node[vertex] at (2.5, -0.5)  (ll2) {};
+	\node[vertex] at (4.5, -0.5)  (ll3) {};
+	\draw (lu1) -- (la);
+	\draw (lu2) -- (la);
+	\draw (lu3) -- (la);
+	\draw (ll1) -- (la);
+	\draw (ll2) -- (la);
+	\draw (ll3) -- (la);
+\end{tikzpicture}

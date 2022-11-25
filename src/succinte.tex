@@ -1,100 +1,58 @@
 \chapter{Strutture succinte}
-\section{Abstract data types}
-Gli \textit{abstract data type} sono tipi di dati descritti dal loro comportamento: un esempio è
-l'ADT \texttt{stack<T>}, il quale è dotato di alcune operazioni inerenti al tipo
-stesso, chiamate \textbf{primitive}:
-\begin{lstlisting}
-  bool  isEmpty()
-  T     top()
-  void  pop()
-  void  push(T)
-\end{lstlisting}
-Il cosa facciano i metodi si può descrivere in molti modi: si può
-utilizzare un metodo discorsivo, spiegando a parole, o utilizzare un metodo
-analitico:
-$$
-	\forall S, s.push(x).top() = x
-$$
-(nonostante la notazione impropria dovuta alla signatura delle funzioni);
-$$
-	\forall S, s.isEmpty() \implies S.push(x).pop().isEmpty()
-$$
-Una volta descritto un ADT è necessario implementarlo, ossia costruire effettivamente
-una struttura che implementa le primitive rispettandone la descrizione. Chiaramente,
-vi sono molte implementazioni diverse che soddisfano le richieste
-ma hanno \textit{costi} diversi, sia in tempo che in spazio. Siamo interessati
-ad alcuni ADT e relative implementazioni che utilizzano poco tempo e spazio.
-Ogni ADT ha associato un concetto di \textit{taglia}, che rappresenta genericamente
-la grandezza di un'istanza: nel caso dello stack, la taglia sarebbe il numero
-di elementi presenti sulla pila.
 
-\subsection{Teoria dell'informazione}
-Per poter caratterizzare le implementazioni degli ADT in base allo
-spazio che occupano è necessario introdurre alcuni concetti della teoria
-dell'informazione, i quali discendono dai Teoremi di Shannon,
-sommariamente riassumibili nel seguente teorema.
 
-\begin{theorem}[della codifica della sorgente]
+
+\section{Tipi di dati astratti}
+I tipi di dati astratti (ADT, \textit{abstract data type}) sono tipi di dati descritti dal loro comportamento, ossia dalla loro interfaccia e la sua specificazione.
+Ad esempio, l'ADT \texttt{stack<T>} è dotato delle seguenti operazioni, chiamate \emph{primitive}:
+\begin{verbatim}
+  bool     isEmpty()
+  T        top()
+  stack<T> pop()
+  stack<T> push(T)
+\end{verbatim}
+L'effettivo comportamento delle primitive può essere specificato in diversi modi, ad esempio esplicitandone analiticamente le proprietà:
+\begin{gather*}
+	\forall S\quad \texttt{s.push(x).top()} = x \\
+	\forall S\quad \texttt{s.isEmpty()} \implies \texttt{!S.push(x).pop().isEmpty()}
+\end{gather*}
+Una volta descritto un ADT è necessario implementarlo, ossia costruire effettivamente una struttura su cui è possibile chiamare le primitive rispettandone la descrizione.
+In generale, più implementazioni possono soddisfare le richieste delle primitive: naturalmente, sono particolarmente utili implementazioni che abbiano un basso costo in termini di tempo e spazio.
+Ogni ADT ha associato un concetto di \emph{taglia}, che rappresenta genericamente la grandezza di un'istanza: ad esempio, nel caso dello stack la taglia può essere definita come il numero di elementi presenti sulla pila.
+
+
+\subsection{L'\textit{information theoretical lower bound}}
+Per poter caratterizzare le implementazioni degli ADT in base allo spazio che occupano introduciamo alcuni concetti della teoria dell'informazione\footnote{Si veda ad esempio \cite{Cover:06:informtheory} per un approccio moderno a tale campo}.
+Il teorema della codifica di sorgente \cite{Shannon:48:theorycommu} (anche noto come primo teorema di Shannon), dà un'informazione fondamentale sullo spazio medio che occupa una struttura dati che può memorizzare $v$ valori:
+\begin{theorem}
 	\label{thm:shannon}
 	Per codificare $v$ valori servono in media $\log_2(v)$ bit.
 \end{theorem}
 
-Per esempio, immaginiamo di dover codificare un'immagine $100\times100$ pixel
-in bianco e nero. Le immagini possibili sono $2^{10000}$: per codificare
-queste immagini servono in media $10000$ bit. In effetti, la
-rappresentazione banale che rappresenta ogni pixel, utilizza esattamente
-$10000$ bit e non potrebbe usarne di meno! Usandone, per esempio, solo
-$9000$, alcune immagini diverse avrebbero la stessa rappresentazione.
+Il teorema è ovvio nel caso di rappresentazioni a dimensione fissa.
+Per esempio, immaginiamo di dover codificare un'immagine di $100\times100$ pixel in bianco e nero.
+Le immagini possibili sono $2^{10000}$, e il teorema afferma che per codificare queste immagini servono in media $10000$ bit.
+In effetti, la rappresentazione banale, che rappresenta ogni pixel con un bit, utilizza esattamente $10000$ bit.
+Usando meno bit alcune immagini diverse avrebbero, inevitabilmente, la stessa rappresentazione.
 
-Questo teorema vale anche per rappresentazioni di dimensione
-variabile, ossia vale anche per codifiche: si supponga di avere un
-algoritmo in grado di comprimere tre immagini ognuna in $100$ bit.
-La conseguenza di questo teorema è che ci saranno delle altre immagini che
-utilizzeranno più di $10000$ bit, in modo che la media rimanga $10000$.
+Il teorema, però, vale anche per rappresentazioni di dimensione variabile
+Ad esempio, si supponga di avere un algoritmo in grado di comprimere tre immagini come le precedenti, ognuna in $100$ bit.
+La conseguenza di questo teorema è che esistono altre immagini la cui codifica utilizza più di $10000$ bit, mantenendo la media a $10000$.
 
-In generale, dati $v$ valori rappresentabili con $x_1, x_2, \cdots, x_v$ bit
-rispettivamente; il Teorema afferma che
-$$
-	\frac{\sum_{i} x_i}{v} \geq \log_2(v)
-$$
+Il teorema di Shannon afferma anche che esiste una codifica per rappresentare $v$ valori utilizzando un numero di bit medio in $[\log_2(v),1+\log_2(v))$, assumendo che tutti i $v$ valori siano equiprobabili.
 
-In realtà il \cref{thm:shannon} dice di più, ossia che è possibile creare un
-sistema di compressione per i $v$ valori utilizzando un numero di bit medio
-tra $[\log_2(v), 1 + \log_2(v))$, assumendo che tutti i $v$ valori siano
-equiprobabili.\footnote{
-	\cite{Shannon:48:theorycommu} è il lavoro di C. Shannon che ha dato vita al campo della
-	teoria dell'informazione; un approccio più moderno è \cite{Cover:06:informtheory}.}
+Ci confronteremo spesso con il valore $Z_n:=\log_2 v$, chiamato \emph{information-theoretical lower bound}.
+Sulla base di tale valore classifichiamo in base allo spazio le implementazioni di un ADT:
+\begin{description}
+	\item[struttura implicita] occupa un numero di bit di $D_n=Z_n+O(1)$;
+	\item[struttura succinta] occupa un numero di bit di $D_n=Z_n+o(1)$;
+	\item[struttura compatta] occupa un numero di bit di $D_n=O(Z_n)$.
+\end{description}
 
-Ci confronteremo spesso con questo \textbf{information-theoretical lower bound}:
-immaginiamo tutte le possibili istanze $v_i$ di ADT di taglia $i$;
-per esempio, uno stack con valori in $\{0, 1, \cdots, 9\}$;
-lo stack di taglia $0$ è lo stack vuoto, gli stack
-di taglia $1$ sono le $10$ istanze stack che contengono solo $1$, solo $2$, e così via,
-mentre gli stack di taglia $2$ sono $10^2$; in generale uno stack
-di taglia $n$ ha $10^n$ valori. Il Teorema afferma che in media servono
-$\log_2{10^n} = n \log_2(10) \approx 4n$ bit per rappresentare uno stack
-con valori in $\{0, 1, \cdots, 9\}$: sappiamo quindi che
-\textit{nessuna implementazione} può utilizzare, in media, meno di
-$Z_n =n \log_2(10)$ bit, l'information-theoretical lower bound per
-rappresentare stack di taglia $n$ con valori in $\{0, 1, \cdots, 9\}$.
+C'è da tenere in considerazione, comunque, che spesso sussiste un tradeoff tra lo spazio occupato da una codifica compressa e la velocità in cui è possibile effettuare operazioni su di essa.
+Ad esempio, difficilmente è possibile effettuare operazioni su un file compresso con un algoritmo di compressione general-purpose come \textit{tz2}.
 
-Ipotizziamo di avere una struttura che utilizza in media $D_n \geq Z_n$ bit:
-esiste un tradeoff tra quanto \textit{compatta} è la struttura e quanto
-tempo è necessario per eseguire le funzioni primitive.
-Esistono sistemi di compressione che ignorano completamente il problema:
-ad esempio, comprimendo un oggetto con l'algoritmo \texttt{tz2}, non si può
-utilizzare l'oggetto compresso come la sua rappresentazione non compressa
-per eseguire le primitive su di esso! Noi siamo interessati a strutture
-compresse - rappresentano i dati in maniera efficiente rispetto allo spazio -
-e con primitive efficienti tanto quanto un'implementazione non compressa.
 
-Definiamo quindi delle classificazioni delle implementazioni in base al rapporto
-tra l'effettivo utilizzo di spazio (in media) e l'indice $Z_n$:
-un'implementazione dell'ADT è chiamata \textbf{implicita} se occupa un numero
-di bit $D_n = Z_n + O(1)$, \textbf{succinta} se occupa un numero di bit
-$D_n = Z_n + o(Z_n)$ e \textbf{compatta} se $D_n = O(Z_n)$; tutto questo sempre
-notando che le primitive devono essere efficienti tanto quanto quelle definite
-su strutture non compresse.
 
 \section{Strutture di rango e selezione}
 Questi ADT sono definiti da un vettore $\mathbb{b} \in 2^n$ con due primitive:

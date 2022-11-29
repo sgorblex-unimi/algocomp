@@ -1,0 +1,35 @@
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+	\draw (100,100) -- (320,100) -- (320,120) -- (100,120) -- cycle;
+	\draw (120,100) -- (120,120);
+	\draw (140,100) -- (140,120);
+	\draw (160,100) -- (160,120);
+	\draw (180,100) -- (180,120);
+	\draw (200,100) -- (200,120);
+	\draw (220,100) -- (220,120);
+	\draw (240,100) -- (240,120);
+	\draw (260,100) -- (260,120);
+	\draw (280,100) -- (280,120);
+	\draw (300,100) -- (300,120);
+	\draw (250,80) -- (250,98);
+	\draw [shift={(250,100)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29);
+	\draw (100.25,150) .. controls (100.25,154.67) and (102.58,157) .. (107.25,157) -- (140.25,157) .. controls (146.92,157) and (150.25,159.33) .. (150.25,164) .. controls (150.25,159.33) and (153.58,157) .. (160.25,157)(157.25,157) -- (193.25,157) .. controls (197.92,157) and (200.25,154.67) .. (200.25,150);
+	\draw (200.5,150.5) .. controls (200.5,155.17) and (202.83,157.5) .. (207.5,157.5) -- (240.5,157.5) .. controls (247.17,157.5) and (250.5,159.83) .. (250.5,164.5) .. controls (250.5,159.83) and (253.83,157.5) .. (260.5,157.5)(257.5,157.5) -- (293.5,157.5) .. controls (298.17,157.5) and (300.5,155.17) .. (300.5,150.5);
+	\draw [dash pattern={on 0.84pt off 2.51pt}] (100,100) -- (80,100);
+	\draw [dash pattern={on 0.84pt off 2.51pt}] (100,120) -- (80,120);
+	\draw [dash pattern={on 0.84pt off 2.51pt}] (340,120) -- (320,120);
+	\draw [dash pattern={on 0.84pt off 2.51pt}] (340,100) -- (320,100);
+	\draw (240.25,120.5) .. controls (240.25,125.17) and (242.58,127.5) .. (247.25,127.5) -- (250.17,127.5) .. controls (256.84,127.5) and (260.17,129.83) .. (260.17,134.5) .. controls (260.17,129.83) and (263.5,127.5) .. (270.17,127.5)(267.17,127.5) -- (273.08,127.5) .. controls (277.75,127.5) and (280.08,125.17) .. (280.08,120.5);
+	\draw (199.92,120.25) .. controls (199.92,124.92) and (202.25,127.25) .. (206.92,127.25) -- (209.83,127.25) .. controls (216.5,127.25) and (219.83,129.58) .. (219.83,134.25) .. controls (219.83,129.58) and (223.16,127.25) .. (229.83,127.25)(226.83,127.25) -- (232.75,127.25) .. controls (237.42,127.25) and (239.75,124.92) .. (239.75,120.25);
+	\draw (245,59.4) node [anchor=north west][inner sep=0.75pt] {$p$};
+	\draw (104,102.4) node [anchor=north west][inner sep=0.75pt] {$1$};
+	\draw (124,102.4) node [anchor=north west][inner sep=0.75pt] {$0$};
+	\draw (144,102.4) node [anchor=north west][inner sep=0.75pt] {$1$};
+	\draw (224,102.4) node [anchor=north west][inner sep=0.75pt] {$1$};
+	\draw (164,102.4) node [anchor=north west][inner sep=0.75pt] {$1$};
+	\draw (204,102.4) node [anchor=north west][inner sep=0.75pt] {$0$};
+	\draw (240,170.4) node [anchor=north west][inner sep=0.75pt] {$S_{n}$};
+	\draw (140,170.4) node [anchor=north west][inner sep=0.75pt] {$S_{n-1}$};
+	\draw (248,132.4) node [anchor=north west][inner sep=0.75pt] {$B_{k}$};
+	\draw (204,132.4) node [anchor=north west][inner sep=0.75pt] {$B_{k-1}$};
+	\draw (184,102.4) node [anchor=north west][inner sep=0.75pt] {$0$};
+\end{tikzpicture}

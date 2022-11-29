@@ -55,514 +55,126 @@ Ad esempio, difficilmente è possibile effettuare operazioni su un file compress
 
 
 \section{Strutture di rango e selezione}
-Questi ADT sono definiti da un vettore $\mathbb{b} \in 2^n$ con due primitive:
-$$
-	\mathbf{rank}_b: \mathbb{N} \rightarrow \mathbb{N}
-$$
-$$
-	\mathbf{select}_b: \mathbb{N} \rightarrow \mathbb{N}
-$$
-tali che:
-$$
-	\forall p \leq n ~~ \mathbf{rank}_b(p) = |\{i | i < p \land b_i = 1\}|
-$$
-$$
-	\forall k \leq n ~~ \mathbf{select}_b(k) =\max \{p | \mathbf{rank}_b(p) \leq k\}
-$$
-Quindi, per esempio, per un $\mathbf{b} = [0 1 1 0 1 0 1]$ si hanno due
-tabelle di rank e select come in \cref{table:rank_sel}.
+Le strutture di rango e selezione sono ADT che consistono in un vettore $b$ di lunghezza $n$ su cui è possibile effettuare le primitive $\rank$ e $\select$:
+\begin{gather*}
+	\forall p\leq n\quad \rank_b(p) := \card{\set{i\mid i<p\land b_i=1}} = \sum_{i=0}^n b_i \\
+	\forall k\leq n\quad \select_b(k) := \max\set{p\mid \rank_b(p)\leq k}
+\end{gather*}
 
+Per esempio, se $b = [0 1 1 0 1 0 1]$ le tabelle di rank e select di $b$ sono descritte in \cref{table:rank_sel}.
 \begin{table}[ht]
 	\centering
-
 	\begin{subtable}{0.45\textwidth}
 		\centering
 		\begin{tabular}{c|c}
-			$p$ & $\mathbf{rank}_b(p)$ \\ \hline
-			0   & 0                    \\
-			1   & 0                    \\
-			2   & 1                    \\
-			3   & 2                    \\
-			4   & 2                    \\
-			5   & 3                    \\
-			6   & 3                    \\
+			$p$ & $\rank_b(p)$ \\ \hline
+			0   & 0            \\
+			1   & 0            \\
+			2   & 1            \\
+			3   & 2            \\
+			4   & 2            \\
+			5   & 3            \\
+			6   & 3            \\
 			7   & 4
 		\end{tabular}
-		\caption{$\mathbf{rank}_b(p)$}
+		\caption{$\rank_b(p)$}
 	\end{subtable}
 	\begin{subtable}{0.45\textwidth}
 		\centering
 		\begin{tabular}{c|c}
-			$k$      & $\mathbf{select}_b(p)$ \\ \hline
-			0        & 1                      \\
-			1        & 2                      \\
-			2        & 3                      \\
-			3        & 6                      \\
-			4        & 7                      \\
-			5        & 7                      \\
-			$\cdots$ & 7                      \\
+			$k$ & $\select_b(p)$ \\ \hline
+			0   & 1              \\
+			1   & 2              \\
+			2   & 4              \\
+			3   & 6              \\
+			4   & 7              \\
+			5   & 7              \\
+			6   & 7              \\
+			7   & 7              \\
 		\end{tabular}
-		\caption{$\mathbf{select}_b(p)$}
+		\caption{$\select_b(p)$}
 	\end{subtable}
-	\caption{Tabelle per $\mathbf{b}$.}
+	\caption{Operazioni di rango e selezione su $b$.}
 	\label{table:rank_sel}
 \end{table}
-Rank e select sono funzioni inverse in un senso molto stretto, ciò vale che
-$$
-	\forall k ~~ \mathbf{rank}_b(\mathbf{select}_b(k)) = k
-$$
-mentre l'inverso, ossia applicare select a rank, si ottiene una proprietà
-diversa:
-$$
-	\forall p ~~ \mathbf{select}_b(\mathbf{rank}_b(p)) \geq p
-$$
-proprio grazie a quest'ultima proprietà è possibile dedurre la struttura sottostante,
-nel senso che è possibile capire dove siano gli $0$ e gli $1$ in $\mathbf{b}$.
 
-\subsection{Struttura di Jacobson per il rango}
-\subsubsection{Four-russians trick}
-L'implementazione dell'ADT rank di Jacobson
-utilizza il ``four-russians trick''. Si immagini di
-voler rappresentare una matrice binaria: un modo per farlo potrebbe essere
-dividere la matrice in blocchi chiamati \textit{piastrelle} ed enumerare
-le possibili piastrelle. Chiaramente, se nella matrice appare ogni possibile
-combinazione di piastrella, il guadagno del trucco sarà nullo.
-Se, invece, la matrice è molto ripetitiva, le piastrelle possibili da ricordare saranno
-poche e basterà utilizzare il numero associato alla piastrella per rappresentare
-l'intera matrice. Un esempio è in \cref{fig:frtrick}.
+Valgono due proprietà fondamentali per le operazioni di rango e selezione:
+\begin{gather*}
+	\forall k\quad \rank_b(\select_b(k)) = k \\
+	\forall p\quad \select_b(\rank_b(p)) \geq p
+\end{gather*}
+% TODO: elaborare
+Grazie a queste proprietà è possibile ricostruire i valori di $b$ dalle sole query delle operazioni di rango e selezione su di esso.
 
-% disegno.. 19-11-2021 ... 
+
+
+\subsection{La struttura di Jacobson per il rango}
+Jacobson costruisce un'implementazione dell'operazione rango usando il cosiddetto "trucco dei quattro russi" (\textit{four-russians trick}).
+
+Il vettore $b$ di $n$ bit viene diviso in parti uguali, chiamate \emph{superblocchi}, di lunghezza $\log_2^2 n$.
+Ogni superblocco viene diviso a sua volta in parti più piccole, dette blocchi, di lunghezza $\frac{1}{2}\log_2(n)$, come rappresentato in \cref{fig:jrank}.
+
+% TODO: rifare figura
 \begin{figure}[ht]
 	\centering
-	\begin{subfigure}{0.32\textwidth}
-		\centering
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Rectangle [id:dp005749332004390428] 
-			\draw  [fill={rgb, 255:red, 195; green, 222; blue, 215 }  ,fill opacity=1 ] (10,30) -- (60,30) -- (60,70) -- (10,70) -- cycle ;
-			%Shape: Rectangle [id:dp7752907448209945] 
-			\draw   (60,30) -- (110,30) -- (110,70) -- (60,70) -- cycle ;
-			%Shape: Rectangle [id:dp6434156098479539] 
-			\draw   (110,30) -- (160,30) -- (160,70) -- (110,70) -- cycle ;
-			%Shape: Rectangle [id:dp6511151383263759] 
-			\draw   (10,70) -- (60,70) -- (60,110) -- (10,110) -- cycle ;
-			%Shape: Rectangle [id:dp12594297400828225] 
-			\draw  [color={rgb, 255:red, 0; green, 0; blue, 0 }  ,draw opacity=1 ][fill={rgb, 255:red, 239; green, 122; blue, 122 }  ,fill opacity=1 ] (60,70) -- (110,70) -- (110,110) -- (60,110) -- cycle ;
-			%Shape: Rectangle [id:dp07170680173867716] 
-			\draw  [fill={rgb, 255:red, 169; green, 198; blue, 234 }  ,fill opacity=1 ] (110,70) -- (160,70) -- (160,110) -- (110,110) -- cycle ;
-			%Shape: Rectangle [id:dp016792670255308284] 
-			\draw   (10,110) -- (60,110) -- (60,150) -- (10,150) -- cycle ;
-			%Shape: Rectangle [id:dp40735665999968684] 
-			\draw   (60,110) -- (110,110) -- (110,150) -- (60,150) -- cycle ;
-			%Shape: Rectangle [id:dp5192196869257351] 
-			\draw  [fill={rgb, 255:red, 195; green, 222; blue, 215 }  ,fill opacity=1 ] (110,110) -- (160,110) -- (160,150) -- (110,150) -- cycle ;
-		\end{tikzpicture}
-		\caption{Tabella iniziale. Ogni riquadro contiene $5$ bit.}
-	\end{subfigure}
-	\begin{subfigure}{0.32\textwidth}
-		\centering
-
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Rectangle [id:dp7804092113436614] 
-			\draw  [fill={rgb, 255:red, 195; green, 222; blue, 215 }  ,fill opacity=1 ] (200,50) -- (250,50) -- (250,90) -- (200,90) -- cycle ;
-			%Shape: Rectangle [id:dp023528268951144793] 
-			\draw  [fill={rgb, 255:red, 239; green, 122; blue, 122 }  ,fill opacity=1 ] (200,90) -- (250,90) -- (250,130) -- (200,130) -- cycle ;
-			%Shape: Rectangle [id:dp43332731525643986] 
-			\draw  [fill={rgb, 255:red, 169; green, 198; blue, 234 }  ,fill opacity=1 ] (200,130) -- (250,130) -- (250,170) -- (200,170) -- cycle ;
-			%Shape: Rectangle [id:dp31985072077933197] 
-			\draw   (250,50) -- (300,50) -- (300,90) -- (250,90) -- cycle ;
-
-			%Shape: Rectangle [id:dp6876058724781219] 
-			\draw   (250,90) -- (300,90) -- (300,130) -- (250,130) -- cycle ;
-
-			%Shape: Rectangle [id:dp9303810523957489] 
-			\draw   (250,130) -- (300,130) -- (300,170) -- (250,170) -- cycle ;
-
-			% Text Node
-			\draw (268,141) node [anchor=north west][inner sep=0.75pt]   [align=left] {3};
-			% Text Node
-			\draw (268,101) node [anchor=north west][inner sep=0.75pt]   [align=left] {2};
-			% Text Node
-			\draw (268,62) node [anchor=north west][inner sep=0.75pt]   [align=left] {1};
-		\end{tikzpicture}
-		\caption{Enumerazione di sottomatrici.}
-	\end{subfigure}
-	\begin{subfigure}{0.32\textwidth}
-		\centering
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Rectangle [id:dp021688033849312616] 
-			\draw   (295,78) -- (345,78) -- (345,118) -- (295,118) -- cycle ;
-			%Shape: Rectangle [id:dp6593678571435228] 
-			\draw   (345,78) -- (395,78) -- (395,118) -- (345,118) -- cycle ;
-			%Shape: Rectangle [id:dp05373113383793526] 
-			\draw  [fill={rgb, 255:red, 195; green, 222; blue, 215 }  ,fill opacity=0 ] (245,118) -- (295,118) -- (295,158) -- (245,158) -- cycle ;
-			%Shape: Rectangle [id:dp881184835248234] 
-			\draw  [fill={rgb, 255:red, 195; green, 222; blue, 215 }  ,fill opacity=0 ] (245,158) -- (295,158) -- (295,198) -- (245,198) -- cycle ;
-			%Shape: Rectangle [id:dp40942537357979314] 
-			\draw   (295,158) -- (345,158) -- (345,198) -- (295,198) -- cycle ;
-			%Shape: Rectangle [id:dp4268873556029348] 
-			\draw   (245,78) -- (295,78) -- (295,118) -- (245,118) -- cycle ;
-
-			%Shape: Rectangle [id:dp9673334799284516] 
-			\draw   (345,158) -- (395,158) -- (395,198) -- (345,198) -- cycle ;
-
-			%Shape: Rectangle [id:dp06125848702433001] 
-			\draw   (295,118) -- (345,118) -- (345,158) -- (295,158) -- cycle ;
-
-			%Shape: Rectangle [id:dp6270788142678815] 
-			\draw   (345,118) -- (395,118) -- (395,158) -- (345,158) -- cycle ;
-
-
-			% Text Node
-			\draw (363,129) node [anchor=north west][inner sep=0.75pt]   [align=left] {3};
-			% Text Node
-			\draw (313,129) node [anchor=north west][inner sep=0.75pt]   [align=left] {2};
-			% Text Node
-			\draw (363,170) node [anchor=north west][inner sep=0.75pt]   [align=left] {1};
-			% Text Node
-			\draw (263,90) node [anchor=north west][inner sep=0.75pt]   [align=left] {1};
-
-
-		\end{tikzpicture}
-		\caption{Matrice risultante dopo l'applicazione del \textit{four-russians trick}.}
-	\end{subfigure}
-	\caption{Trucco dei quattro russi.}
-	\label{fig:frtrick}
-\end{figure}
-
-\subsubsection{Implementazione}
-Il vettore $\mathbf{b}$  di $n$ bit viene quindi diviso in blocchi della
-stessa lunghezza, chiamati \textit{superblocchi}, di lunghezza
-$\log_2(n)^2$. Ogni superblocco viene
-diviso a sua volta in blocchi più piccoli, di lunghezza $\frac{1}{2} \log_2(n)$,
-come rappresentato in \cref{fig:jrank}.
-\begin{figure}[ht]
-	\centering
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Shape: Brace [id:dp6738156163571107] 
-		\draw   (150,231) .. controls (149.99,235.67) and (152.32,238) .. (156.99,238.01) -- (199.99,238.07) .. controls (206.66,238.08) and (209.99,240.41) .. (209.98,245.08) .. controls (209.99,240.41) and (213.32,238.09) .. (219.99,238.1)(216.99,238.09) -- (262.99,238.16) .. controls (267.66,238.17) and (269.99,235.84) .. (270,231.17) ;
-		%Straight Lines [id:da0175742846479654] 
-		\draw    (150,150) -- (150,230) ;
-		%Straight Lines [id:da9565831392918982] 
-		\draw    (270,150) -- (270,230) ;
-		%Shape: Rectangle [id:dp2322340296066201] 
-		\draw   (150,130) -- (170,130) -- (170,150) -- (150,150) -- cycle ;
-		%Shape: Rectangle [id:dp44447847120593675] 
-		\draw   (170,130) -- (190,130) -- (190,150) -- (170,150) -- cycle ;
-		%Shape: Rectangle [id:dp11830121656354553] 
-		\draw   (190,130) -- (210,130) -- (210,150) -- (190,150) -- cycle ;
-		%Shape: Rectangle [id:dp03816859758995417] 
-		\draw   (210,130) -- (230,130) -- (230,150) -- (210,150) -- cycle ;
-		%Shape: Rectangle [id:dp9408927207358553] 
-		\draw   (230,130) -- (250,130) -- (250,150) -- (230,150) -- cycle ;
-		%Shape: Rectangle [id:dp9557419136965325] 
-		\draw   (250,130) -- (270,130) -- (270,150) -- (250,150) -- cycle ;
-		%Shape: Rectangle [id:dp7039774887247845] 
-		\draw   (270,130) -- (290,130) -- (290,150) -- (270,150) -- cycle ;
-		%Shape: Rectangle [id:dp3777415956586846] 
-		\draw   (290,130) -- (310,130) -- (310,150) -- (290,150) -- cycle ;
-		%Shape: Rectangle [id:dp35581942359165963] 
-		\draw   (150,150) -- (190,150) -- (190,170) -- (150,170) -- cycle ;
-		%Shape: Rectangle [id:dp047912414707197204] 
-		\draw   (190,150) -- (230,150) -- (230,170) -- (190,170) -- cycle ;
-		%Shape: Brace [id:dp6450376307720747] 
-		\draw   (190.22,170.82) .. controls (190.22,175.49) and (192.55,177.82) .. (197.22,177.82) -- (200.17,177.82) .. controls (206.84,177.82) and (210.17,180.15) .. (210.17,184.82) .. controls (210.17,180.15) and (213.5,177.82) .. (220.17,177.82)(217.17,177.82) -- (223.11,177.82) .. controls (227.78,177.82) and (230.11,175.49) .. (230.11,170.82) ;
-		%Straight Lines [id:da007337321639370731] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (310,130) -- (330,130) ;
-		%Straight Lines [id:da4459939594214508] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (310,150) -- (330,150) ;
-
-		% Text Node
-		\draw (179,250) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle log_{2}( n)^{2}$};
-		% Text Node
-		\draw (181,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle \frac{1}{2} log_{2}( n)$};
-		% Text Node
-		\draw (154,111.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-
-
-	\end{tikzpicture}
-	\caption{Divisione di $\textbf{b}$ in superblocchi e blocchi.}
+	\input{img/jacobson_super_and_blocks.tikz}
+	\caption{Divisione di $b$ in superblocchi e blocchi.}
 	\label{fig:jrank}
 \end{figure}
-Per esempio, se $n = 256$, i superblocchi avranno lunghezza
-$\log_2(256)^2 = 8^2 = 64$ bit e saranno $256/64 = 4$, mentre i
-blocchi interni saranno $\frac{1}{2}\log_2(256) = \frac{1}{2}8 = 4$ bit e saranno
-$64/4 = 16$ per superblocco, $16*4 = 64$ in totale.
-In questo esempio, i possibili blocchi sono $2^4 = 16$ e, in generale,
-siccome i blocchi hanno lunghezza $\frac{1}{2} \log_2(n)$, sono
-$$
-	2^{\frac{1}{2}\log_2(n)} = (2^{\log_2(n)})^{\frac{1}{2}} =  \sqrt{n}
-$$
-Se volessimo memorizzare la funzione di rank per un singolo blocco,
-costruiremmo una tabella di $\frac{1}{2}\log_2(n)$ righe e per ognuna
-di queste bisognerebbe salvare il numero di $1$ presenti nel blocco fino a quel punto,
-utilizzando per ogni rank uno spazio $\log_2(\frac{1}{2}\log_2(n))$. Interamente, quindi,
-la tabella di rank per un singolo blocco occupa spazio
-$$
-	\frac{1}{2}\log_2(n) \cdot \log_2(\frac{1}{2}\log_2(n)) \text{ bit}
-$$
-e, volendo memorizzare la tabella per ogni tipo di blocco, si consuma uno spazio
-$$
-	2^{\frac{1}{2}\log_2(n)} \cdot \frac{1}{2}\log_2(n) \cdot \log_2(\frac{1}{2}\log_2(n)) = \sqrt{n} \cdot \frac{1}{2}\log_2(n) \cdot \log_2(\frac{1}{2}\log_2(n))
-	\leq \sqrt{n} \frac{1}{2}\log_2(n) \cdot \log_2(\log_2(n)) = o(n) \text{ bit}
-$$
-che significa che si può definire una tabella che enumera i tipi di blocco e per ognuno di
-essi, come mostrato nella \cref{table:example_rank_block4}.
 
-\begin{table}[!ht]
+Si costruiscono quindi due vettori, $S$ e $B$. Per ogni superblocco $i$, $S_i$ contiene il rango del primo elemento di $b$ nel superblocco $i$. Per ogni blocco $j$, $B_j$ contiene la differenza tra il rango del primo elemento del blocco $j$ e il rango del primo elemento del relativo superblocco. Il rango di un elemento $p$ appartenente al superblocco $i$ e al blocco $j$ è quindi uguale a $S_i+B_j$ più il numero di bit a $1$ dall'inizio del blocco $j$ al bit $p$, ossia il rango di $p$ all'interno del sottovettore che coincide con il blocco $j$.
+
+\begin{table}
 	\centering
 	\begin{tabular}{|c|c|c|c|c|c|c|}
 		\hline
-		\multirow{2}{*}{$0000$} & $p$                & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
-		                        & $\mathbf{rank}(p)$ & $0$ & $0$ & $0$ & $0$ & $0$ \\ \hline
-		\multirow{2}{*}{$0001$} & $p$                & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
-		                        & $\mathbf{rank}(p)$ & $0$ & $0$ & $0$ & $0$ & $1$ \\ \hline
-		$\cdots$                &                    &     &     &     &     &     \\ \hline
-		\multirow{2}{*}{$1111$} & $p$                & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
-		                        & $\mathbf{rank}(p)$ & $0$ & $1$ & $2$ & $3$ & $4$ \\ \hline
+		\multirow{2}{*}{$0000$} & $p$        & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
+		                        & $\rank(p)$ & $0$ & $0$ & $0$ & $0$ & $0$ \\ \hline
+		\multirow{2}{*}{$0001$} & $p$        & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
+		                        & $\rank(p)$ & $0$ & $0$ & $0$ & $0$ & $1$ \\ \hline
+		$\cdots$                &            &     &     &     &     &     \\ \hline
+		\multirow{2}{*}{$1111$} & $p$        & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
+		                        & $\rank(p)$ & $0$ & $1$ & $2$ & $3$ & $4$ \\ \hline
 	\end{tabular}
-	\caption{Rank per ogni possibile blocco di lunghezza $4$.}
+	\caption{Rango di ogni possibile blocco di lunghezza $4$.}
 	\label{table:example_rank_block4}
 \end{table}
 
-Tutta questa struttura, benché sembra molto grande, è in realtà memorizzabile in $o(n)$, ossia
-in una quantità di spazio che cresce meno rapidamente rispetto a $n$.
-La prima idea è memorizzare queste strutture di rank per i blocchi. Dopo di che, per ogni superblocco
-si memorizzano gli $1$ prima del superblocco, ossia per ogni superblocco $i$ si definisce
-$$
-	S_i = \mathbf{rank}(i[0])
-$$
-come rappresentato nella \cref{fig:superblock_i}.
+I ranghi delle posizioni in un blocco sono salvati in un'apposita tabella, per evitare di doverli calcolare ogni volta. È quindi necessaria una tabella (simile a quanto mostrato in \cref{table:example_rank_block4}) che contiene il rango di ogni posizione, per ogni possibile tipo di blocco. I tipi di blocco possibili sono, in numero:
+\begin{equation*}
+	2^{\frac{1}{2}\log_2 n} = \left(2^{\log_2 n}\right)^{\frac{1}{2}} = \sqrt{n}
+\end{equation*}
+
+Il costo in bit di ogni tabella è
+\begin{equation*}
+	\underbrace{\frac{1}{2}\log_2 n}_\text{numero di elementi}\cdot \underbrace{\log_2\left(\frac{1}{2}\log_2 n\right)}_\text{costo dei valori di rango}
+\end{equation*}
+per un totale, per tutte le tabelle, di
+\begin{equation*}
+	\sqrt n\cdot\frac{1}{2}\log_2 n\cdot \log_2\left(\frac{1}{2}\log_2 n\right)
+	\leq \sqrt n\cdot \frac{1}{2}\log_2 n\cdot \log_2(\log_2 n) = o(n) \text{ bit.}
+\end{equation*}
+
+Lo spazio occupato dal vettore $S$ è
+\begin{equation*}
+	\underbrace{\frac{n}{\log_2^2 n}}_\text{numero di superblocchi}\cdot\underbrace{\log_2 n}_\text{costo del singolo valore} = \frac{n}{\log_2 n} = o(n) \text{ bit}
+\end{equation*}
+Mentre quello occupato dal vettore $B$ è
+\begin{equation*}
+	\underbrace{\frac{n}{\frac{1}{2}\log_2 n}}_\text{numero di blocchi} \cdot\log_2(\log_2^2 n) =
+	\frac{2n}{\log_2 n} 2 \log_2(\log_2 n) = o(n) \text{ bit}
+\end{equation*}
+
+% TODO migliorare figura (blocchi di 2 non sono molto rappresentativi)
 \begin{figure}
 	\centering
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Shape: Brace [id:dp6450376307720747] 
-		\draw   (150.22,152.93) .. controls (150.22,157.6) and (152.55,159.93) .. (157.22,159.93) -- (180.17,159.93) .. controls (186.84,159.93) and (190.17,162.26) .. (190.17,166.93) .. controls (190.17,162.26) and (193.5,159.93) .. (200.17,159.93)(197.17,159.93) -- (223.11,159.93) .. controls (227.78,159.93) and (230.11,157.6) .. (230.11,152.93) ;
-		%Shape: Brace [id:dp6867457932235534] 
-		\draw   (150.62,189.98) .. controls (150.62,194.65) and (152.95,196.98) .. (157.62,196.98) -- (220.21,196.98) .. controls (226.88,196.98) and (230.21,199.31) .. (230.21,203.98) .. controls (230.21,199.31) and (233.54,196.98) .. (240.21,196.98)(237.21,196.98) -- (302.8,196.98) .. controls (307.47,196.98) and (309.8,194.65) .. (309.8,189.98) ;
-		%Shape: Rectangle [id:dp04043578965235095] 
-		\draw   (150,120) -- (310,120) -- (310,150) -- (150,150) -- cycle ;
-		%Straight Lines [id:da7948124479327557] 
-		\draw    (230,120) -- (230,150) ;
-		%Straight Lines [id:da6507675221013395] 
-		\draw    (150,140) .. controls (151.67,138.33) and (153.33,138.33) .. (155,140) .. controls (156.67,141.67) and (158.33,141.67) .. (160,140) .. controls (161.67,138.33) and (163.33,138.33) .. (165,140) .. controls (166.67,141.67) and (168.33,141.67) .. (170,140) .. controls (171.67,138.33) and (173.33,138.33) .. (175,140) .. controls (176.67,141.67) and (178.33,141.67) .. (180,140) .. controls (181.67,138.33) and (183.33,138.33) .. (185,140) .. controls (186.67,141.67) and (188.33,141.67) .. (190,140) .. controls (191.67,138.33) and (193.33,138.33) .. (195,140) .. controls (196.67,141.67) and (198.33,141.67) .. (200,140) .. controls (201.67,138.33) and (203.33,138.33) .. (205,140) .. controls (206.67,141.67) and (208.33,141.67) .. (210,140) .. controls (211.67,138.33) and (213.33,138.33) .. (215,140) .. controls (216.67,141.67) and (218.33,141.67) .. (220,140) .. controls (221.67,138.33) and (223.33,138.33) .. (225,140) .. controls (226.67,141.67) and (228.33,141.67) .. (230,140) -- (230,140) ;
-		%Straight Lines [id:da816948397241291] 
-		\draw    (150,130) .. controls (151.67,128.33) and (153.33,128.33) .. (155,130) .. controls (156.67,131.67) and (158.33,131.67) .. (160,130) .. controls (161.67,128.33) and (163.33,128.33) .. (165,130) .. controls (166.67,131.67) and (168.33,131.67) .. (170,130) .. controls (171.67,128.33) and (173.33,128.33) .. (175,130) .. controls (176.67,131.67) and (178.33,131.67) .. (180,130) .. controls (181.67,128.33) and (183.33,128.33) .. (185,130) .. controls (186.67,131.67) and (188.33,131.67) .. (190,130) .. controls (191.67,128.33) and (193.33,128.33) .. (195,130) .. controls (196.67,131.67) and (198.33,131.67) .. (200,130) .. controls (201.67,128.33) and (203.33,128.33) .. (205,130) .. controls (206.67,131.67) and (208.33,131.67) .. (210,130) .. controls (211.67,128.33) and (213.33,128.33) .. (215,130) .. controls (216.67,131.67) and (218.33,131.67) .. (220,130) .. controls (221.67,128.33) and (223.33,128.33) .. (225,130) .. controls (226.67,131.67) and (228.33,131.67) .. (230,130) .. controls (231.67,128.33) and (233.33,128.33) .. (235,130) .. controls (236.67,131.67) and (238.33,131.67) .. (240,130) .. controls (241.67,128.33) and (243.33,128.33) .. (245,130) .. controls (246.67,131.67) and (248.33,131.67) .. (250,130) .. controls (251.67,128.33) and (253.33,128.33) .. (255,130) .. controls (256.67,131.67) and (258.33,131.67) .. (260,130) .. controls (261.67,128.33) and (263.33,128.33) .. (265,130) .. controls (266.67,131.67) and (268.33,131.67) .. (270,130) .. controls (271.67,128.33) and (273.33,128.33) .. (275,130) .. controls (276.67,131.67) and (278.33,131.67) .. (280,130) .. controls (281.67,128.33) and (283.33,128.33) .. (285,130) .. controls (286.67,131.67) and (288.33,131.67) .. (290,130) .. controls (291.67,128.33) and (293.33,128.33) .. (295,130) .. controls (296.67,131.67) and (298.33,131.67) .. (300,130) .. controls (301.67,128.33) and (303.33,128.33) .. (305,130) .. controls (306.67,131.67) and (308.33,131.67) .. (310,130) -- (310,130) ;
-		%Straight Lines [id:da005001855200690519] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (310,120) -- (350,120) ;
-		%Straight Lines [id:da8158288414744241] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (310,150) -- (350,150) ;
-
-		% Text Node
-		\draw (181,166.4) node [anchor=north west][inner sep=0.75pt]    {$S_{1}$};
-		% Text Node
-		\draw (221,212.4) node [anchor=north west][inner sep=0.75pt]    {$S_{2}$};
-	\end{tikzpicture}
-	\caption{$S_2$ è il numero di $1$ presenti in $\mathbf{b}$ `sotto' la traccia più lunga, mentre $S_1$
-		è il numero di $1$ sotto quella più corta. Va notato che $S_0 = 0$ benché non sia
-		mostrato nella figura.}
-	\label{fig:superblock_i}
-\end{figure}
-Per ogni blocco $l$ afferente al superblocco $i$ si definisce
-$$
-	B_l = \mathbf{rank}(l[0]) - S_i
-$$
-come rappresentato nella \cref{fig:block_i}.
-\begin{figure}
-	\centering
-
-
-
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Shape: Brace [id:dp6867457932235534] 
-		\draw   (150.62,189.98) .. controls (150.62,194.65) and (152.95,196.98) .. (157.62,196.98) -- (220.21,196.98) .. controls (226.88,196.98) and (230.21,199.31) .. (230.21,203.98) .. controls (230.21,199.31) and (233.54,196.98) .. (240.21,196.98)(237.21,196.98) -- (302.8,196.98) .. controls (307.47,196.98) and (309.8,194.65) .. (309.8,189.98) ;
-		%Shape: Rectangle [id:dp04043578965235095] 
-		\draw   (150,120) -- (310,120) -- (310,150) -- (150,150) -- cycle ;
-		%Straight Lines [id:da005001855200690519] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (310,120) -- (350,120) ;
-		%Straight Lines [id:da8158288414744241] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (310,150) -- (350,150) ;
-		%Shape: Brace [id:dp13835137879055492] 
-		\draw   (150.09,150.38) .. controls (150.09,155.05) and (152.42,157.38) .. (157.09,157.38) -- (159.88,157.38) .. controls (166.55,157.38) and (169.88,159.71) .. (169.88,164.38) .. controls (169.88,159.71) and (173.21,157.38) .. (179.88,157.38)(176.88,157.38) -- (182.67,157.38) .. controls (187.34,157.38) and (189.67,155.05) .. (189.67,150.38) ;
-		%Shape: Brace [id:dp46357313811514655] 
-		\draw   (190.28,150.18) .. controls (190.28,154.85) and (192.61,157.18) .. (197.28,157.18) -- (200.07,157.18) .. controls (206.74,157.18) and (210.07,159.51) .. (210.07,164.18) .. controls (210.07,159.51) and (213.4,157.18) .. (220.07,157.18)(217.07,157.18) -- (222.86,157.18) .. controls (227.53,157.18) and (229.86,154.85) .. (229.86,150.18) ;
-		%Shape: Brace [id:dp8791020491294269] 
-		\draw   (230.47,150.18) .. controls (230.47,154.85) and (232.8,157.18) .. (237.47,157.18) -- (240.26,157.18) .. controls (246.93,157.18) and (250.26,159.51) .. (250.26,164.18) .. controls (250.26,159.51) and (253.59,157.18) .. (260.26,157.18)(257.26,157.18) -- (263.05,157.18) .. controls (267.72,157.18) and (270.05,154.85) .. (270.05,150.18) ;
-		%Straight Lines [id:da2991531768387089] 
-		\draw    (190,120) -- (190,150) ;
-		%Straight Lines [id:da7604970738017156] 
-		\draw    (230,120) -- (230,150) ;
-		%Straight Lines [id:da9790584425339227] 
-		\draw    (150,140) .. controls (151.67,138.33) and (153.33,138.33) .. (155,140) .. controls (156.67,141.67) and (158.33,141.67) .. (160,140) .. controls (161.67,138.33) and (163.33,138.33) .. (165,140) .. controls (166.67,141.67) and (168.33,141.67) .. (170,140) .. controls (171.67,138.33) and (173.33,138.33) .. (175,140) .. controls (176.67,141.67) and (178.33,141.67) .. (180,140) .. controls (181.67,138.33) and (183.33,138.33) .. (185,140) .. controls (186.67,141.67) and (188.33,141.67) .. (190,140) -- (190,140) ;
-		%Straight Lines [id:da7640613174865398] 
-		\draw    (150,130) .. controls (151.67,128.33) and (153.33,128.33) .. (155,130) .. controls (156.67,131.67) and (158.33,131.67) .. (160,130) .. controls (161.67,128.33) and (163.33,128.33) .. (165,130) .. controls (166.67,131.67) and (168.33,131.67) .. (170,130) .. controls (171.67,128.33) and (173.33,128.33) .. (175,130) .. controls (176.67,131.67) and (178.33,131.67) .. (180,130) .. controls (181.67,128.33) and (183.33,128.33) .. (185,130) .. controls (186.67,131.67) and (188.33,131.67) .. (190,130) .. controls (191.67,128.33) and (193.33,128.33) .. (195,130) .. controls (196.67,131.67) and (198.33,131.67) .. (200,130) .. controls (201.67,128.33) and (203.33,128.33) .. (205,130) .. controls (206.67,131.67) and (208.33,131.67) .. (210,130) .. controls (211.67,128.33) and (213.33,128.33) .. (215,130) .. controls (216.67,131.67) and (218.33,131.67) .. (220,130) .. controls (221.67,128.33) and (223.33,128.33) .. (225,130) .. controls (226.67,131.67) and (228.33,131.67) .. (230,130) -- (230,130) ;
-
-		% Text Node
-		\draw (221,212.4) node [anchor=north west][inner sep=0.75pt]    {$S_{0}$};
-		% Text Node
-		\draw (160,165.4) node [anchor=north west][inner sep=0.75pt]    {$B_{1}$};
-		% Text Node
-		\draw (200,165.4) node [anchor=north west][inner sep=0.75pt]    {$B_{2}$};
-		% Text Node
-		\draw (236,169.4) node [anchor=north west][inner sep=0.75pt]    {$\cdots $};
-	\end{tikzpicture}
-	\caption{$B_2$ è il numero di $1$ presenti in $\mathbf{b}$ `sotto' la traccia più lunga, mentre $B_1$
-		è il numero di $1$ sotto quella più corta. Va notato che $B_0$, in questo frangente, è $0$,
-		poiché $S_0$ è il primo superblocco di $\mathbf{b}$.}
-	\label{fig:block_i}
-\end{figure}
-
-\noindent
-Quindi, gli $S_i$ sono tanti quanti sono i superblocchi, ossia $\frac{n}{log_2(n)^2}$ e occupano spazio
-$$
-	\frac{n}{\log_2(n)^2} \underbrace{\log_2(n)}_{\text{spazio di un } S_I} = \frac{n}{\log_2(n)} = o(n) \text{ bit}
-$$
-mentre i $B_l$ sono tanti quanti sono i blocchi, ossia $\frac{n}{\frac{1}{2}\log_2(n)}$ e occupano spazio
-$$
-	\frac{n}{\frac{1}{2}\log_2(n)} \underbrace{\log_2(\log_2(n)^2)}_{\text{al massimo}} =
-	\frac{2n}{\log_2(n)} 2 \log_2(\log_2(n)) = o(n) \text{ bit}
-$$
-Se si vuole conoscere il rango di uno specifico bit in un blocco bisogna
-recuperare $S_i$ e $B_i$ e calcolare il quale sia effettivamente il rango, che
-è stato memorizzato in una tabella $Tab$ utilizzando il four-russians trick
-enumerando i possibili $\sqrt(n)$ blocchi e memorizzando il rango di ogni
-bit del blocco. Complessivamente, quindi, tutte le tabelle necessarie occupano
-$D_n = o(n)$ bit.
-
-\begin{figure}[!h]
-	\centering
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Shape: Rectangle [id:dp07152433688787241] 
-		\draw   (100,100) -- (320,100) -- (320,120) -- (100,120) -- cycle ;
-		%Straight Lines [id:da2936448051112307] 
-		\draw    (120,100) -- (120,120) ;
-		%Straight Lines [id:da027036583121563318] 
-		\draw    (140,100) -- (140,120) ;
-		%Straight Lines [id:da7810766858201694] 
-		\draw    (160,100) -- (160,120) ;
-		%Straight Lines [id:da5001340947135379] 
-		\draw    (180,100) -- (180,120) ;
-		%Straight Lines [id:da3843632481846373] 
-		\draw    (200,100) -- (200,120) ;
-		%Straight Lines [id:da03824030730667982] 
-		\draw    (220,100) -- (220,120) ;
-		%Straight Lines [id:da15646574434271243] 
-		\draw    (240,100) -- (240,120) ;
-		%Straight Lines [id:da846809534956415] 
-		\draw    (260,100) -- (260,120) ;
-		%Straight Lines [id:da4897590587430042] 
-		\draw    (280,100) -- (280,120) ;
-		%Straight Lines [id:da4069787777904943] 
-		\draw    (300,100) -- (300,120) ;
-		%Straight Lines [id:da05219000701716625] 
-		\draw    (250,80) -- (250,98) ;
-		\draw [shift={(250,100)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-		%Shape: Brace [id:dp37474184805141453] 
-		\draw   (100.25,150) .. controls (100.25,154.67) and (102.58,157) .. (107.25,157) -- (140.25,157) .. controls (146.92,157) and (150.25,159.33) .. (150.25,164) .. controls (150.25,159.33) and (153.58,157) .. (160.25,157)(157.25,157) -- (193.25,157) .. controls (197.92,157) and (200.25,154.67) .. (200.25,150) ;
-		%Shape: Brace [id:dp9417201733674553] 
-		\draw   (200.5,150.5) .. controls (200.5,155.17) and (202.83,157.5) .. (207.5,157.5) -- (240.5,157.5) .. controls (247.17,157.5) and (250.5,159.83) .. (250.5,164.5) .. controls (250.5,159.83) and (253.83,157.5) .. (260.5,157.5)(257.5,157.5) -- (293.5,157.5) .. controls (298.17,157.5) and (300.5,155.17) .. (300.5,150.5) ;
-		%Straight Lines [id:da1555835238266523] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (100,100) -- (80,100) ;
-		%Straight Lines [id:da0928939361477803] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (100,120) -- (80,120) ;
-		%Straight Lines [id:da19581834915337515] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (340,120) -- (320,120) ;
-		%Straight Lines [id:da4107689408293117] 
-		\draw  [dash pattern={on 0.84pt off 2.51pt}]  (340,100) -- (320,100) ;
-		%Shape: Brace [id:dp9863486277907854] 
-		\draw   (240.25,120.5) .. controls (240.25,125.17) and (242.58,127.5) .. (247.25,127.5) -- (250.17,127.5) .. controls (256.84,127.5) and (260.17,129.83) .. (260.17,134.5) .. controls (260.17,129.83) and (263.5,127.5) .. (270.17,127.5)(267.17,127.5) -- (273.08,127.5) .. controls (277.75,127.5) and (280.08,125.17) .. (280.08,120.5) ;
-		%Shape: Brace [id:dp8556326349440747] 
-		\draw   (199.92,120.25) .. controls (199.92,124.92) and (202.25,127.25) .. (206.92,127.25) -- (209.83,127.25) .. controls (216.5,127.25) and (219.83,129.58) .. (219.83,134.25) .. controls (219.83,129.58) and (223.16,127.25) .. (229.83,127.25)(226.83,127.25) -- (232.75,127.25) .. controls (237.42,127.25) and (239.75,124.92) .. (239.75,120.25) ;
-
-		% Text Node
-		\draw (245,59.4) node [anchor=north west][inner sep=0.75pt]    {$p$};
-		% Text Node
-		\draw (104,102.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-		% Text Node
-		\draw (124,102.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-		% Text Node
-		\draw (144,102.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-		% Text Node
-		\draw (224,102.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-		% Text Node
-		\draw (164,102.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-		% Text Node
-		\draw (204,102.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-		% Text Node
-		\draw (240,170.4) node [anchor=north west][inner sep=0.75pt]    {$S_{n}$};
-		% Text Node
-		\draw (140,170.4) node [anchor=north west][inner sep=0.75pt]    {$S_{n-1}$};
-		% Text Node
-		\draw (248,132.4) node [anchor=north west][inner sep=0.75pt]    {$B_{k}$};
-		% Text Node
-		\draw (204,132.4) node [anchor=north west][inner sep=0.75pt]    {$B_{k-1}$};
-		% Text Node
-		\draw (184,102.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-	\end{tikzpicture}
-	\caption{Calcolo di $\mathbf{rank_b}(p)$.}
+	\input{img/jacobson_rank.tikz}
+	\caption{Calcolo di $\rank(p)$.}
 	\label{fig:example_rank_p}
 \end{figure}
 
-Quanto tempo impiega un'implementazione basata su queste strutture per
-calcolare il rango di una posizione $p$? Per sapere quanti $1$ ci sono
-prima della posizione $p$, bisogna innanzitutto calcolare il superblocco
-di appartenenza di $p$, che è il superblocco numero $\frac{p}{\log_2(n)^2}$.
-Vogliamo sapere quanti $1$ ci sono prima di quel superblocco - valore che abbiamo
-memorizzato nei $S_i$. A questo punto, è necessario calcolare il numero di $1$
-dall'inizio del superblocco all'inizio del blocco al quale appartiene $p$, valore salvato
-in $B_i$. Rimane, quindi, da capire quanti $1$ ci sono dall'inizio del blocco al
-quale appartiene $p$ fino alla posizione $p$ stessa. Per questo si può
-utilizzare la tabella $Tab$ del four-russians trick:
+Un'implementazione della struttura succinta di Jacobson per il rango impiega un tempo costante per calcolare il rango di una posizione $p$, dovendo effettuare un accesso ai vettori $S$ e $B$ e uno alla tabella dei tipi di blocco. In effetti l'identificazione del tipo di blocco, stando al criterio di costo della macchina di Turing, è logaritmica in $n$, dovendo scansionare linearmente il blocco che contiene la posizione interessata. Tuttavia, adottando un criterio di costo simile alle macchine reali, questa scansione avviene in tempo costante, poiché un blocco è solitamente contenuto in una o due parole di memoria, recuperate in tempo costante.
 
-$$
-	\mathbf{rank}_{\mathbf{b}}(p) = S_{\frac{p}{\log_2(n)^2}} + B_{\frac{p}{\frac{1}{2}\log_2(n)}}
-	+ Tab[t, p \mod \frac{1}{2}\log_2(n)]
-$$
-dove $t$ è il tipo blocco a cui $p$ appartiene secondo l'enumerazione dei blocchi di
-$Tab$, calcolabile data la posizione d'inizio del blocco di $p$
-$$
-	x = \lfloor \frac{p}{\frac{1}{2}\log_2(n)}\rfloor (\frac{1}{2}\log_2(n))
-$$
-accedendo il vettore $\mathbf{b}$ e leggendo i valori del blocco\footnote{
-	In termini pratici, come avviene questo accesso? Se avviene leggendo,
-	uno per uno, tutti i valori del blocco al quale appartiene $p$ per poi
-	accedere alla tabella $Tab$, non ha più senso leggere i valori da
-	$\mathbf{b}[x]$ fino a $\mathbf{b}[p-1]$ contando gli $1$ visti?
-}:
-$$
-	t = \mathbf{b}[x, x +1, \cdots, x + \frac{1}{2} \log_2(n) -1 ]
-$$
-Il calcolo del rank avviene quindi in tempo lineare,
-poiché si tratta di accedere a $3$ tabelle e la struttura quindi
-occupa lo spazio di $n + o(n)$ bit, poiché è necessario mantenere $b$ e
-risponde alle query in tempo $O(1)$. Rispetto alla nostra classificazione,
-questa struttura è \textbf{succinta} e ha la stessa efficienza della struttura naïve.
 
 \subsection{Struttura di Clarke per la selezione}
 La struttura di Clarke per la selezione è succinta teoricamente, ma in pratica

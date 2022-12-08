@@ -1,0 +1,18 @@
+\begin{subfigure}{0.45\textwidth}
+	\begin{center}
+		\begin{tikzpicture}
+			\node [circle, draw]{};
+		\end{tikzpicture}
+	\end{center}
+	\caption{Foglia}
+\end{subfigure}
+\begin{subfigure}{0.45\textwidth}
+	\begin{center}
+		\begin{tikzpicture}
+			\node [circle,draw]{}
+			child {node [isosceles triangle,draw,shape border rotate=90] {$T_1$}}
+			child {node [isosceles triangle,draw,shape border rotate=90] {$T_2$}};
+		\end{tikzpicture}
+	\end{center}
+	\caption{Passo induttivo}
+\end{subfigure}

@@ -378,427 +378,142 @@ una struttura \textbf{succinta}.
 
 
 
-\section{Struttura per alberi binari}
-Gli \textit{alberi} possono essere visti in due modi: per i
-matematici, essi sono dei grafi connessi aciclici mentre per gli
-informatici sono una \textit{struttura dati} radicata che ha una
-\textit{radice}. In particolare, un albero \textit{binario} è un
-albero tale per cui ogni nodo ha al più due figli; formalmente,
-si definiscono induttivamente: l'albero con un solo nodo (che è anche
-la radice), denotato $\emptyset$, è un albero binario;
-se $T_1$ e $T_2$ sono due alberi binari,
-allora anche l'albero radicato in un nuovo nodo che ha come figli
-$T_1$ e $T_2$, denotato $(T_1, T_2)$ è un albero binario. In questa definizione,
-ogni nodo ha o $0$ o $2$ figli. I nodi che non hanno figli
-sono chiamati \textbf{nodi esterni} o \textbf{foglie}, mentre gli altri sono
-chiamati \textbf{nodi interni}.
+\section{Alberi binari}
+Un albero è un grafo non orientato, connesso e aciclico.
+Un albero con radice è un albero in cui si elegge un vertice radice. I vertici adiacenti alla radice sono i suoi figli, che danno origine a sottoalberi. I vertici che danno origine a sottoalberi composti unicamente dalla radice sono detti foglie, o nodi esterni. I rimanenti nodi in un albero sono detti nodi interni.
+Un albero binario è un albero radicato in cui ogni nodo interno ha due figli.
+Equivalentemente si possono definire gli alberi binari induttivamente: un albero binario è una foglia $\emptyset$, oppure, se $L$ e $R$ sono alberi binari, è una coppia $(L,R)$ composta da una radice a cui sono connessi i sottoalberi $L$ e $R$.
 
-
-\begin{figure}[!hb]
-	\begin{subfigure}{0.45\textwidth}
-		\begin{center}
-			\begin{tikzpicture}
-				\node [circle, draw]{};
-			\end{tikzpicture}
-		\end{center}
-		\caption{L'albero binario $\emptyset$.}
-	\end{subfigure}
-	\begin{subfigure}{0.45\textwidth}
-		\begin{center}
-			\begin{tikzpicture}
-				\node [circle,draw]{}
-				child {node [isosceles triangle,draw,shape border rotate=90] {$T_1$}}
-				child {node [isosceles triangle,draw,shape border rotate=90] {$T_2$}};
-			\end{tikzpicture}
-		\end{center}
-		\caption{L'albero binario $(T_1, T_2)$.}
-	\end{subfigure}
+% TODO: migliorare figura del passo induttivo: la radice dovrebbe essere adiacente alle radici dei sottoalberi
+\begin{figure}
+	\input{img/bitree_induct.tikz}
 	\caption{Definizione induttiva di albero binario.}
 	\label{fig:btree_inductive}
 \end{figure}
 
-\begin{figure}
-	\begin{center}
-		\begin{tikzpicture}
-			\node [circle,draw]{} [level distance=10mm,sibling distance=25mm]
-			child { node [circle,draw]{} [level distance=10mm ,sibling distance=15mm]
-					child {node [circle,draw] {}
-							child {node [circle,fill] {}}
-							child {node [circle,fill]{}}}
-					child {node [circle,draw,fill]{}}
-				}
-			child {node [circle,draw] {} [level distance=10mm ,sibling distance=15mm]
-					child {node [circle,draw,fill] {}}
-					child {node [circle,draw,fill]{}}
-				};
-		\end{tikzpicture}
-	\end{center}
-	\caption{L'albero binario $(((\emptyset, \emptyset), \emptyset), (\emptyset, \emptyset))$.}
-	\label{fig:btree_example}
-\end{figure}
+Un albero può essere \emph{ancillare}, cioè organizzare dati contenuti nei nodi interni o nelle foglie (tipicamente esclusivamente una delle due opzioni). Le strutture costruite per alberi privi di dati possono tipicamente essere generalizzate al caso di alberi ancillari.
 
-\noindent
-Ora stiamo descrivendo alberi \textit{vuoti}, ossia che non contengono dati:
-alternative sono gli alberi \textbf{ancillari}, i quali contengono dati solo nei nodi interni
-o solo nelle foglie. Al netto di queste distinzioni, definiamo $E$ l'insieme dei nodi
-esterni, $I$ l'insieme dei nodi interni di un albero binario e $n$ il numero di nodi
-interni, ossia $n = |I|$. Inoltre, `equipaggiamo' gli alberi binari di due funzioni
-$ext$ e $int$, che denotano l'insieme delle foglie interne e l'insieme delle foglie
-interne di un albero binario.
+Dato un albero binario, chiameremo $E$ l'insieme dei nodi esterni (foglie), $I$ l'insieme dei nodi interni e $n:=\card{I}$.
+Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come il numero di foglie e nodi interni di un dato albero binario.
 
-\begin{theorem} \label{thm:btree_leaves}
-	In ogni albero binario, il numero di foglie in un albero binario è uguale al numero di nodi esterni più uno:
-	$$
-		|E| = |I| + 1
-	$$
+\begin{theorem}\label{thm:btree_leaves}
+	In un albero binario, il numero di foglie è uguale al numero di nodi interni più uno:
+	\begin{equation*}
+		\card{I}=\card{E}+1
+	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Per induzione.
+	Effettuando induzione strutturale sulla definizione di albero binario:
 	\begin{itemize}
-		\item{\bf base}: $ext(\emptyset) = 1$ e $int(\emptyset) = 0$.
-		\item{\bf induzione}: siano $L, R$ due alberi binari. Allora
-		$$
-			ext((L,R)) = ext(L) + ext(R) = int(L) + 1 + int(R) + 1 = int((L, R))  + 1
-		$$
+		\item $\trext(\emptyset)=1$, $\trint(\emptyset)=0$.
+		\item siano $L, R$ due alberi binari. Vale
+		      \begin{equation*}
+			      \trext((L,R)) = \trext(L) + \trext(R) = \trint(L) + 1 + \trint(R) + 1 = \trint((L, R))  + 1
+		      \end{equation*}
 	\end{itemize}
 \end{proof}
 
 \begin{corollario}
-	Ogni albero con $n$ nodi interni ha in totale $2n +1$ nodi.
+	Ogni albero con $n$ nodi interni ha in totale $2n+1$ nodi.
 \end{corollario}
 
-\begin{theorem}[di Catalan]\label{thm:catalan}
-	Il numero di alberi binari con $n$ nodi interni è
-	$$
-		C_n = \frac{1}{n+1}{2n \choose n}
-	$$
+\begin{theorem}
+	Il numero di alberi binari con $n$ nodi interni è $C_n$, dove $C_n$ è l'$n$-esimo numero di Catalano:
+	\begin{equation*}
+		C_n := \frac{1}{n+1}\binom{2n}{n}
+	\end{equation*}
 \end{theorem}
-\begin{proof}
-	Omessa.
-\end{proof}
 \begin{corollario}
-	$ \forall n ~ \log_2(C_n)  =2n + O(\log_2(n)) $
+	\begin{equation*}
+		\forall n \quad\log_2(C_n)=2n+O(\log_2(n))
+	\end{equation*}
 \end{corollario}
 \begin{proof}
-	Utilizzando l'approssimazione di Stirling
-	$$
-		x! \approx \sqrt{2\pi x} (\frac{x}{e})^x
-	$$
-
+	Ricordando l'approssimazione di Stirling per il fattoriale:
+	\begin{equation*}
+		x! \sim \sqrt{2\pi x} \left(\frac{x}{e}\right)^x
+	\end{equation*}
 	si ha che
-	$$
-		C_n = \frac{1}{n+1} \frac{(2n)!}{n! (2n - n)!} = \frac{1}{n+1}\frac{(2n)!}{(n!)^2} \approx
-		\frac{1}{n+1} \frac{\sqrt{4 \pi n} (\frac{2n}{e})^{2n}}{2 \pi n (\frac{n}{e})^{2n}}
-		= \frac{1}{n+1} \frac{1}{\sqrt{\pi n }} 2^{2n} \approx \frac{4^n}{\sqrt{\pi n^3}}
-	$$
-	(che può essere dimostrato asintoticamente corretto).
-	Questo significa che
-	$$
-		\log_2(C_n) = n \log_2(4) - \frac{1}{2}\log_2(\pi n^3)
-		= 2n - \frac{3}{2}\log_2(n) - \frac{1}{2}\log_2(\pi)
-		= 2n + O(\log_2(n))
-	$$
+	\begin{align*}
+		C_n = \frac{1}{n+1}\binom{2n}{n} & = \frac{1}{n+1}\cdot\frac{(2n)!}{n!(2n-n)!}                                                             \\
+		                                 & = \frac{(2n)!}{(n+1)(n!)^2}                                                                             \\
+		                                 & \sim \frac{\sqrt{4\pi n}\left(\frac{2n}{e}\right)^{2n}}{(n+1)\cdot 2\pi n\left(\frac{n}{e}\right)^{2n}} \\
+		                                 & = \frac{1}{n+1}\cdot \frac{1}{\sqrt{\pi n}}\cdot 2^{2n}                                                 \\
+		                                 & \approx \frac{4^n}{\sqrt{\pi n^3}}
+	\end{align*}
+	Da cui
+	% TODO: spiegare
+	\begin{equation*}
+		\log_2 C_n = 2n-O(\log n) \text.
+	\end{equation*}
 \end{proof}
-\begin{corollario}
-	Per memorizzare alberi binari con $n$ nodi interni sono necessari
-	$$
-		Z_n = 2n + O(\log_2(n)) \text{ bit}
-	$$
+\begin{corollario}\label{corol:bitree:itlb}
+	L'information theoretical lower bound in bit per gli alberi binari è
+	\begin{equation*}
+		Z_n = 2n-O(\log_2(n)) \text.
+	\end{equation*}
 \end{corollario}
 
-\subsection{L'ADT albero binario}
-L'ADT che vogliamo costruire per un albero binario è definito a partire da una definizione
-di nodi interni $I$, nodi interni $E$, e relazioni genitore-figlio. Le operazioni
-che vogliamo eseguire su questi oggetti sono:
-$$
-	\forall n \in (I \cup E) ~~ \mathbf{is\_leaf}(n) = 1 \iff n \in  E
-$$
 
-$$
-	\forall n \in (I \cup E) ~~ \mathbf{left\_child}(n) = \{n_l | n_l \text{ è il figlio sinistro di } n\}
-$$
+\subsection{Una struttura succinta per alberi binari}
+Per costruire una struttura succinta per gli alberi binari, definiamo tre operazioni fondamentali in cui possono consistere le query alla struttura dati: le operazioni $\trleft$ e $\trright$, che restituiscono rispettivamente il figlio sinistro e destro di un dato nodo, e l'operazione $\trparent$, che restituisce il genitore di un dato nodo.
 
-$$
-	\forall n \in (I \cup E) ~~ \mathbf{right\_child}(n) = \{n_l | n_l \text{ è il figlio destro di } n\}
-$$
+Per rappresentare un albero binario con $n$ nodi interni, numeriamo i nodi da $0$ a $2n$ seguendo una visita in ampiezza, come rappresentato in \cref{fig:btree_rappr_num}.
+Costruiamo quindi un vettore $v$ (\cref{fig:btree_rappr_vec}), di lunghezza $2n+1$ e tale che
+\begin{equation*}
+	\forall i\in\set{0,\dots,2n},\qquad v_i = \begin{cases}
+		1 & \text{se il nodo $i$ appartiene a $I$} \\
+		0 & \text{altrimenti}
+	\end{cases}
+\end{equation*}
 
-$$
-	\forall n \in (I \cup E) ~~ \mathbf{parent}(n) = \{p | n \text{ è il figlio di } p\}
-$$
-
-
-\subsubsection{Rappresentazione}
-Per rappresentare un albero binario con $n$ nodi interni, numeriamo seguendo una visita in
-ampiezza i nodi dell'albero, come rappresentato in \cref{fig:btree_rappr_num}. I numeri assegnati
-andranno da $0$ a $2n$ e introducono una biiezione tra l'insieme $\{0, \cdots, 2n\}$ e i nodi,
-realizzato come una funzione $node: \{0, \cdots, 2n\} \rightarrow (E \cup I)$.
-
-\begin{figure}[h]
+\begin{figure}
 	\centering
-	\begin{subfigure}[t]{0.45\textwidth}
-		\centering
-		\begin{tikzpicture}[
-				every node/.style={circle, draw, minimum size=4mm, inner sep=0.5mm},
-				level distance=10mm,
-				level 1/.style={sibling distance=25mm},
-				level 2/.style={sibling distance=25mm}]
-			\node [label=above:{0}]{}
-			child {
-			node [label=above:{1}] {}
-			child {node[fill, label=above:{3}]{}}
-			child {
-			node[label=above:{4}]{}
-			child {
-			node [label=above:{5}]{}
-			child {node[fill,label=above:{7}]{}}
-			child {node[fill,label=above:{8}]{}}
-			}
-			child {
-			node[label=above:{6}]  {}
-			[level distance=10mm ,sibling distance=15mm]
-			child {node[fill,label=above:{9}] {}}
-			child {node[fill,label=above:{10}] {}}
-			}
-			}
-			}
-			child {node [fill, label=above:{2}]{}};
-		\end{tikzpicture}
-
-		\caption{L'albero binario $((\emptyset, ((\emptyset, \emptyset), (\emptyset, \emptyset))), \emptyset)$ numerato.}
-		\label{fig:btree_rappr_num}
-
-	\end{subfigure}
-	\begin{subfigure}[t]{0.45\textwidth}
-		\centering
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Rectangle [id:dp4589196649246813] 
-			\draw   (160,120) -- (180,120) -- (180,140.67) -- (160,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp7482491218517459] 
-			\draw   (180,120) -- (200,120) -- (200,140.67) -- (180,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp3055160865785119] 
-			\draw   (200,120) -- (220,120) -- (220,140.67) -- (200,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp6460750266770654] 
-			\draw   (220,120) -- (240,120) -- (240,140.67) -- (220,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp45180487257490853] 
-			\draw   (240,120) -- (260,120) -- (260,140.67) -- (240,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp28629681352535363] 
-			\draw   (260,120) -- (280,120) -- (280,140.67) -- (260,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp7936708770675233] 
-			\draw   (280,120) -- (300,120) -- (300,140.67) -- (280,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp23915136536136594] 
-			\draw   (300,120) -- (320,120) -- (320,140.67) -- (300,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp722227591081337] 
-			\draw   (320,120) -- (340,120) -- (340,140.67) -- (320,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp6052306075858915] 
-			\draw   (340,120) -- (360,120) -- (360,140.67) -- (340,140.67) -- cycle ;
-			%Shape: Rectangle [id:dp5583026074292488] 
-			\draw   (360,120) -- (380,120) -- (380,140.67) -- (360,140.67) -- cycle ;
-
-			% Text Node
-			\draw (121,122.4) node [anchor=north west][inner sep=0.75pt]    {$\mathbf{b} \ =\ $};
-			% Text Node
-			\draw (164,101.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-			% Text Node
-			\draw (184,101.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-			% Text Node
-			\draw (204,101.4) node [anchor=north west][inner sep=0.75pt]    {$2$};
-			% Text Node
-			\draw (224,101.4) node [anchor=north west][inner sep=0.75pt]    {$3$};
-			% Text Node
-			\draw (244,101.4) node [anchor=north west][inner sep=0.75pt]    {$4$};
-			% Text Node
-			\draw (264,101.4) node [anchor=north west][inner sep=0.75pt]    {$5$};
-			% Text Node
-			\draw (284,101.4) node [anchor=north west][inner sep=0.75pt]    {$6$};
-			% Text Node
-			\draw (304,101.4) node [anchor=north west][inner sep=0.75pt]    {$7$};
-			% Text Node
-			\draw (324,101.4) node [anchor=north west][inner sep=0.75pt]    {$8$};
-			% Text Node
-			\draw (344,101.46) node [anchor=north west][inner sep=0.75pt]    {$9$};
-			% Text Node
-			\draw (361,101.4) node [anchor=north west][inner sep=0.75pt]    {$10$};
-			% Text Node
-			\draw (164,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-			% Text Node
-			\draw (184,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-			% Text Node
-			\draw (204,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-			% Text Node
-			\draw (224,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-			% Text Node
-			\draw (244,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-			% Text Node
-			\draw (264,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-			% Text Node
-			\draw (284,121.4) node [anchor=north west][inner sep=0.75pt]    {$1$};
-			% Text Node
-			\draw (304,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-			% Text Node
-			\draw (324,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-			% Text Node
-			\draw (344,121.46) node [anchor=north west][inner sep=0.75pt]    {$0$};
-			% Text Node
-			\draw (364,121.4) node [anchor=north west][inner sep=0.75pt]    {$0$};
-
-		\end{tikzpicture}
-		\caption{Vettore $\mathbf{v}$ associato.}
-		\label{fig:btree_rappr_vec}
-	\end{subfigure}
+	\input{img/bitree_and_vec.tikz}
 	\caption{Un albero binario e il suo vettore associato.}
 \end{figure}
-\noindent
-La concreta rappresentazione dell'albero si realizza con un vettore di bit di lunghezza
-$2n + 1$ $\mathbf{v}$ tale che
-$$
-	\forall i \in \{0, \cdots, 2n\} ~~ \mathbf{v}[i] =
-	\begin{cases}
-		1 & node(i) \in I \\
-		0 & node(i) \in E
-	\end{cases}
-$$
-ottenendo quindi esattamente $n$ `$1$' nel vettore, come mostrato in \cref{fig:btree_rappr_vec}.
 
-\subsubsection{Implementazione}
-Per capire come implementare l'ADT utilizzando il vettore $\mathbf{v}$, ci poniamo
-nella situazione di dover trovare, dato un nodo numerato $p$ in un albero
-binario $T$, i suoi due figli, i quali sono numerati $q$ e $q+1$.
-Sia quindi $T'$ un sottoalbero di $T$, radicato nella stessa radice di $T$,
-che contiene tutti i nodi di $T$ numerati fino al nodo precedente
-al nodo $q$, come rappresentato in \cref{fig:btree_rappr_step}.
+Studiamo ora come produrre i risultati delle query di $\trleft$, $\trright$, e $\trparent$ a partire dal vettore $v$. Si consideri, all'interno di un albero $T$, una terna di nodi $p,q,q+1$, dove $p$ è il genitore e $q$ e $q+1$ i figli. Sia $T'$ il sottoalbero radicato nella stessa radice di $T$ contenente tutti i nodi di numero minore di $q$, come rappresentato in \cref{fig:btree_rappr_step}. Si tenga presente che alcuni nodi interni nell'albero $T$, in particolare quelli che seguono $p$, diventano foglie in $T'$.
 
+Il numero di nodi interni minori di $p$, ossia il numero di nodi interni in $T'$, è uguale al rango di $p$ in $v$. Applicando il \cref{thm:btree_leaves}, calcoliamo che il numero complessivo di nodi minori di $q$, cioè il numero di nodi dell'albero $T'$, è
+\begin{equation}\label{eq:btree:left_child}
+	\trleft(p) = q = \trint(T')+\trext(T') = 2\cdot\trint(T')+1 = 2\cdot\rank(p)+1 \text.
+\end{equation}
+Mentre per il figlio destro vale, ovviamente
+\begin{equation}\label{eq:btree:right_child}
+	\trright(p) = q+1 = 2\cdot\rank(p)+1 \text.
+\end{equation}
 
-\begin{figure}[h]
+\begin{figure}
 	\centering
-
-
-
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,539); %set diagram left start at 0, and has height of 539
-
-		%Shape: Trapezoid [id:dp3557987154319203] 
-		\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (312.92,126.04) -- (317.75,115.9) -- (328.33,115.9) -- (333.17,126.04) -- cycle ;
-		%Shape: Right Triangle [id:dp7862842021574125] 
-		\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (346,114.3) -- (334.2,125.7) -- (334.2,114.3) -- cycle ;
-		%Shape: Triangle [id:dp9413454407809129] 
-		\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (360.11,21.08) -- (402.87,115.9) -- (317.34,115.9) -- cycle ;
-		%Shape: Circle [id:dp7169355320482411] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (360.11,106.08) .. controls (360.11,102.68) and (362.87,99.92) .. (366.28,99.92) .. controls (369.68,99.92) and (372.44,102.68) .. (372.44,106.08) .. controls (372.44,109.49) and (369.68,112.25) .. (366.28,112.25) .. controls (362.87,112.25) and (360.11,109.49) .. (360.11,106.08) -- cycle ;
-		%Straight Lines [id:da11031799115386731] 
-		\draw    (366.28,106.08) -- (356.04,122.86) ;
-		%Straight Lines [id:da5314879825236313] 
-		\draw    (366.28,106.08) -- (376.09,121.82) ;
-		%Shape: Triangle [id:dp2636274720755136] 
-		\draw   (360.11,21.08) -- (436.94,191.08) -- (283.28,191.08) -- cycle ;
-		%Straight Lines [id:da07107046785599602] 
-		\draw    (312.18,126.95) -- (334.47,126.95) ;
-		%Straight Lines [id:da23996966123276942] 
-		\draw    (345.08,116.14) -- (402.93,116.14) ;
-		%Straight Lines [id:da8657897153449609] 
-		\draw    (345.49,115.99) -- (333.99,127.24) ;
-		%Shape: Circle [id:dp6390655913899737] 
-		\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (350.11,123.93) .. controls (350.11,120.53) and (352.87,117.76) .. (356.28,117.76) .. controls (359.68,117.76) and (362.44,120.53) .. (362.44,123.93) .. controls (362.44,127.34) and (359.68,130.1) .. (356.28,130.1) .. controls (352.87,130.1) and (350.11,127.34) .. (350.11,123.93) -- cycle ;
-		%Shape: Circle [id:dp31674144349432576] 
-		\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (370.11,124.11) .. controls (370.11,120.71) and (372.87,117.95) .. (376.28,117.95) .. controls (379.68,117.95) and (382.44,120.71) .. (382.44,124.11) .. controls (382.44,127.52) and (379.68,130.28) .. (376.28,130.28) .. controls (372.87,130.28) and (370.11,127.52) .. (370.11,124.11) -- cycle ;
-		%Shape: Right Triangle [id:dp4307506900461393] 
-		\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (320.12,125.88) -- (333.92,109.62) -- (333.95,125.85) -- cycle ;
-
-		% Text Node
-		\draw (341.53,125.76) node [anchor=north west][inner sep=0.75pt]    {$q$};
-		% Text Node
-		\draw (364.58,131.05) node [anchor=north west][inner sep=0.75pt]    {$q+1$};
-		% Text Node
-		\draw (363.18,78.26) node [anchor=north west][inner sep=0.75pt]    {$p$};
-		% Text Node
-		\draw (353.2,51.2) node [anchor=north west][inner sep=0.75pt]    {$T'$};
-		% Text Node
-		\draw (414,30.4) node [anchor=north west][inner sep=0.75pt]    {$T$};
-
-
-	\end{tikzpicture}
+	\input{img/sottoalbero_tank.tikz}
 	\caption{Sottoalbero $T'$ di $T$ utilizzato per calcolare $q$ e $q+1$.}
 	\label{fig:btree_rappr_step}
 \end{figure}
 
-Definiamo l'insieme dei nodi interni di $T$ con numerazione strettamente
-minore di $p$
-$$
-	E_{T, p} = \{n \in int(T) | n < p \}
-$$
-e, intuitivamente, deve essere
-$$
-	q = |int(T')| + |ext(T')| = 2 |int(T')| + 1 = 2 |E_{T,p}| + 1 = 2 \mathbf{rank_v}(p) + 1
-$$
-poiché $|E_{T,p}|$ è uguale al numero di `$1$' presenti in $\mathbf{v}$ con indice
-strettamente minore a $p$, concludendo, chiaramente se e solo se
-$\mathbf{is\_leaf}(p) = \mathbf{v}[p] = 1$, che\footnote{In quanto segue si omette
-	la biiezione $node$, dando per implicito il rapporto tra enumerazione e nodi.}
-$$
-	\forall p \in \{0, \cdots, 2n\} ~~ \mathbf{left\_child}(p) = 2 \mathbf{rank_v}(p) + 1
-$$
-$$
-	\forall p \in \{0, \cdots, 2n\} ~~ \mathbf{right\_child}(p) = 2 \mathbf{rank_v}(p) + 2
-$$
-Per risalire al genitore a partire da un figlio, ossia da $q$ risalire a $p$,
-basta osservare che $p$ è un nodo tale per cui
-$$
+Per implementare l'operazione $\trparent$, si osservi che in virtù delle equazioni \ref{eq:btree:left_child} e \ref{eq:btree:right_child} vale
+\begin{equation*}
 	\begin{cases}
-		2\mathbf{rank_v}(p) + 1 = q & \text{se } q \text{ è il figlio di sinistra} \\
-		2\mathbf{rank_v}(p) + 2 = q & \text{se } q \text{ è il figlio di destra}
+		\rank(p)=\dfrac{q}{2}-\dfrac12 & \quad\text{per $q$ dispari} \\[2ex]
+		\rank(p)=\dfrac{q}{2}-1        & \quad\text{per $q$ pari}
 	\end{cases}
-	\implies
-	\begin{cases}
-		\mathbf{rank_v}(p) + \frac{1}{2} = \frac{q}{2} \\
-		\mathbf{rank_v}(p) + 1 = \frac{q}{2}
-	\end{cases}
-	\implies
-	\begin{cases}
-		\mathbf{rank_v}(p) = \frac{q}{2}  - \frac{1}{2} \\
-		\mathbf{rank_v}(p) = \frac{q}{2} - 1
-	\end{cases}
-$$
-ma possiamo concludere che
-$$
-	\mathbf{rank_v}(p) = \lfloor \frac{q}{2} - \frac{1}{2} \rfloor
-$$
-siccome a seconda che $q$ sia pari o dispari l'equazione sarà sempre verificata,
-ossia questa uguaglianza è vera se e solo se è almeno una delle due precedenti;
-se $\frac{q}{2} - \frac{1}{2}$ è intero, allora è vera la prima equazione, mentre
-se non è intero si ottiene $\frac{q}{2} - 1$, verificando la seconda.
-Applichiamo ad entrami i membri l'operazione di $\mathbf{select}$:
-$$
-	\mathbf{select_v(rank_v}(p)) = \mathbf{select_v}(\lfloor \frac{q}{2} - \frac{1}{2} \rfloor)
-	\implies p = \mathbf{select_v}(\lfloor \frac{q}{2} - \frac{1}{2} \rfloor)
-$$
+\end{equation*}
+da cui si ricava
+\begin{equation*}
+	\rank(p)=\floor{\frac x2-\frac 12}
+\end{equation*}
+e quindi, essendo $\select(\rank(p))=p$ poiché $v_p=1$:
+\begin{equation*}
+	p=\select(\rank(p))=\select\left(\floor{\frac x2-\frac 12}\right) \text.
+\end{equation*}
 
-\subsubsection{Complessità in spazio}
-Per rappresentare un albero con $n$ nodi interni utilizziamo un vettore $b$ che ha tanti
-bit tanti quanti sono i nodi dell'albero, ossia $2n +1$. Oltre a questo, si utilizza
-lo spazio utilizzato dalle strutture di rank e select, ossia
-$$
-	D_n = 2n +1 + o(2n+1) = 2n + 1 + o(n)
-$$
-con un risultato per $Z_n$ pari a $2n + O(\log_1(n))$, la differenza è
-$$
-	D_n - Z_n = o(n)
-$$
-pertanto la struttura è succinta con accesso in tempo costante.
+È quindi possibile fare uso di una struttura per rappresentare il vettore $v$ che sia succinta rispetto all'information theoretical lower bound trovato al \cref{corol:bitree:itlb}:
+\begin{align*}
+	D_n & = 2n+1+o(n)    \\
+	Z_n & = 2n-O(\log n)
+\end{align*}
 
-\subsubsection{Alberi binari con dati}
-Se i dati si trovano su ogni tipo di nodo dell'albero (sia interni che interni) i dati
-ancillari si possono mantenere in un ulteriore vettore della stessa lunghezza.
-Se, invece, i dati ancillari si trovano esclusivamente sui nodi interni,
-la situazione è leggermente più complicata: il vettore dei dati avrà
-lunghezza pare ai al numero di nodi interni e sarà necessario ottenere il numero
-ordinale del nodo interno, utilizzando quindi la funzione rank.
-Alternativamente, se si vogliono salvare dati sulle foglie, si dovrà utilizzare
-una tecnica in grado di contare il \texttt{rank} per gli $0$.
+
 
 \section{Struttura di Elias-Fano per sequenze monotone}
 La struttura (o codifica, rappresentazione) di Elias-Fano che andiamo

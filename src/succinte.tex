@@ -515,225 +515,103 @@ e quindi, essendo $\select(\rank(p))=p$ poiché $v_p=1$:
 
 
 
-\section{Struttura di Elias-Fano per sequenze monotone}
-La struttura (o codifica, rappresentazione) di Elias-Fano che andiamo
-a presentare si occupa delle sequenze monotone di interi, ossia
-delle sequenze di $n$ numeri interi
-$$
-	0 \leq x_0, x_1, \cdots, x_{n+1}
-$$
-ordinati, ossia
-$$
-	\forall i, j ~ i < j \implies x_i < x_j
-$$
-e tali per cui
-$$
-	\exists u ~ \forall i ~ x_i < u
-$$
-dove $u$ è chiamato \textit{dimensione dell'universo}.
-L'ADT che vogliamo rappresentare richiede una primitiva
-che, presentato un indice $i$, restituisce l'$i$-esimo elemento della sequenza,
-ossia
-$$
-	\forall i ~ \mathbf{project}(i) = x_i
-$$
-La rappresentazione di sequenze monotone di interi è molto utile.
-Per esempio, per rappresentare un grafo, si può attribuire ad ogni
-nodo un numero: l'idea classica è quella di utilizzare poi, per esempio,
-liste di adiacenza per elencare i nodi raggiungibili da un certo noto
-considerato. I nodi adiacenti possono essere ordinati in ordine crescente,
-ottenendo una sequenza esattamente monotona.
-Un altro esempio di utilizzo di sequenze monotone è negli indici inversi.
+\section{Sequenze monotone}
+Sia data una sequenza monotona di $n$ numeri naturali
+\begin{equation*}
+	x_0\leq x_1\leq \dots \leq x_{n-1}
+\end{equation*}
+Con un valore $u$, chiamato \emph{dimensione dell'universo}, tale che
+\begin{equation*}
+	\exists u ~ \forall i ~ x_i < u \text.
+\end{equation*}
+
+Dato un naturale $i<n$, si vuole ottenere l'elemento di indice $i$ della sequenza.
 
 
-\subsection{Rappresentazione}
-La rappresentazione banale sarebbe utilizare un vettore di $n$ numeri
-utilizzando per ognuno $\log_2(u)$ bit; la rappresentazione di Elias-Fano
-utilizza meno spazio basandosi sulla seguente idea: si definisce
-$$
-	l = \max\{0, \lfloor\log_2(\frac{u}{n})\rfloor\}
-$$
-e gli $l$ bit meno significativi di ogni $x_i$ vengono salvati
-esplicitamente, mentre i rimanenti bit vengono rappresentati
-in un altro modo. Consideremo sempre il caso in cui $l\neq 0$, in
-quanto $l = 0 \iff u < n$, facendo quindi una moderata
-assunzione di sparsità.
-\begin{table}[h]
-	\centering
-	\begin{tabular}{c}
-		\begin{lstlisting}
-	 0 0 0 1 parte superiore
-	 . . . .
-	 1 1 1 1 		
-	 ------- limite l 
-	 0 1 1 1 			
-	 . . . .
-	 1 0 0 1 parte inferiore
-    \end{lstlisting}
-	\end{tabular}
-	\caption{Divisione di ogni $x_i$.}
-\end{table}
+\subsection{La struttura di Elias-Fano}
+Per evitare di usare un vettore di $n\cdot\log_2 u$ bit, viene definito un valore limite $l$:
+\begin{equation*}
+	l := \max\set{0,\floor{\log_2\left(\frac{u}{n}\right)}}\text.
+\end{equation*}
+La rappresentazione di Elias-Fano estrae da ogni intero $x_i$ la parte $l_i:=x_i\mod 2^l$, formata dai $l$ bit meno significativi. Per memorizzare le parti $l_i$ si fa uso di un vettore $L$ di $n$ elementi, ciascuno di $l$ bit.
 
-\subsubsection{Implementazione e complessità in spazio}
-Le parti inferiori vengono `estratte' definendo
-$$
-	\forall i \in \{0, \cdots, n\} ~ l_i = x_i \mod 2^l
-$$
-utilizzando $n \cdot l$ bit in totale.  Ciò che rimane è la parte superiore, ossia
-$s_i = \lfloor{\frac{x_{i}}{2^l}}\rfloor$; definiamo una sequenza di differenze
-$$
-	d_i = \lfloor{\frac{x_i}{2^l}}\rfloor - \lfloor{\frac{x_{i-1}}{2^l}}\rfloor
-$$
-assumendo $x_{-1} = 0$. Stiamo sfruttando il fatto che la sequenza sia non
-decrescente, quindi $\forall i ~ d_i \geq 0$.
+Per le parti più significative, si calcolano i valori $u_i:=\floor{\frac{x_i}{2^l}}-\floor{\frac{x_{i-1}}{2^l}}$ (dove implicitamente $x_{-1}=0$), che vengono memorizzati in codifica unaria in una porzione di memoria $U$.
 
-Ogni differenza della sequenza viene rappresentata in unario, utilizzando $d_i$ bit
-`$0$' seguiti dal bit `$1$' per rappresentare il valore $d_i$; la sequenza
-così rappresentata viene salvata in un vettore $\mathbf{d}$ equipaggiato
-con funzioni di rango e selezione. Questa struttura occupa in spazio
-una quantità al più
-$$
-	\sum_{i = 0}^{n - 1}(d_i + 1) = n + \sum_{i=0}^{n-1} d_i
-	= n + \sum_{i = 0}^{n-1} (\lfloor{\frac{x_i}{2^l}}\rfloor - \lfloor{\frac{x_{i-1}}{2^l}}\rfloor) \text{ bit}
-$$
-che identifica una serie telescopica; pertanto, il consumo in spazio è
-$$
-	n + (\lfloor{\frac{x_{n-1}}{2^l}}\rfloor -\lfloor{\frac{x_{-1}}{2^l}}\rfloor) \leq n + \frac{u}{2^l}
-	= n + \frac{u}{2^{\lfloor \log_2(\frac{u}{n})\rfloor}} \text{ bit}
-$$
-Se $u/n$ è una potenza di $2$, allora il consumo è
-$$
-	n + \frac{u}{(u/n)} = 2n \text{ bit}
-$$
-altrimenti è al più
-$$
-	n + \frac{u}{2^{\log_2(\frac{u}{n}) - 1 }} = n + \frac{u}{2^{\log_2(u/n)}1/2} = n + \frac{2n}{u/n} = 3n \text{ bit}
-$$
-Considerando entrambe le parti, questa struttura occupa in spazio $l\cdot n$ bit
-per la parte inferiore e $2n$ o $3n$ bit per la parte superiore; in totale,
-quindi, si consumano $(l+2)n$ o $(l+3)n$ bit.
-Ricordando che stiamo considerando sempre $l = \lfloor \log_2(u/n) \rfloor$, consideriamo
-$$
+Poiché ci interessa il caso sparso, assumeremo $l\neq 0$, in quanto $l=0 \iff u<n$.
+
+
+\subsubsection{Costo in spazio}
+Il vettore $L$ ha costo, ovviamente, $l\cdot n$ bit.
+Il numero di bit richiesti a memorizzare ciascun $u_i$ è uguale a $u_i+1$ ($u_i$ zeri e un $1$). In tutto
+\begin{align*}
+	\sum_{i=0}^{n-1}(u_i+1) & = \sum_{i=0}^{n-1}\left(\floor{\frac{x_i}{2^l}}-\floor{\frac{x_{i-1}}{2^l}}+1\right) \\
+	                        & \leq n + \floor{\frac{x_{n-1}}{2^l}} \leq n + \frac{u}{2^l}                          \\[1ex]
+	                        & \leq n+\frac{u}{2^{\floor{\log_2\frac{u}{n}}}}
+\end{align*}
+Se $u/n$ è una potenza di $2$, questo numero è uguale a $2n$, altrimenti è limitato da $3n$:
+\begin{align*}
+	 & \leq n+\frac{u}{2^{\log_2\frac{u}{n}-1}} \\[1ex]
+	 & = n+\frac{2u}{u/n} = 3n \text.
+\end{align*}
+Considerando entrambe le parti, questa struttura occupa in spazio $l\cdot n$ bit per la parte inferiore e $2n$ o $3n$ bit per la parte superiore.
+In totale, quindi, il costo è di $(l+2)n$ o $(l+3)n$ bit.
+Ricordando l'ipotesi che $l=\floor{\log_2(u/n)}$, vale
+\begin{equation*}
 	\lceil \log_2(u/n) \rceil =
 	\begin{cases}
 		l & u/n \text{ è una potenza di } 2 \\
 		l +1                                \\
 	\end{cases}
-$$
-e concludiamo
-$$
-	D_n = (2 + \lceil \log_2(u/n) \rceil) n \text{ bit}
-$$
-che però non tiene conto dello spazio occupato dalla struttura di rango e selezione,
-che infatti sono necessarie: supponiamo di volere la posizione dell'$i$-esimo $1$ in $\mathbf{d}$:
-\begin{align*}
-	\mathbf{select_d}(i) = d_0 + d_1 + \cdots + d_{i-1} + i & "i" \text{ è il numero di '1' in mezzo ai valori}
-\end{align*}
-quindi
-$$
-	\mathbf{select_d}(i) - i = \sum_{j = 0}^i \lfloor{\frac{x_{j}}{2^l}}\rfloor -\lfloor{\frac{x_{j-1}}{2^l}}\rfloor = \lfloor \frac{x_i}{2^l} \rfloor
-$$
-di conseguenza
-$$
-	x_i =  \lfloor \frac{x_i}{2^l} \rfloor 2^l + (x_i ~ \mathrm{mod} {2^l}) = (\mathbf{select_d}(i) - i ) 2^l + l_i
-$$
-Contando anche le strutture di rank e select, che quindi sono necessarie, si occupa uno spazio
-$$
-	D_n = (2 + \lceil \log_2(u/n) \rceil)n + o(n) \text{ bit}
-$$
+\end{equation*}
+Complessivamente, quindi, la struttura occupa un numero di bit di al più
+\begin{equation*}
+	D_n = 2n+n\ceil{\log_2\frac un} \text.
+\end{equation*}
 
-\subsection{Lower bound per le strutture di Elias-Fano}
-La parte difficile dello studio di questa struttura è il calcolo del lower bound:
-dobbiamo considerare tutte le sequenze monotone
-$$
-	0 \leq x_0 \leq \cdots \leq x_{n-1} \le u
-$$
-Quante sono, una volta fissati $n$ e $u$? Esse sono in biiezione con i multinsiemi di cardinalità
-$n$ sottoinsiemi di $\{0,1, \cdots, u-1\}$. Uno di questi multinsiemi si può vedere come
-$$
-	c_0, c_1, \cdots, c_{u-1}
-$$
-dove ogni $c_i$ è il numero di occorrenze del valore $i$ nel multinsieme, ossia
-il numero di soluzioni intere non negative dell'equazione
-$$
-	c_0 + c_1, \cdots, c_{u-1} = n
-$$
-e possiamo calcolare il numero di sequenze monotone calcolando il numero
-di possibili soluzioni per questa equazione fissati $n$ e $u$.
 
-Per esempio, si immagini di avere un universo di dimensione $u = 7$ e $n = 5$ numeri
-estratti da $\{0, 1, \cdots, 7\}$: la sequenza
-$$
-	0 \leq 1 \leq 3 \leq 3 \leq 5 \leq 6 \le 7
-$$
-la cui equazione associata è
-$$
-	c_0 + c_1 + c_2 + \cdots + c_6 = 5
-$$
-è rappresentabile, in termini di $c_i$, come
-$$
-	c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1
-$$
-che è una soluzione dell'equazione precedente.
+Per ricavare la parte più significativa di $x_i$ è necessario contare il numero di zeri fino all'$1$ di indice $i$ in $U$. Questo numero è uguale a $\select(i)-i$, quindi:
+\begin{equation*}
+	x_i=(\select(i)-i)2^l+l_i
+\end{equation*}
 
-\subsubsection{Metodo stars and bars}
+Contando strutture succinte di rango e selezione rendere più efficiente il calcolo degli $x_i$, si ottiene un costo in spazio complessivo di
+\begin{equation*}
+	D_n = 2n+n\ceil{\log_2\frac un}+o(n) \text.
+\end{equation*}
+
+
+\subsection{Information theoretical lower bound}
+Le possibili sequenze monotone di $n$ interi limitati da $u$ corrispondono ai possibili multisottoinsiemi dell'insieme $\set{0,\dots,u-1}$ di cardinalità $n$, nonché alle soluzioni dell'equazione
+\begin{equation}\label{eq:seqmon}
+	c_0+c_1+\dots+c_{u-1}
+\end{equation}
+dove $c_i$ è il numero di occorrenze dell'intero $i$ nella sequenza.
+
 Per contare le possibili soluzioni si può utilizzare la tecnica \textit{stars and bars}, in
-cui si utilizzano delle stringhe costruite utilizzando $n$ stelline e $u-1$ barrette, piazzate
-in qualsiasi posizione:
-$$
+cui si utilizza una stringa costruita utilizzando $n$ stelline e $u-1$ barrette per rappresentare una soluzione all'equazione \ref{eq:seqmon}. Ad esempio:
+\begin{equation*}
 	| \starsymb || \starsymb \starsymb || \starsymb | \starsymb
-$$
+\end{equation*}
 
-Il numero di soluzioni è uguale al numero di stringhe costruite in tale modo: i valori nella sequenza
-sono $n$ e vanno `distribuiti' in $u$ spazi, delineati dalle $u-1$ barrette. L'interpretazione della
-stringa appena mostrata è $ c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1 $, come
-nell'esempio precedente. I simboli utilizzabili sono $(u-1) + n$, pertanto le possibili stringhe
-costruibili con questi simboli sono  ${u + n -1}\choose{u - 1}$.
-Questo fornisce il lower bound desiderato:
-$$
-	Z_n = \log_2{{u + n -1}\choose{u - 1}} = \log_2{{u + n - 1}\choose{n}} \text{ bit}
-$$
-e introduciamo l'approssimazione
-$$
-	{{a}\choose{b}} \approx b \log_2(\frac{a}{b}) + (a - b)\log_2(\frac{a}{a-b})
-$$
-che ci permette di scrivere
+Il valore complessivo della sequenza è $n$ e va distribuito in $u$ spazi, delineati dalle $u-1$ barrette.
+L'interpretazione della stringa appena mostrata è $ c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1 $.
+Il numero di soluzioni possibili è uguale al numero di stringhe costruite in questo modo, che equivale al numero di modi di scegliere $u-1$ posizioni in cui inserire barre in una stringa di $n+u-1$ simboli, ossia $\binom{n+u-1}{u - 1}$.
+
+Facendo uso dell'approssimazione di Stirling per il coefficiente binomiale\footnote{$\log\binom AB \approx B\log\frac AB+(A-B)\log\frac{A}{A-B}$. In questo caso $A:=u+n-1$ e $B:=n$, quindi per $n\ll u$ il secondo addendo si annulla.}:
 \begin{align*}
-	Z_n = \log_2{{u + n -1}\choose{u - 1}} & \approx n \log_2(\frac{u + n -1}{n}) + (u -1) \log_2(\frac{u + n - 1}{u - 1}) =        \\
-	                                       & = n \log_2(\frac{u + n - 1}{n}) = n \log_2(\frac{u}{n}(1 + \frac{n}{u} - \frac{1}{u})) \\
-	                                       & = n \log_2(\frac{u}{n}) + n \log_2(1 + \frac{n}{u} - \frac{1}{u}) \text{ bit}
+	Z_n & = \log_2\binom{n+u-1}{u - 1} = \log_2\binom{n+u-1}{n}              \\
+	    & \approx n\log_2\frac{u+n-1}{n} =                                   \\
+	    & = n\log_2\left(\frac un\left(1+\frac nu - \frac 1u\right)\right) = \\
+	    & = n\log_2\frac un + n\log_2\left(1+\frac nu-\frac 1u\right)        \\
+	    & \sim n\log_2\frac un + \frac{n^2}{u} \approx n\log_2\frac un
 \end{align*}
 
-\noindent
-Un'altra proprietà che utilizziamo è
-$$
-	x \approx \ln(1 + x)
-$$
-quindi
-\begin{align*}
-	Z_n & = n \log_2(\frac{u}{n}) + n \ln(1 + \frac{n}{u}-\frac{1}{u})\frac{1}{\ln(2)}
-	\approx n \log_2(\frac{u}{n}) + n (\frac{n}{u}-\frac{1}{u})\frac{1}{\ln(2)}               \\
-	    & = n \log_2(\frac{u}{n}) + \frac{1}{u}\frac{1}{\ln(2)} - \frac{n}{u}\frac{1}{\ln(2)}
-	\approx n \log_2(\frac{u}{n}) \text{ bit}
-\end{align*}
+Quindi la struttura è implicita:
+\begin{equation*}
+	D_n = 2n+n\ceil{\log_2\frac un}+o(n) = O(Z_n)
+\end{equation*}
 
-L'utilizzo in spazio calcolato precedentemente è
-$$
-	D_n = 2n + n \lceil \log_2(\frac{u}{n}) \rceil + o(n)
-$$
-In questo frangente, per raffinare l'analisi, conviene considerare la differenza
-col lower bound non sull'intera struttura, bensì sul singolo elemento.
-Definiamo, quindi, il lower bound per l'elemento
-$$
-	\bar{Z_n} \approx \log_2(\frac{u}{n})
-$$
-e
-$$
-	\bar{D_n} = 2+ \lceil \log_2(\frac{u}{n}) \rceil + o(n) = \bar{Z_n} + O(1)
-$$
-la struttura è `quasi' implicita, dove l'incertezza deriva dal numero di
-approssimazioni fatte e sull'assunzione di sparsità; in pratica, ciò che succede
-in pratica è che questa uguaglianza vale quando $n \leq \sqrt{u}$.
+
 
 \section{Struttura per parentesi ben formate}
 \subsection{Linguaggi di Dyck}

@@ -22,7 +22,7 @@
 		bottom=4mm
 	}
 \else
-	\geometry{includehead}
+	\geometry{left=3cm,right=3cm,top=3cm,bottom=3cm,includehead}
 	\pagestyle{headings}
 \fi
 

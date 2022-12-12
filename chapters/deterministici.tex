@@ -1,19 +1,20 @@
 % TEX root = ../main.tex
 \chapter{Algoritmi deterministici}
-
-Come anticipato, in questo corso tratteremo inizialmente gli algoritmi deterministici.
-
 \section{Problema del matching bipartito massimale}
 % disegno grafo bipartito: nove vertici, cinque a sinistra e quattro a destra, 
 % 1l, 2l, 4l, 5l -> 1d; 3l -> 2d, 3d; 4l ->4d.
-\popt {BipartiteMaxMatching} {$G = (V,E)$ \textit{bipartito}} {Insieme di lati}
-{Qual è il \textit{matching} più ampio?} {Scelte di insiemi di lati che siano \textit{matching}}
-{$Max$}{Cardinalità dell'insieme}
-
-\noindent
+Nel \textsc{BipartiteMaxMatching} problem, le soluzioni ammissibili sono dei
+\textit{matching}, ossia una scelta di lati tale che nessun vertice abbia più di
+un lato incidente. L'obiettivo è trovare il matching più grande possibile, ossia
+quello col numero maggiore di lati. La funzione di costo è quindi la cardinalità
+dell'insieme di matching, e il problema è di massimo.
 Un grafo \textit{bipartito} è un grafo non orientato in cui l'insieme dei vertici
 è diviso in due parti; tutti i lati hanno un'estremità che incide su una parte
 e un'estremità che incide sull'altra, come rappresentato nella figura \ref{fig:graphmatching}.
+
+\popt {BipartiteMaxMatching} {$G = (V,E)$ \textit{bipartito}} {Insieme di lati}
+{Qual è il \textit{matching} più ampio?} {Scelte di insiemi di lati che siano \textit{matching}}
+{$Max$}{Cardinalità dell'insieme}
 
 \begin{figure}[h]
 	\centering
@@ -42,14 +43,8 @@ e un'estremità che incide sull'altra, come rappresentato nella figura \ref{fig:
 	\label{fig:graphmatching}
 \end{figure}
 
-Le soluzioni ammissibili sono dei \textit{matching}, ossia una scelta di lati
-tale che nessun vertice abbia più di un lato incidente. L'obiettivo è trovare il
-matching più grande possibile, ossia quello col numero maggiore di lati.
-La funzione di costo è quindi la cardinalità dell'insieme di matching,
-e il problema è di massimo.
-
 Questo problema si può risolvere polinomialmente. Esiste anche un algoritmo
-che risolve questo problema anche sui grafi generali, ma sono molto complessi.
+che risolve questo problema anche sui grafi generali, ma è molto complesso.
 
 % lezione 3 - 06/10/2021
 \subsection{Algoritmo basato su cammini aumentanti}

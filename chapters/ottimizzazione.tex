@@ -4,13 +4,14 @@
 \section {Introduzione}
 Un problema di \textbf{ottimizzazione} è caratterizzato da: 
 \begin{enumerate}
-  \item  è l'insieme degli input $I_{\Pi}$;
-  \item  è l'insieme degli output $O_{\Pi}$;
-  \item  una funzione che ad ogni input associa una famiglia di output: $Amm_{\Pi} : I_{\Pi} \rightarrow \{2^{O_{\Pi}} \setminus \emptyset \}$;
+  \item l'insieme degli input $I_{\Pi}$;
+  \item l'insieme degli output $O_{\Pi}$;
+  \item  una funzione che ad ogni input associa una famiglia di output:
+    $Amm_{\Pi} : I_{\Pi} \rightarrow (2^{O_{\Pi}} \setminus \emptyset)$;
   \item il tipo del problema $Tipo_{\Pi} \in \{Min, Max\}$; e
   \item una funzione da una coppia input-output ai naturali
     $$
-	c_{\Pi}: I_{\Pi}\times O_{\Pi} \rightarrow \mathbb{N}
+	c_{\Pi}: I_{\Pi} \times O_{\Pi} \rightarrow \mathbb{N}
     $$
     che formalizza il concetto di \textbf{costo} di una soluzione - per un problema 
     di minizzazione, l'obiettivo sarà scegliere l'output con costo minore. 
@@ -29,17 +30,18 @@ Le proprietà $3$, $4$ e $5$ formalizzano ulteriormente l'insieme $Sol_{\Pi}$ de
 {Numero di clausole rese vere}
 
 \noindent
-Le istanze di questo problema sone formule in forma normale congiunta ben formate
-(ossia CNF); le soluzioni ammissibili sono assegnamenti di valori di verità; 
-il costo (o \textit{funzione obiettivo}) è il numero di clausole rese vere. 
-\textsc{MaxSat} ha chiaramente $Tipo_{\Pi} = Max$, in quanto 
-l'obiettivo è massimizzare il numero di clausole verificate.
+Le istanze di questo problema sono formule ben formate in forma normale congiunta
+(ossia CNF); le soluzioni ammissibili sono assegnamenti di valori di verità; il
+costo (o \textit{funzione obiettivo}) è il numero di clausole rese vere.
+\textsc{MaxSat} ha chiaramente $Tipo_{\Pi} = Max$, in quanto l'obiettivo è
+massimizzare il numero di clausole verificate.
 
-In alcuni frangenti potrebbe causarsi una certa ambiguità: 
-l'algoritmo cerca \textit{il valore} della soluzione ottimale o \textit{la soluzione} ottimale stessa? 
-Possiamo affermare che cerchiamo la soluzione stessa (in quanto il suo valore 
-è calcolabile con la funzione di costo) e la indicheremo con la notazione $y^*(x)$; 
-inoltre, indicheremo il costo della soluzione ottimale con $c^*(x)$.
+In alcuni frangenti potrebbe causarsi una certa ambiguità: l'algoritmo cerca
+\textit{il valore} della soluzione ottimale o \textit{la soluzione} ottimale
+stessa? Nel nostro corso diciamo che cerchiamo la soluzione stessa, in quanto il
+suo valore è calcolabile con la funzione di costo, e la indicheremo con la
+notazione $y^*(x)$; inoltre, indicheremo il costo della soluzione ottimale con
+$c^*(x) = c_{\pi}(y^*(x))$
 
 \section{Rapporto di prestazioni}
 Dato un input $x \in I_{\Pi}$ e $y \in Amm_{\Pi}$, possiamo sempre affermare che 
@@ -49,24 +51,24 @@ $$
   c_{\Pi}(x,y) \leq c_{\Pi}(x,y^*(x)) = c_{\Pi}^*(x) & \text{ per i problemi di massimo}
 \end{cases}
 $$
+
 \subsection{Rapporto di approssimazione}
 Definiamo \textbf{rapporto di approssimazione} la quantità
 $$
 R_{\Pi}(x,y) = \max\{\frac{c_{\Pi}(x,y)}{c_{\Pi}(x, y^*(x))}, \frac{c_{\Pi}(x,y^*(x))}{c_{\Pi}(x, y)}\}
 $$
-questo valore ci permette di dimenticare se stiamo trattando un problema di 
+questo valore ci permette di ``dimenticare'' se stiamo trattando un problema di 
 minimizzazione o massimizzazione, in quanto sarà sempre $R_{\Pi} \geq 1$.
 
 \subsubsection{$\alpha$-approssimazione}
-Se, per esempio, $R_{\Pi} = 1$, la soluzione $y$ è in realtà $y = y^*(x)$; 
-se $R_{\Pi} = 2$, per un problema di minimo significa che il costo di $y$ è 
-il doppio del costo di $y^*(x)$, mentre per un problema di massimo significa che 
-il costo di $y$ è la metà del costo di $y^*(x)$. 
-In generale, dato un problema di approssimazione tenteremo di progettare
-un algoritmo che preso un input $x \in I_{\Pi}$ produca un output $y(x) \in Amm_{\Pi}$. 
-Se si riesce a dimostrare che l'algoritmo costruito trova una soluzione che, 
-per ogni input $x$, è tale per cui $R(x,y(x)) \leq \alpha$ si definisce l'algoritmo 
-$\alpha$-approssimato.
+Se, per esempio, $R_{\Pi} = 1$, la soluzione $y$ è in realtà $y = y^*(x)$; se
+$R_{\Pi} = 2$, per un problema di minimo significa che il costo di $y$ è il
+doppio del costo di $y^*(x)$, mentre per un problema di massimo significa che il
+costo di $y$ è la metà del costo di $y^*(x)$. In generale, dato un problema di
+approssimazione tenteremo di progettare un algoritmo che preso un input $x \in
+I_{\Pi}$ produca un output $y(x) \in Amm_{\Pi}$: se si riesce a dimostrare che
+l'algoritmo costruito trova una soluzione che, per ogni input $x$, è tale per
+cui $R(x,y(x)) \leq \alpha$ si definisce l'algoritmo $\alpha$-approssimato.
 
 \section{Classi di complessità per l'ottimizzazione}
 Considereremo sempre algoritmi che terminano in tempo polinomiale; ovviamente, 
@@ -129,42 +131,43 @@ $\mathbf{P} = \mathbf{NP}$.
 \end{theorem}
 
 \begin{proof}
-Assumiamo $Tipo_{\Pi} = Max$. Per assurdo, supponiamo $\Pi \in \mathbf{PO}$. 
-dato un input $(x,k) \in I_{\Pi} \times \mathbb{N}$ calcoliamo la soluzione ottima 
-$y^*(x)$ in tempo polinomiale usando il fatto che $\Pi \in \mathbf{PO}$. 
-Se $k \leq c_{\Pi}(x, y^*(x))$ 
-rispondiamo \textit{sì}, altrimenti rispondiamo \textit{no}. Questo algoritmo funziona in 
-tempo polinomiale e decide il problema di decisione associato a $\Pi$; 
-in quanto $\hat{\Pi} \in \mathbf{NP-completi}$, concludiamo $\mathbf{P} = \mathbf{NP}$.
+Assumiamo $Tipo_{\Pi} = Max$. Per assurdo, supponiamo $\Pi \in \mathbf{PO}$.
+Dato un input $(x,k) \in I_{\Pi} \times \mathbb{N}$ calcoliamo la soluzione
+ottima $y^*(x)$ in tempo polinomiale usando il fatto che $\Pi \in \mathbf{PO}$.
+Se $k \leq c_{\Pi}(x, y^*(x))$ rispondiamo \textit{sì}, altrimenti rispondiamo
+\textit{no}. Questo algoritmo funziona in tempo polinomiale e decide il problema
+di decisione associato a $\Pi$; in quanto $\hat{\Pi} \in \mathbf{NP-completi}$,
+concludiamo $\mathbf{P} = \mathbf{NP}$.
 \end{proof}
 
 \subsection{Altre classi di complessità}
-In base al rapporto di approssimazione e al comportamento 
-dell'algoritmo dati gli input e il rapporto di approssimazione stesso è 
-possibile definire ulteriori classi di complessità. Utilizziamo ora 
-la notazione $A_{\Pi}$ per denotare un algoritmo che risolve il problema 
-$\Pi$.
+In base al rapporto di approssimazione e al comportamento dell'algoritmo dati
+gli input e il rapporto di approssimazione stesso è possibile definire ulteriori
+classi di complessità. Utilizziamo ora la notazione $A_{\Pi}$ per denotare un
+algoritmo che risolve il problema $\Pi$.
 
-\subsubsection{La classe \textbf{APX}}
+\subsubsection{La classe {\bf APX} ({\it NPO-approximable})}
 La classe dei problemi \textit{approssimabili} in tempo nondeterministico polinomiale:
 $$
 \mathbf{APX} = \{\Pi | \exists A_{\Pi}, \alpha: A_{\Pi} \text{ è } \alpha\text{-approssimante per } \Pi\}
 $$
-Abbiamo che $\mathbf{APX} \subsetneq \mathbf{NPO}$: vi sono infatti alcuni 
+Abbiamo che $\mathbf{APX} \subsetneq \mathbf{NPO}$: vi sono infatti alcuni
 problemi che non sono approssimabili. 
 
-\subsubsection{La classe {\bf PTAS}}
+\subsubsection{La classe {\bf PTAS} ({\it Polynomial time approximation scheme})}
 La seguente classe è parametrizzata dal valore del rapporto di approssimazione 
 scelto:
 $$
 \mathbf{PTAS} = \{\Pi | \exists A_{\Pi},  (x, \rho) \in I_{\Pi} \times \mathbb{Q}^{\geq 1}:
-A_{\Pi}(x) = y \in Amm_{\Pi}(x) \text{ in tempo } poly(x) \land R_{\Pi}(x,y) \geq \rho \} 
+A_{\Pi}(x) = y \in Amm_{\Pi}(x) \text{ in tempo } poly(x) \land R_{\Pi}(x,y) \leq \rho \} 
 $$
-Abbiamo che  $\mathbf{PTAS} \subsetneq \mathbf{APX}$, infatti vi sono problemi 
-che non possono essere approssimati al più di un certo valore. Si noti che 
-i problemi in $\mathbf{PTAS}$ sono risolti in tempo polinomiale \textit{nell'input} ma 
-non nel valore di approssimazione stesso. 
-\subsubsection{La classe {\bf FPTAS}}
+Abbiamo che  $\mathbf{PTAS} \subsetneq \mathbf{APX}$, infatti vi sono problemi
+che non possono essere approssimati al più di un certo valore. Si noti che i
+problemi in $\mathbf{PTAS}$ sono risolti in tempo polinomiale
+\textit{nell'input} ma non nel valore di approssimazione stesso.
+
+\subsubsection{La classe {\bf FPTAS} ({\it Fully polynomial time approximation
+scheme})}
 Stringendo la restrizione di polinomialità anche sul rapporto di approssimazione 
 otteniamo la seguente classe: 
 $$
@@ -173,8 +176,6 @@ $$
 Abbiamo che  $\mathbf{FPTAS} \subsetneq \mathbf{PTAS}$, infatti vi sono problemi 
 che possono essere approssimati arbitrariamente solo utilizzando un tempo non 
 polinomiale nel valore di approssimazione. 
-
-
 
 
 \begin{figure}[h]
@@ -241,13 +242,12 @@ In un grafo non orientato un \textbf{cammino} di lunghezza $k$
 $$
 \pi = v_1, v_2, \cdots, v_k
 $$
-tale che $\forall v_{i} \in \pi :\exists \{v_i, v_{i+1}\} \in E$. 
+tale che $\forall v_{i} \in \pi :\exists \langle v_i, v_{i+1}\rangle \in E$. 
 Un cammino senza ripetizioni di vertici è chiamato \textit{semplice}, altrimenti
-è definito \textit{non semplice}. Un \textbf{circuito} è un cammino semplice 
+è definito \textit{non semplice}. Un \textbf{circuito} è un cammino semplice
 chiuso di lunghezza $\geq 3$. La \textbf{connessione} tra due vertici $x$ e $y$
-è denotata $x \leadsto y$ e sussiste se esiste un cammino da $x$ a $y$ 
-(e, di conseguenza, da $y$ a $x$); 
-questa nozione è inoltre una relazione di equivalenza (totale), gode infatti 
-di riflessività, transitività e simmetria. Gli insiemi di vertici mutuamente 
-connessi formano le \textbf{componenti connesse} di un grafo.
-
+è denotata $x \leadsto y$ e sussiste se esiste un cammino da $x$ a $y$ (e, di
+conseguenza, da $y$ a $x$); questa nozione è inoltre una relazione di
+equivalenza (totale), gode infatti di riflessività, transitività e simmetria.
+Gli insiemi di vertici mutuamente connessi formano le \textbf{componenti
+connesse} di un grafo.

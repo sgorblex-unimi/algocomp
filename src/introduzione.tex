@@ -28,7 +28,7 @@ Dato un insieme $A$, l'insieme dei sottoinsiemi di $A$ può essere definito con
 $$
 	2^A := \{f | f: A \to \{0,1\}\}
 $$
-in quanto le immagini di una funzione $f_B\in2^A$ rappresentano booleani che descrivono l'appartenenza al sottoinsieme $B$ determinato da $f_B$. $f_B$ si dice funzione caratteristica di $B$
+in quanto le immagini di una funzione $f_B\in2^A$ rappresentano booleani che descrivono l'appartenenza al sottoinsieme $B$ determinato da $f_B$. $f_B$ si dice funzione caratteristica di $B$.
 Seguendo la definizione, si ha inoltre
 $$
 	A^2 = \{f| f: \{0,1\} \to A\}\text.
@@ -40,6 +40,7 @@ Come ultimo esempio, si ha che $2^{2^*}$ è l'insieme di tutti i linguaggi binar
 \subsection*{Grafi}
 Per i grafi non orientati usiamo i nomi vertice e lato, mentre per i grafi orientati nodo e arco. In un grafo $G=(V,E)$, $V$ è l'insieme dei vertici e $E\subseteq\binom{V}{2}$ è l'insieme dei lati.
 Dato un lato $v=\set{a,b}$, si dice che $v$ incide sui vertici $a$ e $b$. I vertici su cui non incide alcun lato vengono chiamati vertici isolati.
+% La definizione è riferita a un grafo orientato o non orientato?
 In un grafo qualsiasi, un cammino da $a$ a $b$ è una sequenza di archi $(a,x_1),(x_1,x_2),\dots,(x,b)$ e la sua lunghezza è il numero di lati che lo compongono. Nella nostra notazione un cammino può percorrere lo stesso vertice più volte. Ci interesseranno tipicamente, però, i cammini semplici (cioè dove ciò non accade). Due vertici $a$ e $b$ sono connessi (si scrive $a\leadsto b$) se e solo se esiste un cammino da $a$ a $b$. Data la relazione di equivalenza
 \begin{equation*}
 	a\sim b \iff a\leadsto b

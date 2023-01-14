@@ -9,7 +9,7 @@ Questo insegnamento esplora alcune tra le classi di complessità non trattate ne
 	\begin{itemize}
 		\item $I_\Pi\subseteq 2\star$ è l'insieme degli input;
 		\item $O_\Pi\subseteq 2\star$ è l'insieme degli output;
-		\item $\sol_\Pi:I\to 2^O\setminus\set{\emptyset}$ è la funzione soluzione, che associa ogni input all'output corretto.
+		\item $\sol_\Pi:I\to 2^O\setminus\set{\emptyset}$ è la funzione soluzione, che associa ogni input a un insieme di output ammissibili.
 	\end{itemize}
 \end{defin}
 
@@ -21,7 +21,7 @@ Secondo questa definizione un problema riceve un solo input per volta, quindi è
 	Un problema di decisione è un problema $\Pi$ in cui:
 	\begin{itemize}
 		\item l'insieme di output è $\set{0,1}$;
-		\item la funzione soluzione produce un solo output per ogni input, ossia un input ha risposta positiva ($\set{0}$) o negativa ($\set{1}$).
+		\item la funzione soluzione produce un solo output per ogni input, ossia un input ha risposta positiva ($\set{1}$) o negativa ($\set{0}$).
 	\end{itemize}
 \end{defin}
 Per i problemi di decisione si può semplificare la funzione soluzione usando come codominio l'insieme $\set{0,1}$:
@@ -56,7 +56,7 @@ Per parlare di complessità degli algoritmi, è necessario distinguere due accez
 La teoria della calcolabilità studia i problemi, distinguendo quelli risolvibili da un algoritmo e quelli indecidibili.\footnote{Si veda in proposito, e.g., \cite{Hopcroft:79:introLFA} o \cite{Kfoury:82:programcomput}.} Il nostro interesse sarà rivolto unicamente ai problemi calcolabili, cioè per cui esistono algoritmi che li risolvono, e il confronto di questi algoritmi in base alla loro complessità.
 
 \subsubsection{Complessità e ottimalità}
-Dato un algoritmo $A$ che risolve un problema $\Pi$, si definisce la funzione $T_A:I_\Pi\to\N$, che indica il tempo impiegato da $A$ per risolvere un determinato input di $\Pi$. Per non dover considerare il singolo input, la funzione $t_A:\N\to\N$ restituisce il tempo impiegato nel caso peggiore tra gli input di $\Pi$ di una data lunghezza:
+Dato un algoritmo $A$ che risolve un problema $\Pi$, si definisce la funzione $T_A:I_\Pi\to\N$, che indica il tempo impiegato da $A$ per risolvere $\Pi$ con un determinato input. Per non dover considerare il singolo input, la funzione $t_A:\N\to\N$ restituisce il tempo impiegato nel caso peggiore tra gli input di $\Pi$ di una data lunghezza:
 \begin{equation*}
 	t_A(n):=\max_{x\in I_\Pi,\len x=n} T_A(x)
 \end{equation*}
@@ -65,7 +65,7 @@ Trovato un algoritmo che risolve un problema con una certa complessità, tale co
 Non è detto, in generale, che non si possano trovare algoritmi con una complessità migliore.
 Per valutare l'ottimalità della complessità trovata, interviene un tipo di ragionamento completamente diverso, il cui obiettivo è dimostrare che una certa complessità è necessaria per risolvere qualche istanza del problema. Tale complessità si dice \emph{lower bound}.
 Quando si conosce un algoritmo che risolve il problema in ogni sua istanza e la cui complessità è (asintoticamente) uguale al lower bound conosciuto, si ha dimostrato che l'algoritmo è ottimo per il problema.
-Di pochissimi problemi si conosce un algoritmo ottimo: uno dei pochi è l'ordinamento di array, che ha complessità $\Theta(n\log(n))$.
+Di pochissimi problemi si conosce un algoritmo ottimo: uno dei pochi è l'ordinamento di array tramite confronti e scambi degli elementi, che ha complessità $\Theta(n\log(n))$.
 Questa ottimalità è sempre riferita alla soluzione del problema nel caso peggiore (ossia con riferimento a $t_A$, se $A$ è l'algoritmo), e non è detto che il miglior algoritmo conosciuto in questo senso sia il più veloce, ad esempio, nel caso medio.
 
 
@@ -125,7 +125,7 @@ Dalla definizione segue
 	\end{itemize}
 \end{defin}
 
-\begin{theorem}[teorema di Cook]
+\begin{theorem}[teorema di Cook-Levin]
 	\Sat è \NP-completo.
 \end{theorem}
 
@@ -141,21 +141,21 @@ Dalla definizione segue
 \section{Problemi di ottimizzazione}
 
 \begin{defin}[problema di ottimizzazione]
-	Un problema di ottimizzazione è una tupla $\Pi=\tuple{I,\amm,c,T}$, con:
+	Un problema di ottimizzazione è una tupla $\Pi=\tuple{I,\amm,c,T}$, dove:
 	\begin{itemize}
 		\item $I_\Pi\in\set{0,1}\star$ è l'insieme degli input;
-		\item $\amm_\Pi: I_\Pi\to2^{2\star}\setminus\set{\emptyset}$ è l'insieme delle soluzioni ammissibili;
+		\item $\amm_\Pi: I_\Pi\to2^{2\star}\setminus\set{\emptyset}$ è l'insieme delle soluzioni ammissibili per un dato input;
 		\item $c_\Pi:I_\Pi\times 2\star\to\Q^+$ è la funzione obiettivo (o di costo), che associa un valore a un output per un dato input;
 		\item $T_\Pi \in\set{\MIN,\MAX}$ è il tipo di ottimizzazione: l'obiettivo è minimizzare la funzione obiettivo se $T_\Pi=\MIN$ e massimizzarla se $T_\Pi=\MAX$.
 	\end{itemize}
 \end{defin}
 
 \begin{examp}
-	\MaxSat è la versione di ottimizzazione di \Sat. Data una formula logica in forma normale congiuntiva, le soluzioni ammissibili sono i possibili assegnamenti delle variabili e la funzione obietivo è uguale al numero di clausole rese vere. È naturalmente un problema di massimo.
+	\MaxSat è la versione di ottimizzazione di \Sat. Data una formula logica in forma normale congiuntiva, le soluzioni ammissibili sono i possibili assegnamenti delle svariabili e la funzione obietivo è uguale al numero di clausole rese vere. È naturalmente un problema di massimo.
 \end{examp}
 
 \begin{defin}[soluzione ottima]
-	Dato un problema di ottimizzazione $\Pi$, e $x\in I_\Pi$, una soluzione $y\star(x)\in\amm(x)$ è ottima se e solo se $\forall \bar y\in\amm(x)_\Pi$:
+	Dato un problema di ottimizzazione $\Pi$, e $x\in I_\Pi$, una soluzione $y\star(x)\in\amm_\Pi(x)$ è ottima se e solo se $\forall \bar y\in\amm_\Pi(x)$:
 	\begin{equation*}
 		c_\Pi(x,y\star(x))
 		\begin{cases}
@@ -208,16 +208,16 @@ Per i problemi di ottimizzazione, si estendono i concetti che definiscono le cla
 \begin{defin}[\NPO]
 	Dato un problema di ottimizzazione $\Pi$, $\Pi\in\text{NPO}$ se e solo se:
 	\begin{itemize}
-		\item $I_\Pi\in P$, ossia si può decidere l'appartenenza di un valore agli input di $\Pi$ in tempo polinomiale;
+		\item $I_\Pi\in P$, ossia si può decidere l'appartenenza di un valore agli input validi di $\Pi$ in tempo polinomiale;
 		\item esiste un polinomio $Q$ tale che
 		      \begin{itemize}
 			      \item $\forall x\in I_\Pi \forall y\in\amm_\Pi(x): \len y\leq Q(\len x)$, ossia le soluzioni ammissibili non superano in lunghezza un polinomio nella lunghezza di $x$;
-			      \item $\forall x\in I_\Pi \forall y\in 2\star:$ se $\len y\leq Q(\len x)$ si può decidere se $y\in\amm_pi(x)$ in tempo polinomiale in $\len x$.
+			      \item $\forall x\in I_\Pi \forall y\in 2\star:$ se $\len y\leq Q(\len x)$ si può decidere se $y\in\amm_\Pi(x)$ in tempo polinomiale in $\len x$.
 		      \end{itemize}
 		\item $c_\Pi$ è calcolabile in tempo polinomiale.
 	\end{itemize}
 \end{defin}
-Il concetto di nondeterminismo applicato a \NPO è individuato nella possibilità di scegliere nondeterministicamente una stringa $y$ tale che $\len y\leq Q(\len x)$, controllare in tempo polinomiale se è una soluzione valida e calcolare in tempo polinomiale il suo obiettivo. Tale obiettivo è ottimo se si suppone che la scelta nondeterministica sia corretta.
+Il concetto di nondeterminismo applicato a \NPO è individuato nella possibilità di scegliere nondeterministicamente una stringa $y$ tale che $\len y\leq Q(\len x)$, controllare in tempo polinomiale se è una soluzione ammissibile e calcolare in tempo polinomiale il suo obiettivo. Tale obiettivo è ottimo se si suppone che la scelta nondeterministica sia corretta.
 
 
 \subsection{Problema di decisione associato e \texorpdfstring{\NPO}{NPO}-completezza}
@@ -226,7 +226,7 @@ Si può associare a un problema di ottimizzazione un problema di decisione:
 	Dato un problema di ottimizzazione $\Pi$, si definisce il problema di decisione $\hat\Pi$, dove:
 	\begin{itemize}
 		\item $I_{\hat\Pi}=I_\Pi\times\N$
-		\item $(x,k)$ ha output $1$ se e solo se
+		\item $\sol_{\hat\Pi}(x,k)=1$ se e solo se
 		      \begin{equation*}
 			      \begin{cases}
 				      c_\Pi(x,y\star(x))\leq k \quad & \text{se } T_\Pi=\MIN \\
@@ -262,10 +262,10 @@ Il problema di decisione risponde quindi alla domanda: "nel problema di ottimizz
 	Sia $\Pi$ \NPO-completo e $\P\neq\NP$.	Per assurdo supponiamo che $\Pi\in\PO$. Supponiamo senza perdita di generalità che $T_\Pi=\MAX$. Allora su input $(x,k)\in I_\Pi\times\N$:
 	\begin{itemize}
 		\item si calcola $y\star(x)$ in tempo polinomiale (essendo $\Pi\in\PO$)
-		\item si calcola $c(x,y\star(x))$ in tempo polinomiale
-		\item se $c(x,y\star(x))\geq k$ si dà output positivo, altrimenti si dà output negativo
+		\item si calcola $c_\Pi(x,y\star(x))$ in tempo polinomiale (essendo $\Pi\in\NPO$ per definizione di $\Pi$ \NPO-completo)
+		\item se $c_\Pi(x,y\star(x))\geq k$ si dà output positivo, altrimenti si dà output negativo
 	\end{itemize}
-	Si è trovato un algoritmo polinomiale per decidere $\hat\Pi$, il che per ipotesi è assurdo.
+	Si è trovato un algoritmo polinomiale per decidere $\hat\Pi$, il che per ipotesi è assurdo ($\hat\Pi$ \NP-completo per definizione di \NPO-completo e $\P\neq \NP$).
 \end{proof}
 
 \begin{theorem}
@@ -284,6 +284,8 @@ Il problema di decisione risponde quindi alla domanda: "nel problema di ottimizz
 \begin{defin}[\gAPX{$\gamma$}]
 	\gAPX{$\gamma$}, con $\gamma\geq1$, è l'insieme dei problemi di ottimizzazione $\Pi$ tali che esiste un algoritmo che dato $x\in I_\Pi$ trova una soluzione $y\in\amm_\Pi(x)$ in tempo polinomiale tale che $R_\Pi(x,y)\leq \gamma$.
 \end{defin}
+% In particolare 1-APX = PO
+
 \begin{defin}[\APX]
 	\begin{equation*}
 		\APX=\bigcup_{\gamma\geq1} \gAPX{\gamma}
@@ -300,6 +302,7 @@ Il problema di decisione risponde quindi alla domanda: "nel problema di ottimizz
 \end{defin}
 
 
+%NPO-completo che interseca PO?
 \begin{figure}
 	\centering
 	\tikzset{every picture/.style={line width=0.75pt}}

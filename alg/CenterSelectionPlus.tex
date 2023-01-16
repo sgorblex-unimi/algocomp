@@ -1,0 +1,15 @@
+\SetKwFunction{ExtractRandomPoint}{ExtractRandomPoint}
+
+\KwInput{$S$, $k$, $d$, $r$}
+
+$C\asn\emptyset$\;
+\While{$S \neq \emptyset$}{
+	$\bar s\asn\ExtractRandomPoint(S)$\;
+	$C\asn C\cup \set{\bar s}$\;
+	$S\asn S\setminus\set{x\mid d(x,\bar s)\leq 2r}$\;
+}
+\If{$\card C\leq k$}{
+	\Return $C$\;
+}\Else{
+	Impossibile\;
+}

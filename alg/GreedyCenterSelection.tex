@@ -1,0 +1,14 @@
+\SetKwFunction{ExtractRandomPoint}{ExtractRandomPoint}
+
+\KwInput{$S$, $k$, $d$}
+
+\If{$\card S\leq k$}{
+	\Return $S$\;
+}
+$s\asn\ExtractRandomPoint(S)$\;
+$C\asn C\cup \set{s}$\;
+\While{$\card C\leq k$}{
+	$\bar s\asn\arg\max_{s\in S} d(s,C)$\;
+	$C\asn C\cup\set{\bar s}$\;
+}
+\Return $C$\;

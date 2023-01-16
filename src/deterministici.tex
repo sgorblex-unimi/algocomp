@@ -180,7 +180,7 @@ Valgono inoltre i seguenti teoremi riguardanti \LoadBalancing, che non dimostria
 \begin{theorem}~
 	\begin{itemize}
 		% TODO: add bib
-		\item \SortedGreedyBalance è un algoritmo $\frac43$-approssimante per \LoadBalancing [Graham 1969];
+		\item \SortedGreedyBalance è un algoritmo $\frac43$-approssimante per \LoadBalancing \cite{Graham:69:sortedgreedybalance};
 		\item $\LoadBalancing\in\PTAS$;
 		\item $\P\neq\NP\impl\LoadBalancing\notin\FPTAS$.
 	\end{itemize}
@@ -188,265 +188,153 @@ Valgono inoltre i seguenti teoremi riguardanti \LoadBalancing, che non dimostria
 
 
 
-\section{Problema della selezione del centro}
-Si supponga di avere un'azienda che ha vari uffici sparsi per la città $S$.
-Gli uffici hanno delle \textbf{distanze} definite tra loro. Al momento, un solo
-ufficio è dotato di magazzino. Questo è molto poco efficiente: i manager, dopo
-un calcolo, scoprono di avere a disposizione il budget per creare nuovi $k$
-magazzini. Ognuno degli uffici rimanenti si rivolgerà al magazzino più
-vicino. Dove inserire i nuovi magazzini in modo tale che i loro \textit{bacini di utenza}
-abbiano la massima distanza ufficio-magazzino minima?
+\section{\CenterSelection}
+Nel problema \CenterSelection è dato uno spazio metrico $\tuple{S,d}$ di punti.
+Si vuole minimizzare la distanza massima $\rho(C)$ tra un nodo e il suo nodo di riferimento, detta raggio di copertura.
+\CenterSelection è un problema \NPO-completo.
 
-\popt {CenterSelection} {$S$ di punti, $d$ una \textit{metrica}, $k$ il numero di
-	punti selezionabili} {Una selezione di punti $C \subseteq S$}
-{Quali punti selezionare in modo che la distanza tra i selezionati e
-	non selezionati sia minima?} {La selezione è di al più $k$ punti: $|C| \leq k$}
-{$Min$}{$\rho(C) = \max_{x \in S} d(x, C)$}
+\popt{\CenterSelection}
+{Insieme $S$ di punti, metrica $d$, numero massimo di centri $k\in\N^+$}
+{Centri $C\subseteq S$}
+{Quali centri selezionare in modo da minimizzare il raggio di copertura}
+{$C\subseteq S\mid \card C\leq k$}
+{$\MIN$}
+{$\rho(C) = \max_{x \in S} d(x, C)$}
 
-\noindent
-Perché $$
-	d: S\times S \rightarrow R^{+}
-$$
-definisca una metrica (o uno spazio metrico), deve essere
+Uno spazio metrico è un insieme $\Omega$ di punti su cui vale una funzione distanza $d:\Omega\times\Omega\to\R^{\geq0}$ tale che:
 \begin{itemize}
-	\item $\forall x     ~~ d(x,x) = 0$
-	\item $\forall x,y   ~~ d(x,y) = d(y,x)$
-	\item $\forall x,y,z ~~ d(x,y) \leq d(x,z) + d(z,y)$ (disuguaglianza triangolare)
+	\item $d(x,y)=0\iff x=y$
+	\item $d(x,y)=d(y,x)\forall x,y\in\Omega$
+	\item $d(x,y)=d(x,z)+d(z,y)$ (disuguaglianza triangolare)
 \end{itemize}
 
-\begin{theorem}
-	\textsc{CenterSelection}$\in \mathbf{NPO-completi}$.
-\end{theorem}
+\begin{defin}[tassellificazione di Voronoi]
+	Dato uno spazio metrico $\tuple{\Omega,d}$, sia $S\subseteq\Omega$ finito e $C\subseteq S$ l'insieme dei centri. Per ogni $c\in C$ la cella di Voronoi rispetto al centro $c$ è l'insieme dei punti $s\in S$ tali che
+	\begin{equation*}
+		c=\arg\min_{c'\in C} d(s,c')
+	\end{equation*}
+	% TODO: brutta, esprimere meglio
+	Dato un punto $s\in S$ definiamo l'assegnamento di $s$ alla cella di centro $c\in C$ $\text{VC}_C(s)=\arg\min_{c'\in C} d(s,c')$.
+\end{defin}
 
-\subsection{Algoritmo center selection plus}
-Questo algoritmo non è realistico e richiede anche un input in più,
-oltre a $S$, $d: S \times S \rightarrow R$ e $k$, anche $r \in R^{> 0}$, il
-raggio di copertura ottimo. Chiaramente, $r$ è a priori sconosciuto!
+\begin{equation*}
+	\text{VC}_C(s)=\arg\min_{c\in C} d(s,c)
+\end{equation*}
 
+\CenterSelection è il problema che riceve in input $S\subseteq_\text{fin}\Omega$ e $k\in\N^+$, ha come soluzioni ammissibili le selezioni di centri $C\subseteq S$ con $\card C\leq k$ e come obiettivo da minimizzare:
+\begin{equation*}
+	\rho(C)=\max_{s\in S} d(s,\text{VC}_C(s))
+\end{equation*}
 
-\begin{algorithm}[h]
-	\caption{\textsc{CenterSelectionPlus}}
-	\label{algo:CenterSelectionPlus}
-	\KwInput{$S$, $k$, $r$, $d$}
+\subsection{\CenterSelectionPlus}
+L'algoritmo \ref{alg:CenterSelectionPlus} non risolve \CenterSelection in quanto richiede un input $r$ aggiuntivo rispetto a quelli previsti dal problema, che consiste in una stima del raggio di copertura ottimo $r\star$.
 
-	$C = \emptyset$
-
-	\While{$S \neq \emptyset$}
-	{
-		$\hat{c} = extractRandomNode(S)$
-
-		$C = C \cup \{\hat{c}\}$
-
-		$S = S \setminus \{x | d(x, \hat{c}) \leq 2r\}$
-	}
-	\If {$|C| \leq k$}
-	{
-		\Return $C$
-	}
-	\Else {
-		print(``Impossible!'')
-	}
+\begin{algorithm}[ht]
+	\caption{\CenterSelectionPlus}
+	\label{alg:CenterSelectionPlus}
+	\input{alg/CenterSelectionPlus.tex}
 \end{algorithm}
 
-\noindent
-L'algoritmo è descritto nel listato \ref{algo:CenterSelectionPlus};
-diamo delle proprietà di questo algoritmo che dipendono da $r$.
-\begin{enumerate}
-	\item Se \textsc{CenterSelectionPlus} emette una soluzione $C$, allora $C$ è una
-	      soluzione ammissibile e $\rho(C) \leq 2r$.
-	\item Se $r \geq \rho^*$ \textsc{CenterSelectionPlus} emette un output valido
-	      diverso da ``impossibile''. Si consideri una soluzione ottima $C^*$:
-	      Ogni volta che l'algoritmo inserisce $\hat{c}$ in uno dei bacini
-	      di $C^*$ tutti i punti a distanza minore o uguale di $2r$
-	      vengono cancellati: un qualunque punto $s$ che sta nello stesso bacino di
-	      $\hat{c}$ ha distanza $d(\hat{c}, s) \leq d(\hat{c}, c^*) + d(s, c^*)$,
-	      che sono anche $\leq \rho^*$, quindi
-	      $$
-		      d(\hat{c}, s) \leq d(\hat{c}, c^*) + d(s, c^*) \leq 2\rho^* \leq 2r
-	      $$
-	      Ad ogni iterazione rimuoviamo quindi un bacino intero, pertanto dopo al più $k$
-	      iterazioni non ci saranno più punti in $S$, e il ciclo termina; di conseguenza
-	      $|C| \leq k$.
-\end{enumerate}
-\begin{figure}[h]
+Si noti che un algoritmo \CenterSelectionPlus' che, invece di eliminare punti di $S$, non prenda in considerazione nella selezione di nuovi centri punti $s$ tali che $d(s,C)>2r$, è del tutto equivalente a \CenterSelectionPlus.
+\begin{theorem}
+	Valgono le seguenti proprietà per \CenterSelectionPlus:
+	\begin{enumerate}[(a)]
+		\item \label{itm:centerselection:plus1} se l'algoritmo emette un output $C$, allora $C$ è una soluzione ammissibile con $\rho(C)\leq 2r$;
+		\item \label{itm:centerselection:plus2} se $r\geq\rho\star$ allora l'algoritmo emette un output.
+	\end{enumerate}
+\end{theorem}
+\begin{proof}
+	\ref{itm:centerselection:plus1} L'output $C$ è ammissibile in quanto composto da elementi di $S$ e $\card C\leq k$. Poiché l'algoritmo termina quando sono stati eliminati tutti i punti di $S$, e ogni punto $\bar s\in S$ viene eliminato quando per un centro $\bar s$ selezionato vale $d(s,\bar s\leq 2r$, il raggio massimo da un punto al centro più vicino è minore o uguale a $2r$;
+
+	\ref{itm:centerselection:plus2} Sia $C\star$ una soluzione ottima. Si consideri $\bar s\in S$ e sia $\bar c:=\text{VC}_{C\star}(\bar s)$ e $X_{\bar c}:=\text{VC}_{C\star}^{-1}(\bar c)$.
+	Per qualunque punto $s\in X_{\bar c}$ vale, per disuguaglianza triangolare:
+	\begin{align*}
+		d(s,\bar s) & \leq d(s,c\star(s))+d(c\star(s),\bar s)                \\
+		            & = d(s,c\star(s))+d(c\star(\bar s),\bar s)              \\
+		            & \leq \rho\star + \rho\star = 2\rho\star \leq 2r \text.
+	\end{align*}
+	Quindi dopo l'inserimento di $\bar s$ non rimane in $S$ alcun elemento di $X_{\bar c)}$. Poiché la soluzione ottima contiene al più $k$ centri, dopo al più $k$ iterazioni tutti i punti di $S$ sono stati rimossi, e $\card C\leq k$.
+\end{proof}
+
+
+Come rappresentato in figura \ref{fig:csplus_r_beh}, l'algoritmo ricevendo $r\geq\rho\star$ produce una soluzione ammissibile con approssimazione $\frac{2r}{\rho\star}$; se $r\leq\frac{\rho\star}{2}$ l'algoritmo non produce output; nei casi rimanenti il comportamento dell'algoritmo non è consistente.
+Un algoritmo del genere può essere utilizzato sfruttando un'opportuna applicazione della ricerca dicotomica per la determinazione del valore ottimo di $r$.
+
+\begin{figure}[ht]
 	\centering
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,383); %set diagram left start at 0, and has height of 383
-
-		%Straight Lines [id:da9485275221436212] 
-		\draw    (121,120.5) -- (490,120.5) ;
-		\draw [shift={(493,120.5)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da07537068280019232] 
-		\draw    (230.33,115) -- (230.33,127) ;
-		%Straight Lines [id:da2577463164839414] 
-		\draw    (330.33,115) -- (330.33,127) ;
-		%Straight Lines [id:da2779185025368248] 
-		\draw    (430.33,115) -- (430.33,127) ;
-		%Straight Lines [id:da7913738440257223] 
-		\draw    (140.75,115) -- (140.75,127) ;
-		%Straight Lines [id:da7607353200386405] 
-		\draw    (140,140) .. controls (141.67,138.33) and (143.33,138.33) .. (145,140) .. controls (146.67,141.67) and (148.33,141.67) .. (150,140) .. controls (151.67,138.33) and (153.33,138.33) .. (155,140) .. controls (156.67,141.67) and (158.33,141.67) .. (160,140) .. controls (161.67,138.33) and (163.33,138.33) .. (165,140) .. controls (166.67,141.67) and (168.33,141.67) .. (170,140) .. controls (171.67,138.33) and (173.33,138.33) .. (175,140) .. controls (176.67,141.67) and (178.33,141.67) .. (180,140) .. controls (181.67,138.33) and (183.33,138.33) .. (185,140) .. controls (186.67,141.67) and (188.33,141.67) .. (190,140) .. controls (191.67,138.33) and (193.33,138.33) .. (195,140) .. controls (196.67,141.67) and (198.33,141.67) .. (200,140) .. controls (201.67,138.33) and (203.33,138.33) .. (205,140) .. controls (206.67,141.67) and (208.33,141.67) .. (210,140) .. controls (211.67,138.33) and (213.33,138.33) .. (215,140) .. controls (216.67,141.67) and (218.33,141.67) .. (220,140) .. controls (221.67,138.33) and (223.33,138.33) .. (225,140) .. controls (226.67,141.67) and (228.33,141.67) .. (230,140) -- (233,140) -- (233,140) ;
-		%Straight Lines [id:da23941010014142017] 
-		\draw    (334.67,137.33) .. controls (336.34,135.66) and (338,135.66) .. (339.67,137.33) .. controls (341.34,139) and (343,139) .. (344.67,137.33) .. controls (346.34,135.66) and (348,135.66) .. (349.67,137.33) .. controls (351.34,139) and (353,139) .. (354.67,137.33) .. controls (356.34,135.66) and (358,135.66) .. (359.67,137.33) .. controls (361.34,139) and (363,139) .. (364.67,137.33) .. controls (366.34,135.66) and (368,135.66) .. (369.67,137.33) .. controls (371.34,139) and (373,139) .. (374.67,137.33) .. controls (376.34,135.66) and (378,135.66) .. (379.67,137.33) .. controls (381.34,139) and (383,139) .. (384.67,137.33) .. controls (386.34,135.66) and (388,135.66) .. (389.67,137.33) .. controls (391.34,139) and (393,139) .. (394.67,137.33) .. controls (396.34,135.66) and (398,135.66) .. (399.67,137.33) .. controls (401.34,139) and (403,139) .. (404.67,137.33) .. controls (406.34,135.66) and (408,135.66) .. (409.67,137.33) .. controls (411.34,139) and (413,139) .. (414.67,137.33) .. controls (416.34,135.66) and (418,135.66) .. (419.67,137.33) .. controls (421.34,139) and (423,139) .. (424.67,137.33) -- (427.67,137.33) -- (427.67,137.33) ;
-		%Straight Lines [id:da13829858178442833] 
-		\draw    (284,181.67) -- (284,143.67) ;
-		\draw [shift={(284,141.67)}, rotate = 450] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-
-		% Text Node
-		\draw (483,129) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle r$};
-		% Text Node
-		\draw (134.5,93) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle 0$};
-		% Text Node
-		\draw (219,67) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle \frac{\rho ^{*}}{2}$};
-		% Text Node
-		\draw (327.5,76.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle \rho ^{*}$};
-		% Text Node
-		\draw (426.5,84) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle \rho _{max}$};
-		% Text Node
-		\draw (142.67,152.67) node [anchor=north west][inner sep=0.75pt]   [align=left] {``impossibile!''};
-		% Text Node
-		\draw (337.33,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {soluzione $\displaystyle \frac{2r}{\rho ^{*}}$};
-		% Text Node
-		\draw (274.67,187.33) node [anchor=north west][inner sep=0.75pt]   [align=left] {??};
-
-
-	\end{tikzpicture}
-	\caption{Comportamento di \textsc{CenterSelectionPlus}.}
+	\input{img/centerselectionplus.tikz}
+	\caption{Comportamento di \CenterSelectionPlus.}
 	\label{fig:csplus_r_beh}
 \end{figure}
-Quindi, ciò che succede dipende da $r$: se si sceglie maggiore o uguale a $\rho^*$
-l'algoritmo produce una soluzione ammissibile con approssimazione $\frac{2r}{\rho^*}$.
-Se $r \leq \frac{\rho^*}{2}$, l'algoritmo non produce soluzioni. Quando la scelta di
-$r$ è $ \rho^*/2 < r < \rho^*$ l'algoritmo ha un comportamento sconosciuto,
-ogni tanto produce soluzioni ammissibili e ogni tanto no. Noi non sappiamo il valore
-di $r$, ma sappiamo che è sicuramente $r \in [0, \rho_{max}]$, dove $\rho_{max}$
-è la distanza massima tra due punti. Una tecnica dicotomica (scegli un valore vicino a $0$,
-se non produce nessun output alza la soglia minima e procedi con un valore vicino a $\rho_{max}$,
-ripeti) può portare dei risultati.
 
-\subsection{Algoritmo greedy center selection}
-L'algoritmo \textit{greedy} per \textsc{CenterSelection} agisce come descritto
-nell'algoritmo \ref{algo:GreedyCenterSelection}.
-\begin{algorithm}[h]
-	\caption{\textsc{GreedyCenterSelection}}
+
+\subsection{\GreedyCenterSelection}
+L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterSelection.
+
+\begin{algorithm}
+	\caption{\GreedyCenterSelection}
+	\input{alg/GreedyCenterSelection.tex}
 	\label{algo:GreedyCenterSelection}
-	\KwInput{$S$, $k$, $d$}
-
-	\If{$|S| \leq k$}
-	{
-		\Return $S$
-	}
-
-	$\hat{c} = extractRandomNode(S)$
-
-	$C = \{\hat{c}\}$
-
-	\While{$|C| \leq k$}
-	{
-		$\hat{c} = \arg \max_{S} d(s, C)$
-
-		$C = C \cup \{\hat{c}\}$
-	}
-	\Return $C$
 \end{algorithm}
 
 \begin{theorem}
-	L'algoritmo \textsc{GreedyCenterSelection} è $2$-approssimante.
+	\GreedyCenterSelection è un algoritmo $2$-approssimante per \CenterSelection.
 \end{theorem}
 \begin{proof}
-	Per assurdo, supponiamo che $C$ sia $\rho(C) \geq 2\rho^*$, ossia
-	esiste un $\hat{s} \in S$ tale che $d(\hat{s}, C) \geq 2\rho^*$.
-
-	Consideriamo l'$i$-esima iterazione dell'algoritmo: sia $C_{\hat{i}}$ l'insieme
-	dei centri all'inizio dell'$i$-esima iterazione e $c_{\hat{i}}$ il nuovo centro
-	da inserire. Possiamo affermare che
-	$$
-		\forall s ~~ d(c_{\hat{i}}, C_{\hat{i}}) \geq d(s, C_{\hat{i}})
-	$$
-	e, in particolare, questo vale per $\hat{s}$:
-	$$
-		d(c_{\hat{i}}, C_{\hat{i}}) \geq d(\hat{s}, C_{\hat{i}}) \geq d(\hat{s}, C) > 2\rho^*
-	$$
-	il che implica che i $k$ cicli sono una delle esecuzioni possibili dei primi
-	$k$ cicli dell'algoritmo, pertanto valgono tutte le proprietà che valevano
-	per l'altro algoritmo per $r = \rho^*$. Siccome la distanza $d(\hat{s}, C) > 2\rho^*$
-	il punto $\hat{s}$ non è ancora stato rimosso da $S$, quindi l'algoritmo deve
-	ancora fare almeno un'iterazione, e allora l'algoritmo emetterà ``impossibile''.
-	Questo è assurdo poiché per la proprietà $2$ di \textsc{CenterSelectionPlus}
-	se $r \geq \rho^*$  allora l'algoritmo termina.
+	Per assurdo, supponiamo che $C$ sia tale che $\rho(C)>2\rho\star$, ossi  esiste $\hat s\in S$ tale che $d(\hat s,C)> 2\rho\star$.
+	Consideriamo l'$i$-esima iterazione dell'algoritmo: sia $C_i$ l'insieme dei centri all'inizio dell'$i$-esima iterazione e $\bar s_i$ il centro da inserire. Vale:
+	\begin{equation*}
+		d(\bar s_i,C_i)\geq d(\hat s,C_i)\geq d(\hat s, C)>2\rho\star
+	\end{equation*}
+	Questa condizione è esattamente quella che esclude punti dalla selezione di \CenterSelectionPlus', pertanto i due algoritmi sono equivalenti se $r=\rho\star$. Ma per $r=\rho\star$ \CenterSelectionPlus' emette una $\frac{2\rho\star}{\rho\star}=2$-approssimazione, il che contraddice l'ipotesi di assurdo.
 \end{proof}
 
 \begin{theorem}
-	Ammesso che $\mathbf{P} \neq \mathbf{NP}$, non esiste alcun algoritmo $\alpha$-approssimante
-	per \textsc{CenterSelection} con $\alpha < 2$
+	Se $\P\neq\NP$, non esiste $\alpha<2$ tale che $\CenterSelection\in\gAPX\alpha$.
 \end{theorem}
 \begin{proof}
-	Per dimostrare questo teorema introduciamo brevemente il problema del \textsc{DominatingSet},
-	un famoso problema di decisione NP-Completo.
+	Si consideri il problema di decisione \NP-completo \DominatingSet. Dato un grafo non orientato $G=(V,E)$, un dominating set per $G$ è un insieme di vertici $D\subseteq V$ se e solo se ogni vertice non appartenente a $D$ ha un adiacente in $D$: $\forall x\in(V\setminus D),\exists y\in D\mid \set{x,y}\in D$.
 
-	\prob {DominatingSet}
-		{$G=(V, E)$ non orientato, $k \in \mathbb{N}$}
-		{$\{0, 1\} = 2$}
-		{Esiste $D \subseteq V$ con $|D| \leq k$ tale che sia un dominating set?}
+	\pdec{\DominatingSet}
+	{Grafo non orientato $G=(V,E)$, $k\in\N$}
+	{Determinare se esiste un dominating set per $G$ di cardinalità minore o uguale a $k$}
 
-	Diciamo che, dato un grafo $G=(V, E)$, un sottoinsieme $D \subseteq V$ è un \textsc{DominatingSet}
-	di $G$ se e solo se $\forall x \in (V \setminus D)$ esiste un $y \in D$ vicino di $x$.
+	Data un'istanza $((V,E),k)$ di \DominatingSet, costruiamo una istanza di \CenterSelection che ha per spazio l'insieme dei vertici, per numero massimo di centri il limite di cardinalità $k$ per il dominating set e per metrica la funzione
+	\begin{equation*}
+		d(x,y) =
+		\begin{cases}
+			0 \quad & \text{se } x = y                      \\
+			1 \quad & \text{se } x\neq y\land\set{x,y}\in E \\
+			2 \quad & \text{altrimenti}
+		\end{cases}
+	\end{equation*}
 
-	\bigbreak
-
-	Per assurdo, supponiamo che esista un algoritmo $\alpha$-approssimanete per \textsc{CenterSelection}
-	con $\alpha < 2$.
-	Sia $(G=(V, E), k)$ una istanza di \textsc{DominatingSet}, costruiamo una istanza di \textsc{CenterSelection}
-	dove $S=V$, $k=k$ e la funzione distanza è definita in questo modo:
-	$$
-	d(x, y) =
-	\begin{cases}
-	 0 & \text{ se } x = y \\
-	 1 & \text{ se } x \neq y \text{ e } (x, y) \in E \\
-	 2 & \text{ altrimenti }
-	\end{cases}
-	$$
-
-	È facile dimostrare che questa funzione rispetta le proprietà di uno spazio metrico: osservando la disuguaglianza
-	triangolare abbiamo sul lato sinistro un valore che può essere 1 o 2, dal lato destro invece abbiamo la somma
-	di due valori che possono essere entrambi anche loro o 1 o 2, dunque sempre maggiore o uguale al lato sinistro
-
-	$$
-		\underbrace{d(x, y)}_{\text{1 o 2}} <= \underbrace{\underbrace{d(x, z)}_{\text{1 o 2}} + \underbrace{d(z, y)}_{\text{1 o 2}}}_{\text{2 o 3 o 4}}
-	$$
-
-	In una istanza di \textsc{DominatingSet} convertita in \textsc{CenterSelection} dunque abbiamo che $\rho^*$ può
-	assumere solo due valori: $1$ o $2$. Se $\rho^*=1$ è possibile dimostrare che $D$, l'insieme di centri scelti,
-	è un dominating set nell'istanza originale del problema, tramite una semplice catena di implicazioni
-
+	In una istanza di \CenterSelection derivata in questo modo, $\rho\star=2$ oppure $\rho\star=1$. Nel secondo caso l'insieme di centri scelti è un dominating set nell'istanza originale del problema, infatti:
 	\begin{align*}
-		\rho^*=1 &\leftrightarrow \forall x \in (V \setminus D) d(x, D) = 1 \\
-				 &\leftrightarrow \forall x \in (V \setminus D), \exists y \in D \text{ tale che } d(x, y) = 1 \\
-				 &\leftrightarrow \forall x \in (V \setminus D), \exists y \in D \text{ tale che } (x, y) \in E \\
-				 &\leftrightarrow D \text{ è un \textsc{DominatingSet}}
+		\rho\star=1 & \coimpl\forall x\in(V\setminus D)\quad d(x,D)=1                             \\
+		            & \coimpl\forall x \in (V \setminus D)\quad \exists y\in D\mid d(x,y)=1       \\
+		            & \coimpl\forall x \in (V \setminus D)\quad \exists y\in D\mid \set{x,y}\in E \\
+		            & \coimpl D\text{ è un dominating set}
 	\end{align*}
 
-	Eseguiamo il nostro algoritmo $\alpha$-approssimante per \textsc{CenterSelection}, con $\alpha < 2$ per ipotesi,
-	sull'istanza convertita da \textsc{DominatingSet}. Abbiamo dunque che
+	Per assurdo, supponiamo che esista un algoritmo $\alpha$-approssimante per \CenterSelection, con $\alpha < 2$. Eseguendo tale algoritmo su un'istanza così costruita si ottiene un output $D$ tale che:
+	\begin{gather*}
+		1\leq\frac{\rho(D)}{\rho\star}\leq\alpha<2 \\
+		\rho\star\leq\rho(D)\leq\alpha\cdot\rho\star<2\rho\star
+	\end{gather*}
 
-	\begin{align*}
-		1 \leq \frac{\rho}{\rho^*} \leq 2 - \varepsilon \\
-		\rho^* \leq \rho \leq (2 - \varepsilon) * \rho^*
-	\end{align*}
+	Dato che $\rho\star=1\lor\rho\star=2$, allora vale esattamente una delle seguenti proposizioni:
+	\begin{equation*}
+		\begin{cases}
+			1\leq\rho(D)<2\quad & \text{se } \rho\star=1 \\
+			2\leq\rho(D)<4\quad & \text{se } \rho\star=2
+		\end{cases}
+	\end{equation*}
+	Quindi, eseguito l'algoritmo, se $\rho(D)<2$ allora $\rho\star=1$ e la decisione per l'istanza originale di \DominatingSet è positiva; se $\rho(D)\geq2$ allora $\rho\star=2$ e la decisione è negativa.
 
-	Dato che $\rho^*$ può essere solamente $1$ o $2$, allora il nostro $\rho$ può ricadere in uno solo di due casi disgiunti:
-
-	\begin{align*}
-		1 \leq \rho \leq 2 - \varepsilon \implies \text{ esiste DominatingSet} \\
-		2 \leq \rho \leq 4 - 2 \varepsilon \implies \text{ non esiste DominatingSet}
-	\end{align*}
-
-	Osservando quale delle due disequazioni il nostro $\rho$ soddisfa, potremmo decidere in tempo polinomiale
-	se esiste o meno un \textsc{DominatingSet} per la nostra istanza. Questo sappiamo essere impossibile, dunque
-	concludiamo che non possiamo approssimare di più \textsc{CenterSelection}.
+	Poiché l'algoritmo agisce in tempo polinomiale, allora $\DominatingSet\in\P$, il che è assurdo se $\P\neq\NP$.
 \end{proof}
+
 
 
 \section{Problema della copertura d'insiemi}

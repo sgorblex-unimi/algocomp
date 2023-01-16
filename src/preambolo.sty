@@ -137,18 +137,18 @@
 
 % altri operatori
 \newcommand{\impl}{\Rightarrow}
+\newcommand{\coimpl}{\Leftrightarrow}
 \newcommand{\set}[1]{\left\{ #1 \right\}}
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
 \newcommand{\tuple}[1]{\langle #1 \rangle}
 
 % scheda problema
-\newcommand{\prob}[4]{
+\newcommand{\pdec}[4]{
 	\begin{description}[labelwidth=2.2cm,labelindent=.5cm]
 		\item[Problema] #1
 		\item[Input] #2
-		\item[Output] #3
-		\item[Semantica] #4
+		\item[Decisione] #3
 	\end{description}
 }
 
@@ -180,11 +180,14 @@
 \newproblem{MaxMatching}
 \newproblem{BiMaxMatching}
 \newproblem{PerfectMatching}
+\newproblem{DominatingSet}
 \newcommand{\gAPX}[1]{#1\text-\APX}
 \newproblem{LoadBalancing}
 \newcommand{\asn}{\leftarrow}
 \newalgo{GreedyLoadBalancing}
 \newalgo{SortedGreedyBalance}
+\newalgo{CenterSelectionPlus}
+\newalgo{GreedyCenterSelection}
 \newproblem{CenterSelection}
 \newproblem{SetCover}
 \newproblem{MinCut}

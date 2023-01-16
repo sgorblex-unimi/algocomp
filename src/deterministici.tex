@@ -87,214 +87,106 @@ La procedura \Flip esegue un flip del matching dato.
 
 
 
-\section{Problema del bilanciamento del carico}
-\popt {LoadBalancing} {$n$ task $t_0, t_1, \cdots, t_{n-1} \in \mathbb{N}^+$, $m$ macchine}
-{Insieme di assegnamenti di task a macchine}
-{Qual è l'assegnamento con costo massimo minore?}
-{Scelte di assegnamenti di tutti i task alle macchine in modo coerente}
-{$Min$}
-{Ogni macchina ha carico $L_i = \sum_{j \text{ assegnato a } i } t_j$
-    la funzione obiettivo è $L=\max_i L_i$}
-Per esempio, si supponga di avere $8$ task e $3$ macchine. I task hanno costo
-$\{3, 2, 3, 1, 1, 4, 5, 1\}$; vi sono diversi modi per assegnare le task:
-\begin{itemize}
-	\item{$m_0$}: $\{5, 1,1\}$ con $L_0 = 7$
-	\item{$m_1$}: $\{4, 3\}$ con $L_1 = 7$
-	\item{$m_2$}: $\{2, 3, 1\}$ con $L_2 = 6$.
-\end{itemize}
-Pertanto $L = 7$.
+\section{\LoadBalancing}
+Il problema \LoadBalancing (bilanciamento del carico) consiste nel dividere un insieme di task, ciascuno con la sua durata, tra le macchine di un insieme, in modo da minimizzare la durata complessiva (carico) impiegata dalla macchina più lenta. Questo problema è \NPO-completo.
 
-\begin{theorem}
-	\textsc{LoadBalancing} $ \in \mathbf{NPO-completi}$.
+\popt
+{\LoadBalancing}
+{Durate $t_0,\dots,t_{n-1}\in\N^+$ per $n$ task, numero $m$ di macchine}
+{Assegnamento di ciascun task a una macchina}
+{Determinare l'assegnamento che minimizza la durata massima}
+{Assegnamenti $x:n\to m$}
+{$\MIN$}
+{$L=\max_j L_j$, dove $L_j:=\sum_{i\in x^{-1}(j)} t_i$}
+
+
+\subsection{\GreedyLoadBalancing}
+Un algoritmo greedy può trovare una soluzione ammissibile per \LoadBalancing.
+L'algoritmo esamina i task $t_0,t_1,\dots,t_{n-1}$ nell'ordine, assegnando ogni task alla macchina più scarica.
+\GreedyLoadBalancing, se implementato con una coda con priorità che tenga conto della macchina dal carico minimo (effettuando $n$ operazioni di insert/update per i carichi di $m$ macchine), opera in tempo $O(n\log m)$.
+L'algoritmo non ottiene, in generale, la soluzione ottima, ma ha la garanzia di non produrre più del doppio dell'ottimo, come dimostrato dal seguente teorema:
+
+\begin{theorem}\label{thm:greedyloadbalancing}
+	\GreedyLoadBalancing è un algoritmo 2-approssimante per \LoadBalancing.
 \end{theorem}
-
-\subsection{Algoritmo greedy balance}
-Un algoritmo banale per risolvere approssimativamente il problema \textsc{LoadBalancing} è
-l'algoritmo \ref{algo:greedybalance}.
-
-\begin{algorithm}[!ht]
-	\caption{\textsc{GreedyBalance}}
-	\label{algo:greedybalance}
-	\KwInput{$m$ macchine, $n$ task con costi $t_i$}
-
-	\For{$i$ : $0..n-1$}
-	{
-		$L_i = 0$
-	}
-
-	\For{$j$ : $0..n-1$}
-	{
-		$ \bar{i} = \arg \min (L_i)$
-
-		$M_i.addTask(t_j)$
-
-		$L_i = L_i + t_j$
-	}
-
-\end{algorithm}
-\noindent
-Questo algoritmo ha complessità $O(n \log(n))$.
-
-\begin{theorem} \label{thm:gbal_2_approx}
-	\textsc{GreedyBalance} è un algoritmo $2$-approssimante per \textsc{LoadBalancing}.
-\end{theorem}
-
-\noindent
-Prima di procedere con la dimostrazione, sono necessarie due osservazioni:
-
-\begin{lemma}
-	\label{lem:gbal_opt_gt_frac_sum}
-	$$
-		L^* \geq \frac{1}{m} ~ \sum_j t_j
-	$$
+Prima di dimostrare il teorema si consideri il seguente lemma:
+\begin{lemma}\label{lem:load:ultimopasso}
+	Sia $L\star$ il costo della soluzione ottima. Sia $\bar j$ tale che $L_{\bar j}=L\star$ e sia $\bar i$ l'ultimo task assegnato a $\bar j$. Allora:
+	\begin{equation*}
+		L_{\bar j}-t_{\bar i} \leq L\star
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Si supponga di avere la soluzione ottima. Si ha che
-	$$
-		\sum_{i = 0}^{m-1} L^*_i = \sum_{j = 0}^{n-1} t_j
-	$$
-	e pertanto
-	$$
-		L^* = \max\{L^*_i\}_i \geq \frac{1}{m} \sum_j t_i
-	$$
+	Il carico della macchina $\bar j$ prima dell'assegnamento $\bar i$ era $L_{\bar j}-t_{\bar i}$, il cui era minore di ogni altro carico per via di come l'algoritmo sceglie a chi assegnare.
+	Indicato con $L\star_j$ il carico della macchina $j$ nella soluzione ottima, vale $L\star\geq\frac1m\sum_it_i$, essendo $mL\star\geq\sum_jL\star_j=\sum_it_i$.
+	\begin{gather*}
+		L_{\bar j}-t_{\bar i}\leq L_j \qquad\forall j \\
+		\sum_j (L_{\bar j}-t_{\bar i})\leq\sum_j L_j=\sum_i t_i\\
+		m(L_{\bar j}-t_{\bar i})\leq \sum_i t_i \\
+		L_{\bar j}-t_{\bar i}\leq\frac1m\sum_j t_j\leq L\star
+	\end{gather*}
 \end{proof}
-
-\begin{lemma}
-	\label{lem:gbal_opt_gt_max}
-	$$
-		L^* \geq \max_j t_j
-	$$
-\end{lemma}
+Si può ora procedere con la dimostrazione del teorema \ref{thm:greedyloadbalancing}:
 \begin{proof}
-	Banale.
-\end{proof}
-
-Passiamo alla dimostrazione del \cref{thm:gbal_2_approx}.
-\begin{proof}
-	Eseguiamo \textsc{GreedyBalance}; sia $\hat{i}$ la macchina più carica al termine
-	dell'esecuzione, ossia $L = L_{\hat{i}}$. Sia $\hat{j}$ l'ultimo task assignato
-	alla macchina $\hat{i}$. Prima di ricevere $\hat{j}$, il suo carico è tale per cui
-	$$
-		\forall i = 1..m ~ L_{\hat{i}} - t_{\hat{j}} \leq L'_i \leq L_i
-	$$
-	dove $L'_{i}$ è il carico della macchina $i$ quando il task $\hat{j}$ è
-	deve essere assegnato. Sommiamo quindi su tutti gli $i$:
-	$$
-		m \cdot (L_{\hat{i}} - t_{\hat{i}}) \leq \sum_{i = 1}^{m} L_i = \sum_{j = 0}^{n-1} t_j
-	$$
-	poiché tutte le task sono state assegnate. Grazie al \cref{lem:gbal_opt_gt_frac_sum}
-	possiamo affermare
-	$$
-		L_{\hat{i}} - t_{\hat{i}} \leq \frac{1}{m} \sum_i L_i \leq L^*
-	$$
-	\`E ovvio che $L = L_{\hat{i}} = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{j}}$ e
-	sappiamo anche che $t_{\hat{j}} \leq L^*$ dal \cref{lem:gbal_opt_gt_max};
-	possiamo quindi concludere
-	$$
-		L = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{j}} \leq L^* + t_{\hat{j}} \leq L^* + L^* = 2L^*
-	$$
-\end{proof}
-
-Abbiamo dimostrato che \textsc{GreedyBalance} è $2$-approssimato, ma ci sono
-davvero degli input per cui fa così male? Potremmo
-trovare un'approssimazione migliore? Quando vogliamo arrivare a questa conclusione,
-si accompagna un \textit{teorema di strettezza}: c'è uno specifico input per cui
-\textsc{GreedyBalance} fa davvero così male.
-
-\begin{theorem}\label{thm:gbal_strict}
-	Per ogni $\epsilon > 0$ esiste un input per cui  \textsc{GreedyBalance} fornisce una
-	soluzione $L$ tale che
-	$$
-		2 - \epsilon \leq \frac{L}{L^*} \leq 2
-	$$
-\end{theorem}
-
-\begin{proof}
-	Sia $m \geq \lceil\frac{1}{\epsilon}\rceil$. Sia $n = m(m-1) + 1$ dove i
-	primi $m(m-1)$ compiti hanno durata (o costo) $1$, mentre l'ultimo ha durata
-	(o costo) $m$.
-	Questa è la soluzione ottima:
-	\begin{lstlisting}
-    0 [1][1]...[1] (m volte) 
-    1 [1][1]...[1] (m volte)   
-    2 [1][1]...[1] (m volte) 
-    3 [1][1]...[1] (m volte)   
-    ..[1][1]...[1] (m volte)  
-    m [    m     ]
-\end{lstlisting}
-	\textsc{GreedyBalance} conclude l'esecuzione in questa configurazione:
-	\begin{lstlisting}
-    0  [1][1] ... [1] [    m    ]
-    1  [1][1] ... [1] (m-1 volte) 
-    2  [1][1] ... [1] (m-1 volte) 
-    .. [1][1] ... [1] (m-1 volte)
-    m  [1][1] ... [1] (m-1 volte)
-\end{lstlisting}
-	Concludendo con $L = 2m -1$. $L/{L^*} =  (2m-1)/m = 2 - \frac{1}{m} \geq 2 - \epsilon$
+	Si osservi che $L\star\geq\max_it_i$. Applicando il lemma \ref{lem:load:ultimopasso}:
+	\begin{gather*}
+		L=L_{\bar j}=\underbrace{L_{\bar j}-t_{\bar i}}_{\leq L\star}+\underbrace{t_{\bar i}}_{\leq L\star}\leq 2L\star \\[1ex]
+		\frac L{L\star}\leq 2
+	\end{gather*}
 \end{proof}
 
 \begin{corollario}
-	\textsc{LoadBalancing} $ \in  \mathbf{APX}$.
+	$\LoadBalancing\in\gAPX2$.
 \end{corollario}
 
-\subsection{Algoritmo sorted balance}
-La dimostrazione precedente suggerisce un modo diverso per assegnare i task:
-partendo dal task più lungo per decidere gli assegnamenti si crea l'algoritmo
-\textsc{SortedBalance}.
-\begin{algorithm}
-	\caption{\textsc{SortedBalance}}
-	\label{algo:sortedbalance}
-	\KwInput{$m$ macchine, $n$ task con costi $t_i$}
-
-	$sortedTasks = sortDescending(t_i)$
-
-	\textsc{GreedyBalance}$(m, sortedTasks)$
-
-\end{algorithm}
-L'algoritmo \ref{algo:sortedbalance} ha complessità $O(m\log(m) + n\log(m))$ e
-migliora il tasso di approssimazione.
-
-\begin{lemma}\label{lem:lbal_l_gt_t_m}
-	Supponiamo che vi siano più task che macchine. Allora, considerando i task
-	ordinati dal più al meno costoso, vale
-	$$
-		L^* \geq 2 t_m
-	$$
-	Ossia il valore ottimale è maggiore o uguale di due volte il costo dell'$m$-esimo
-	task.
-\end{lemma}
-\begin{proof}
-	Banale: siccome prima di $t_m$ altri $m$ task sono stati assegnati (da $t_0$ a $t_{m-1}$)
-	ognuno dei quali ha costo maggiore o uguale a $t_m$, $t_m$ verrà necessariamente
-	assegnato ad una macchina che avrà carico maggiore o uguale a $t_m$.
-\end{proof}
-
-
+Si dimostra che questo risultato sull'analisi di \GreedyLoadBalancing è tight:
 \begin{theorem}
-	\textsc{SortedBalance} è un algoritmo $\frac{3}{2}$-approssimato.
+	Per ogni $\varepsilon>0$ esiste un input di \LoadBalancing su cui \GreedyLoadBalancing produce una soluzione $L$ tale che
+	\begin{equation*}
+		2-\varepsilon\leq\frac L{L\star}\leq2
+	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Se $n \leq m$, \textsc{SortedBalance} (ma anche \textsc{GreedyBalance}) trova la soluzione
-	ottimale: se ci sono meno task che macchine il costo finale sarà il costo
-	della task più lunga, che è il lower bound del costo ottimale.
+	Scegliamo un numero di macchine $m>\frac1\varepsilon$ e un numero di task $n=m(m-1)+1$. Questi task consistono, nell'ordine, in $n-1$ task da $1$ e un task da $m$. Naturalmente la soluzione ottima assegna unicamente il task da $m$ a una macchina, che risulta la più carica, quindi $L\star=m$.
 
-	Assumiamo quindi $n > m$.
-	Eseguiamo \textsc{SortedBalance} e sia $\hat{i}$ l'indice della macchina con
-	carico massimo $L = L_{\hat{i}}$. Se la macchina $\hat{i}$ ha una sola task
-	assegnata, la soluzione è ottima. Assumiamo, quindi, che $\hat{i}$ abbia almeno
-	due task assegnate; sia $\hat{j}$ l'ultima task assegnatale. \`E evidente che
-	$\hat{j} \geq m$ e questo significa che $t_{\hat{j}} \leq t_{\hat{m}} \leq \frac{1}{2}L^*$.
-	Quindi
-	$$
-		L = L_{\hat{i}} = (L_{\hat{i}} - t_{\hat{j}}) + t_{\hat{j}} \leq \frac{3}{2}L^*
-	$$
+	Per assegnare i task, l'algoritmo assegna un task da $1$ per ogni macchina ciclicamente finché arriva il task da $m$, che viene assegnato a una macchina di carico $m-1$ producendo un costo finale di $2m-1$. In questo caso si ha
+	\begin{equation*}
+		\frac L{L\star}=\frac{2m-1}{m}=2-\frac1m\geq2-\varepsilon
+	\end{equation*}
 \end{proof}
-Un risultato di Graham afferma che \textsc{SortedBalance} in realtà è
-$\frac{4}{3}$-approssimante, mentre un alro risultato di Hochbaum et al. dell'88
-dimostra che il problema del bilanciamento del carico appartiene a $\mathbf{PTAS}$,
-ossia esiste un algoritmo in grado di approssimare arbitrariamente la soluzione
-ottimale ed è anche stato dimostrato che il problema non sia in $\mathbf{FPTAS}$ (ammesso
-che $\mathbf{P} \neq \mathbf{NP}$).
+
+
+\subsection{\SortedGreedyBalance}
+Un algoritmo \SortedGreedyBalance può ordinare i task in ordine decrescente prima di assegnarli come \GreedyLoadBalancing. Questo algoritmo ha costo in tempo di $O(n\log n+n\log m)$.
+
+\begin{theorem}
+	\SortedGreedyBalance è un algoritmo $\frac32$-approssimante per \LoadBalancing.
+\end{theorem}
+\begin{proof}
+	Se $n\leq m$ la soluzione è ottima e la tesi è ovvia.
+
+	Se $n>m$, esiste una macchina che riceve due task. Il primo task assegnato a una macchina già carica è $t_m$, e vale:
+	\begin{equation*}
+		L\star\geq 2t_m
+	\end{equation*}
+
+	Sia $\bar j$ la macchina con carico massimo al termine dell'esecuzione e $\bar i$ l'ultimo carico assegnato. Si ha $\bar i \geq m$, da cui $t_{\bar i}\leq t_m$ e quindi $t_{\bar i}\leq t_m\leq \frac12 L\star$.
+	\begin{gather*}
+		L=\underbrace{L_{\bar j}-t_{\bar i}}_{\leq L\star}+\underbrace{t_{\bar i} }_{\leq \frac12 L\star}\leq L\star+\frac12 L\star=\frac32L\star
+	\end{gather*}
+\end{proof}
+
+Valgono inoltre i seguenti teoremi riguardanti \LoadBalancing, che non dimostriamo.
+\begin{theorem}~
+	\begin{itemize}
+		% TODO: add bib
+		\item \SortedGreedyBalance è un algoritmo $\frac43$-approssimante per \LoadBalancing [Graham 1969];
+		\item $\LoadBalancing\in\PTAS$;
+		\item $\P\neq\NP\impl\LoadBalancing\notin\FPTAS$.
+	\end{itemize}
+\end{theorem}
+
+
 
 \section{Problema della selezione del centro}
 Si supponga di avere un'azienda che ha vari uffici sparsi per la città $S$.

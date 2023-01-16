@@ -19,6 +19,7 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 - cap. 1 Problemi e complessità
 - cap. 2 Algoritmi deterministici:
 	- BiMaxMatching
+	- LoadBalancing
 - cap. 3 Algoritmi probabilistici:
 	- MinCut e Karger
 - cap. 4 Strutture succinte:

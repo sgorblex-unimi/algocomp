@@ -1,0 +1,9 @@
+$M \asn \emptyset$\;
+\While{}{
+	$\pi\asn\FindAugmenting{G,M}$\;
+	\If{$\pi=\bot$}{
+		\Return $M$\;
+	}\Else{
+		$M\asn\Flip(M,\pi)$\;
+	}
+}

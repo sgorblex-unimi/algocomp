@@ -1,311 +1,91 @@
 \chapter{Algoritmi deterministici}
 
-Come anticipato, in questo corso tratteremo inizialmente gli algoritmi deterministici.
 
-\section{Problema del matching bipartito massimale}
-% disegno grafo bipartito: nove vertici, cinque a sinistra e quattro a destra, 
-% 1l, 2l, 4l, 5l -> 1d; 3l -> 2d, 3d; 4l ->4d.
-\popt {BipartiteMaxMatching} {$G = (V,E)$ \textit{bipartito}} {Insieme di lati}
-{Qual è il \textit{matching} più ampio?} {Scelte di insiemi di lati che siano \textit{matching}}
-{$Max$}{Cardinalità dell'insieme}
 
-\noindent
-Un grafo \textit{bipartito} è un grafo non orientato in cui l'insieme dei vertici
-è diviso in due parti; tutti i lati hanno un'estremità che incide su una parte
-e un'estremità che incide sull'altra, come rappresentato nella figura \ref{fig:graphmatching}.
+% TODO: Estendere a MaxMatching?
+\section{\BiMaxMatching}
+Sia $G=(V,E)$ un grafo non orientato. Un \emph{matching} (matrimonio) in $G$ è una selezione di lati in $E$ tale che su nessun vertice in $V$ incide più di un lato.
+\MaxMatching è il problema di trovare il matching di cardinalità massima in un dato grafo.
 
-\begin{figure}[h]
+\BiMaxMatching è una versione di \MaxMatching su grafi bipartiti, cioè in cui i vertici sono divisi in due classi e ogni lato incide su un vertice per classe: $G=(V_1,V_2,E)$ dove $V_1\cup V_2=\emptyset$ e $E\subseteq V_1\times V_2$. $\BiMaxMatching\in\PO$.
+
+\popt{\BiMaxMatching}
+{Grafo bipartito $G=(V_1,V_2,E)$}
+{$X\subseteq E$}
+{Determinare il matching di cardinalità massima in $G$}
+{$X\subseteq E$}
+{$\MAX$}
+{$\card X$}
+
+\begin{figure}
 	\centering
-	\begin{tikzpicture}
-
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 1)  (a) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 2)  (b) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 3)  (c) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 4)  (d) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 5)  (e) {};
-
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 2)  (f) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 3)  (g) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 4)  (h) {};
-		\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 5)  (i) {};
-
-		\draw (a) -- (i);
-		\draw (b) -- (i);
-		\draw (d) -- (i);
-		\draw[red] (e) -- (i);
-		\draw[red] (b) -- (f);
-		\draw[red] (c) -- (g);
-		\draw (c) -- (h);
-	\end{tikzpicture}
-	\caption{Esempio di un grafo bipartito. I lati colorati rappresentano un possibile \textit{matching}.}
+	\input{img/matching_bipartito.tikz}
+	\caption{Esempio di grafo bipartito. I lati colorati rappresentano un possibile matching.}
 	\label{fig:graphmatching}
 \end{figure}
 
-Le soluzioni ammissibili sono dei \textit{matching}, ossia una scelta di lati
-tale che nessun vertice abbia più di un lato incidente. L'obiettivo è trovare il
-matching più grande possibile, ossia quello col numero maggiore di lati.
-La funzione di costo è quindi la cardinalità dell'insieme di matching,
-e il problema è di massimo.
+Fissato un matching $M\subseteq E$, un lato $l\in E$ si dice \emph{occupato} se $l\in M$ e \emph{libero} se $l\notin M$.
+Un vertice si dice \emph{esposto} se e solo se su di esso incidono solo lati liberi. Un cammino semplice si dice \emph{aumentante} rispetto a un matching se alterna lati liberi e occupati e inizia e termina su vertici esposti.
+Quando un matching ha un cammino aumentante si può fare un \flang{flip}, cioè invertire l'appartenenza al matching dei lati del cammino aumentante.
 
-Questo problema si può risolvere polinomialmente. Esiste anche un algoritmo
-che risolve questo problema anche sui grafi generali, ma sono molto complessi.
-
-\subsection{Algoritmo basato su cammini aumentanti}
-Dato un grafo $G$ e un matching $M$ possiamo definire \textit{occupati}
-i lati presenti nel matching. Un vertice \textit{esposto} è un vertice su
-cui non incidono lati occupati. Nei vertici non esposti può incidere al massimo
-uno ed un solo lato occupato (altrimenti non sarebbe un matching). A partire
-da questa definizione, possiamo definire i \textbf{cammini aumentanti}:
-essi sono cammini che alternano lati liberi e lati occupati, iniziando e
-terminando su un vertice esposto.
-
-Dato il cammino aumentante, possiamo rimuovere dal matching tutti i lati
-\textit{occupati} dal cammino aumentante e possiamo inserivi tutti i lati che non
-erano presenti. Questa operazione si chiama \textbf{switch del cammino aumentante}:
-alcuni lati sono stati inseriti, altri sono stati rimossi. Il matching risultante
-può essere più grande o più piccolo, ma dovremo comunque controllare se effettivamente
-ciò che risulta è un matching.
-
-%disegno: inversione selezione cammini del disegno precedente
-
-\begin{figure}[h]
+\begin{figure}
 	\centering
 	\begin{subfigure}[b]{0.4\textwidth}
 		\centering
-		\begin{tikzpicture}
-
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 1)  (a) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 2)  (b) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 3)  (c) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 2)  (f) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 3)  (g) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 4)  (h) {};
-
-			\draw (a) -- (b);
-			\draw[red] (b) -- (f);
-			\draw (f) -- (c);
-			\draw[red] (c) -- (g);
-			\draw (g) -- (h);
-
-		\end{tikzpicture}
-		\subcaption{Prima dello switch.}
+		\input{img/matching_aumentante_pre.tikz}
+		\subcaption{Prima del flip.}
 	\end{subfigure}
 	\begin{subfigure}[b]{0.4\textwidth}
 		\centering
-		\begin{tikzpicture}
-
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 1)  (a) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 2)  (b) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 3)  (c) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 2)  (f) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 3)  (g) {};
-			\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 4)  (h) {};
-
-			\draw[red] (a) -- (b);
-			\draw (b) -- (f);
-			\draw[red] (f) -- (c);
-			\draw (c) -- (g);
-			\draw[red] (g) -- (h);
-
-		\end{tikzpicture}
-		\subcaption{Dopo lo switch.}
+		\input{img/matching_aumentante_post.tikz}
+		\subcaption{Dopo il flip.}
 	\end{subfigure}
-	\caption{Esempio di un cammino aumentante in un grafo bipartito. I lati colorati rappresentano i lati selezionati nel matching.}
+	\caption{Esempio di cammino aumentante in un grafo bipartito.}
 	\label{fig:augpaths}
 \end{figure}
 
+Vale il seguente teorema relativo ai cammini aumentanti per matching su grafi:
 \begin{theorem}
-	Esiste un cammino aumentante per $M$ se e solo se $M$ non è massimo.
+	Sia $M$ un matching per un grafo $G$. Allora:
+	\begin{equation*}
+		\text{Esiste un cammino aumentante per $M$} \iff \text{$M$ non è massimo per $G$.}
+	\end{equation*}
 \end{theorem}
-\begin{proof}
-
-	\begin{itemize}
-		\item[$\implies$] banale dall'operazione di switch.
-
-		\item[$\impliedby$] Ipotizziamo, per assurdo, che $M$ non sia massimo
-			e non esistano cammini aumentanti. Sia $M'$ un matching tale che $|M'| > |M|$.
-			Sia $X = M\Delta M' = (M \setminus M') \cup (M' \setminus M)$.
-
-			Su ogni vertice incidono al massimo due lati di $X$, ossia
-			in $X$ vi saranno alcuni vertici con grado $0$, $1$ oppure $2$
-			(se ci fossero con grado $3$, allora uno dei due matching non sarebbe
-			davvero un matching).
-
-			Se si trova un ciclo in $X$ con un lato in $M \setminus M'$, quello seguente
-			dovrà essere in $M' \setminus M$, quello seguente ancora sarà in $M \setminus M'$
-			e così via; i cicli hanno pertanto per forza lunghezza pari.
-			Ogni ciclo, quindi, ``cancella'' una quantità uguali di lati dalle due metà
-			($M \setminus M'$, $M' \setminus M$).
-
-			Ma deve essere per forza $|M' \setminus M| > |M \setminus M'|$,  poiché
-			$M'$ è un matching più ampio di $M$. Oltre ai cicli si devono considerare
-			anche i cammini: vi deve essere un cammino in $X$ che ha più lati in $M' \setminus M$:
-			i lati saranno alternati, nuovamente, tra lati in $M\setminus M'$ e lati in
-			$M' \setminus M$: i vertici estremi devono essere esposti in $M$,
-			altrimenti ci sarebbe un lato di $M$ che incide su di esso, che però non può stare in $M'$.
-			Pertanto, questo cammino è un cammino aumentante per $M$.
-	\end{itemize}
+\begin{proof}~
+	\begin{description}
+		\item[$\Rightarrow$)] Applicando un flip al cammino aumentante si aumenta il matching di $1$.
+		\item[$\Leftarrow$)] Se $M$ non è massimo, sia $M'$ il matching massimo per $G$ e sia $X:=(M\setminus M')\cup(M'\setminus M)$ (la differenza simmetrica di $M$ e $M'$).
+			Su ogni vertice di $G$ possono incidere al più $2$ lati di $X$ (uno per ciascuno dei due matching).
+			Nel grafo indotto da $X$, in ogni circuito l'appartenenza dei lati a $M$ e $M'$ è alternata e quindi il circuito è composto dallo stesso numero di lati di $M$ e di $M'$.
+			Siccome però $M'$ ha più lati di $M$, esiste almeno un cammino semplice nel grafo indotto da $X$ che ha più lati in $M'$.
+			Tale cammino alterna lati di $M$ e di $M'$ ed è aumentante rispetto a $M$ in $G$.
+	\end{description}
 \end{proof}
 
-\noindent
-L'algoritmo è definito come segue.
+% TODO: è necessario discutere di come viene effettuata la visita per FindAugmenting e quale sia la sua complessità. Tenere conto di ciò nel paragone con MaxMatching: è possibile usare lo stesso algoritmo su grafi non bipartiti?
+\SetKwFunction{FindAugmenting}{FindAugmenting}
+\SetKwFunction{Flip}{Flip}
+L'algoritmo \ref{alg:BiMaxMatching} risolve \BiMaxMatching trovando l'ottimo in tempo polinomiale.
+La procedura \FindAugmenting tiene traccia dei vertici esposti e fa una visita in profondità del grafo a partire da uno di essi, alternando lati liberi e occupati, identificando un cammino aumentante.
+La procedura \Flip esegue un flip del matching dato.
 
-\begin{algorithm}[!ht]
-	\caption{\textsc{BipartiteMaxMatching}}
-	\KwInput{grafo $G = (V,E)$}
-	\KwOutput{Matching massimale per $G$}
-
-	$ M = \emptyset $
-
-	\While{$\exists \text{ cammino aumentante } \pi \text{ per } M $}
-	{
-		esegui uno switch su $\pi$
-	}
+\begin{algorithm}
+	\input{alg/BiMaxMatching.tex}
+	\caption{Risoluzione polinomiale di \BiMaxMatching}
+	\label{alg:BiMaxMatching}
 \end{algorithm}
-
-Dimostriamo ora che se $G$ è bipartito, calcolare se esiste un cammino
-aumentante ha costo $O(nm)$, rendendo la complessità in tempo
-$$
-	O(n^2m)
-$$
-
-Dimostrare che esiste un cammino aumentante esiste richiede una visita;
-procediamo, quindi, con un breve intermezzo riguardo la visita dei grafi.
-
-\subsubsection{Visite di grafi}
-Le visite dei grafi (\textit{graph traversal}) sono algoritmi nei quali i vertici
-del grafo, in ogni istante, possono rientrare in tre categorie:
-\begin{itemize}
-	\item{\bf bianchi}: sono vertici sconosciuti e non esplorati.
-	\item{\bf grigi}: sono vertici conosciuti ma non esplorati. Vengono anche
-	chiamati \textit{nodi di frontiera}. Essi sono contenuti in un'apposita
-	struttura dati chiamata \textit{dispenser}, che effettivamente classifica
-	la visita.
-	\item{\bf neri}: sono vertici conosciuti e visitati.
-\end{itemize}
-
-L'algoritmo generale di visita è l'algoritmo \ref{algo:genericgraphvisit}.
-
-\begin{algorithm}[h]
-	\caption{\textsc{GenericGraphVisit}}
-	\label{algo:genericgraphvisit}
-	\KwInput{grafo $G = (V,E)$, vertice $v_0$}
-	\For {$v \in V(G)$}
-	{
-		$v.color = bianco$
-	}
-	$ F = v_0$ \tcc* {$F$ è un \textit{dispenser} di vertici, e.g. stack}
-	$ v_0.color = grigio$
-
-	\While{!F.empty()}
-	{
-		v = F.get()
-
-		visit(v)
-
-		\tcc*{$N(v)$ estrae i successori di $v$}
-		\For {w : N(v)}
-		{
-
-			\If{w.color = bianco}
-			{
-
-				F.insert(w)
-
-				w.color = grigio
-
-			}
-		}
-		v.color = nero
-	}
-\end{algorithm}
-
-La visita dipende dalla struttura $F$: se $F$ è una coda, la visita sarà in
-ampiezza, mentre se è uno stack la visita sarà in profondità. Chiaramente,
-non è detto che al termine dell'algoritmo tutti i vertici siano stati visitati,
-infatti, se non esiste un cammino tra il nodo seme ed un altro nodo,
-quest'ultimo non sarà mai visitato (pertanto, le visite possono essere utilizzate
-anche per trovare le componenti connesse.)
-Ogni visita richiede tempo $O(m)$,  poiché di tutti i nodi si guardano i vicini una volta sola.
-
-\noindent
-\newline
-Un cammino aumentante è un cammino che comincia e termina in un vertice esposto e
-alterna lati nel matching a lati esterni. Inizialmente, possiamo limitarci
-a cercare tali cammini tra quelli che partono da un vertice esposto;
-eseguiamo quindi una visita in ampiezza (ossia $F$ è una coda) alternando i lati
-liberi ai lati occupati. Se nel corso della visita si trova un vertice
-esposto. Questo algoritmo funziona solo su grafi
-bipartiti: si supponga di cominciare la visita dal nodo $6$ in figura \ref{fig:augmentingvisit}.
-I vicini di $6$ sono $2$ e $5$: supponiamo di scegliere il lato $6 \rightarrow 2$.
-I vicini di $2$ sono $3$ e $1$. Selezioniamo l'unico lato coperto,
-$2 \rightarrow 3$. I vicini di $3$ sono $4$ e $2$ (che è nero);
-selezioniamo l'unico lato non coperto, $3 \rightarrow 4$.
-Procediamo con $4\rightarrow 5$. La visita termina.
-Il cammino aumentante esiste:
-$6 \rightarrow 5 \rightarrow 4 \rightarrow 3 \rightarrow 2 \rightarrow 1$.
-
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}[b]{0.4\textwidth}
-		\centering
-		\begin{tikzpicture}
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (0, 3)  (1) {1};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (1, 2)  (2) {2};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (3, 2)  (3) {3};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (3, 0)  (4) {4};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (1, 0)  (5) {5};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (0, 1)  (6) {6};
-
-			\draw (1) -- (2);
-			\draw[red] (2) -- (3);
-			\draw (2) -- (6);
-			\draw (6) -- (5);
-			\draw (3) -- (4);
-			\draw[red] (5) -- (4);
-
-		\end{tikzpicture}
-		\subcaption{Situazione ipotetica in cui solo due lati, quelli rossi, sono
-			inseriti nel matching.}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.4\textwidth}
-		\centering
-		\begin{tikzpicture}
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (1, 4) (6) {6};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (1, 3) (2) {2};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (0, 2) (3) {3};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (2, 2) (1) {1};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (0, 1) (4) {4};
-			\node[draw,inner sep=1pt,minimum size=8pt, circle] at (0, 0) (5) {5};
-
-			\draw[dashed] (1) -- (2);
-			\draw[red] (2) -- (3);
-			\draw (2) -- (6);
-			\draw (3) -- (4);
-			\draw[red] (5) -- (4);
-
-		\end{tikzpicture}
-		\subcaption{Visita per la creazione del cammino aumentante a partire dal nodo $6$.}
-	\end{subfigure}
-
-	\caption{Esemplificazione dell'algoritmo per trovare cammini aumentanti.}
-	\label{fig:augmentingvisit}
-\end{figure}
-\begin{theorem}
-	\textsc{BipartiteMaxMatching} $\in \mathbf{PO}$.
-\end{theorem}
 
 \begin{corollario}
-	Il problema del \textsc{PerfectMatching}
-	(dato un grafo, decidere se esiste un matching
-	che incide su tutti i vertici) è in $\mathbf{P}$.
+	$\BiMaxMatching\in\PO$.
 \end{corollario}
-Questo deriva dal fatto
-che se esiste un matching perfetto per un grafo, il matching massimo avrà cardinalità $n/2$.
 
-\noindent
-Tutti gli altri problemi che vedremo saranno in $\mathbf{NPO-completi}$.
-\vfill
+\PerfectMatching è il problema di decisione che si chiede se in un grafo bipartito esista un matching che coinvolge tutti i vertici.
+
+\begin{corollario}
+	$\PerfectMatching\in\P$.
+\end{corollario}
+
+
 
 \section{Problema del bilanciamento del carico}
 \popt {LoadBalancing} {$n$ task $t_0, t_1, \cdots, t_{n-1} \in \mathbb{N}^+$, $m$ macchine}

@@ -1,0 +1,14 @@
+\begin{tikzpicture}
+	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 1)  (a) {};
+	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 2)  (b) {};
+	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 3)  (c) {};
+	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 2)  (f) {};
+	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 3)  (g) {};
+	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 4)  (h) {};
+
+	\draw[red] (a) -- (b);
+	\draw (b) -- (f);
+	\draw[red] (f) -- (c);
+	\draw (c) -- (g);
+	\draw[red] (g) -- (h);
+\end{tikzpicture}

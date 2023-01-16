@@ -17,6 +17,8 @@ Il fork è stato creato con una serie di obiettivi:
 Sono stati revisionati i seguenti capitoli/paragrafi:
 - sec. 0 Notazione
 - cap. 1 Problemi e complessità
+- cap. 2 Algoritmi deterministici:
+	- BiMaxMatching
 - cap. 3 Algoritmi probabilistici:
 	- MinCut e Karger
 - cap. 4 Strutture succinte:

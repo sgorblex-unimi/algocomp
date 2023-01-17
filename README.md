@@ -21,6 +21,7 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 	- BiMaxMatching
 	- LoadBalancing
 	- CenterSelection
+	- MinSetCover
 - cap. 3 Algoritmi probabilistici:
 	- MinCut e Karger
 - cap. 4 Strutture succinte:

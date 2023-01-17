@@ -15,10 +15,10 @@
 \if@compact
 	\geometry{
 		paperheight=\dimexpr\textheight+8mm\relax,
-		paperwidth=\dimexpr\textwidth+2mm\relax,
-		left=1mm,
+		paperwidth=\dimexpr\textwidth+4mm\relax,
+		left=2mm,
 		top=4mm,
-		right=1mm,
+		right=2mm,
 		bottom=4mm
 	}
 \else

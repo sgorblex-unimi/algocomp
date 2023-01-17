@@ -1,0 +1,10 @@
+\KwInput{$S_i, U$}
+
+$R\asn U$\;
+$C\asn\emptyset$\;
+\While{$R\neq\emptyset$} {
+	$i=\arg\min_i \set{\frac{w_i}{\card{S_i \cap R}}}$\;
+	$C\asn C\cup\set{S_i}$\;
+	$R\asn R\setminus S_i$\;
+}
+\Return{$C$}\;

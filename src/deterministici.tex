@@ -296,7 +296,7 @@ L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterS
 	Si consideri il problema di decisione \NP-completo \DominatingSet. Dato un grafo non orientato $G=(V,E)$, un dominating set per $G$ è un insieme di vertici $D\subseteq V$ se e solo se ogni vertice non appartenente a $D$ ha un adiacente in $D$: $\forall x\in(V\setminus D),\exists y\in D\mid \set{x,y}\in D$.
 
 	\pdec{\DominatingSet}
-	{Grafo non orientato $G=(V,E)$, $k\in\N$}
+	{Grafo non orientato $G=(V,E)$, $k\in\N^+$}
 	{Determinare se esiste un dominating set per $G$ di cardinalità minore o uguale a $k$}
 
 	Data un'istanza $((V,E),k)$ di \DominatingSet, costruiamo una istanza di \CenterSelection che ha per spazio l'insieme dei vertici, per numero massimo di centri il limite di cardinalità $k$ per il dominating set e per metrica la funzione
@@ -338,369 +338,133 @@ L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterS
 
 
 \section{Problema della copertura d'insiemi}
-Prima di passare a descrivere il problema \textsc{SetCovering} è necessario
-introdurre alcune proprietà delle funzioni armoniche.
+Si definisce funzione armonica la funzione $H:\N^+\to\R$ tale che
+\begin{equation*}
+	H(n)=\sum_{k=1}^n \frac 1k
+\end{equation*}
 
-\subsection{Funzioni armoniche}
-Una funzione armonica è una funzione
-$$
-	H : \mathbb{N}^+ \rightarrow  \mathbb{R}
-$$
-ed è definita
-$$
-	H(n) = \sum_{k = 1}^{n} \frac{1}{k}
-$$
-per esempio $H(3) = 1 + 1/2 + 1/3$.
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\begin{tikzpicture}
-			\begin{axis}[
-					xmin=0,
-					xmax=4,
-					ymin=0,
-					ymax=3,
-					samples=200,
-					axis lines=left
-				]
+% TODO: dimostrare in un'appendice (vedi vecchi appunti)
+Vale la seguente proprietà per la funzione armonica:
+\begin{theorem}
+	\begin{equation*}
+		\ln(n+1)\leq H(n)\leq 1+\ln(n)
+	\end{equation*}
+\end{theorem}
 
-				\addplot [black] {1/x};
-
-				\draw[pattern=north west lines] (0,0) rectangle (1,1);
-				\draw[pattern=north west lines] (1,0) rectangle (2,1/2);
-				\draw[pattern=north west lines] (2,0) rectangle (3,1/3);
-				\draw[pattern=north west lines] (3,0) rectangle (4,1/4);
-			\end{axis}
-		\end{tikzpicture}
-		\subcaption{Grafico di $f(x) = \frac{1}{x}$ verso aree delle somme in $H(4)$.}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\begin{tikzpicture}
-			\begin{axis}[
-					ymin=0,
-					ymax=4,
-					xmin=0,
-					xmax=5,
-					domain=0:4,
-					samples=200,
-					axis lines=left,
-					clip=true,
-					clip mode=individual]
-
-				\addplot [black] {ln(x) + 1} node (plot1) {};
-				\node [right] at (plot1) {$\ln(n) + 1$};
-
-				\addplot [black] {ln(x + 1)} node (plot2) {};
-				\node [right] at (plot2) {$\ln(n + 1)$};
-
-				\draw[{Circle[open]}-,dashed] ({1,1}) -- ({1,1}|-{rel axis cs:0,0});
-				\draw[{Circle[open]}-,dashed] ({2,3/2}) -- ({2,3/2}|-{rel axis cs:0,0});
-				\draw[{Circle[open]}-,dashed] ({3,11/6,1}) -- ({3,11/6,1}|-{rel axis cs:0,0});
-				\draw[{Circle[open]}-,dashed] ({4, 25/12,1}) -- ({4, 25/12,1}|-{rel axis cs:0,0});
-
-			\end{axis}
-		\end{tikzpicture}
-		\subcaption{Grafico di $f(x) = \ln(x) + 1$ e $v(x) = \ln(x+1)$ verso i valori di $H(x)$ per i naturali $x = 1, 2, 3, 4$.}
-	\end{subfigure}
-	\caption{Proprietà di funzioni armoniche}
-	\label{fig:1x_vs_harmo}
-\end{figure}
-
-\noindent
-Le funzioni armoniche hanno delle proprietà:
-\begin{lemma}\label{lem:harmo_leq_lnx}
-	$$
-		H(n) \leq 1 + \int_{1}^{n} \frac{1}{x} dx = 1 + \ln(x)|_1^n = 1 + \ln(n) - 0 = 1 + \ln(n)
-	$$
-\end{lemma}
-\begin{lemma}\label{lem:harmo_geq_lnx1}
-	In quanto
-	$$
-		\int_t^{t+1} \frac{1}{x} dx \leq \int_t^{t+1} \frac{1}{t} dx = \frac{1}{t}
-	$$
-	allora
-	\begin{align*}
-		 & H(n) = \frac{1}{1} + \frac{1}{2} + \cdots + \frac{1}{t} \geq \int_{1}^{2}\frac{1}{x} dx + \int_2^3 \frac{1}{x} dx + \cdots + \int_n^{n+1} \frac{1}{x} dx = \\
-		 & = \int_1^{n+1}\frac{1}{x}dx = \ln(x)|_1^{n+1} = \ln(n+1)
-	\end{align*}
-	quindi $H(N) \geq \ln(n+1)$, e in conclusione
-	$$
-		\ln(n+1) \leq H(N) \leq 1 + \ln(n)
-	$$
-\end{lemma}
-
-\noindent
-Torniamo a descrivere il problema \textsc{SetCover}:
-
-\popt {SetCover} {$S_1, S_2, \cdots, S_m \subseteq U$ tali che $\cup_{i = 1}^m S_i = U$
-	e pesi $\forall i=1,\cdots, m ~~ w_i \in \mathbb{R}^{> 0}$ }
-{Insieme di insiemi scelti (o indici) $C \subseteq \{1, \cdots, m\}$}
-{Quali sono gli insiemi da scegliere per coprire tutti gli elementi di $U$ col
-	costo minore possibile?} {$C$ tale che $\cup_{i \in C}S_i = U$}
-{$Min$}{$w = \sum_{i \in C} w_i$}
+\popt{\MinSetCover}
+{$S_1,S_2,\dots,S_m\subseteq U$ tali che $\cup_{i=1}^m S_i=U$ e pesi $w_1,\dots,w_m$ con $w_i \in\R^{>0}~\forall i$}
+{$C\subseteq\set{S_1,\dots,S_n}$}
+{Quali sono gli insiemi da scegliere per coprire tutti gli elementi di $U$ col costo minore possibile?}
+{$C$ tale che $\cup_{i\in C}S_i=U$}
+{$\MIN$}
+{$w:=\sum_{i:S_i\in C} w_i$}
 
 
 \subsection{Algoritmo greedy set cover}
-\begin{algorithm}[h]
-	\caption{GreedySetCover}
+\begin{algorithm}[ht]
+	\caption{\GreedySetCover}
 	\label{algo:greedysetcover}
-	\KwInput{$S_i, U$}
-
-	$R = U$
-
-	$S = \emptyset$
-
-	\While{$R \neq \emptyset$}
-	{
-		$\hat{S} = \arg \min_{S_i} \{ \frac{w_i}{|S_i \cap R|}\}$
-
-		$S = S \cup \{\hat{S}\}$
-
-		$R = R \setminus \hat{S}$
-	}
-	\Return{$S$}
-
+	\input{alg/GreedySetCover.tex}
 \end{algorithm}
-Enunciamo e dimostriamo alcune proprietà dell'\cref{algo:greedysetcover};
-inizialmente notiamo che ogni elemento $s \in U$ viene inserito in qualche
-iterazione $j$ dell'algoritmo che sceglie un qualche $\hat{S}_j =S_{i_j}$. Definiamo
-quindi
-$$
-	\forall u \in U ~~ c_u = \frac{w_{i_j}}{|S_{i_j} \cap R_j|}
-$$
-come il costo di ogni singolo elemento di $U$ coperto grazie alla scelta di $S_{i_j}$
-durante la $j$-esima iterazione.
+L'algoritmo \ref{algo:greedysetcover} costruisce polinomialmente una soluzione per \MinSetCover, scegliendo a ogni iterazione il sottoinsieme di input che minimizza il rapporto tra il suo peso e il numero di elementi che esso aggiunge all'output parziale.
+
+Ogni elemento $s\in U$ viene inserito nell'output parziale in qualche iterazione $j$ con l'aggiunta di un sottoinsieme $S_j$. Definiamo quindi
+\begin{equation*}
+	c_u = \frac{w_j}{\card{S_j\cap R_j}}
+\end{equation*}
+il costo della copertura del singolo elemento di $U$, avvenuta tramite l'aggiunta di $S_j$ durante la $j$-esima iterazione.
 
 \begin{lemma}\label{lem:gsetcov_w_sum_c_u}
-	$$
-		w = \sum_{u \in U} c_u
-	$$
+	\begin{equation*}
+		w=\sum_{u\in U} c_u
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Supponiamo che la scelta $S = \{S_{i_1}, S_{i_2}, \cdots, S_{i_k}\}$ produca
-	un costo
-	$$
-		w = w_{i_1} + w_{i_2} + \cdots + w_{i_k}
-	$$
-	con ogni $w_{i_j}$ il costo di ogni $S_{i_j}$ scelto alla $j$-esima iterazione.
-	Gli elementi coperti alla $j$-esima iterazione sono esattamente i
-	$u \in S_{i_j} \cap R_j$, che hanno
-	$$
-		c_u = \frac{w_{i_j}}{|S_{i_j} \cap R_j|}
-	$$
-	ed essendo in numero proprio $|S_{i_j} \cap R_j|$, si ottiene
-	$$
-		\sum_{u \in S_{i_j} \cap R_j} c_u = |S_{i_j} \cap R| \cdot \frac{w_{i_j}}{|S_{i_j} \cap R|} = w_{i_j}
-	$$
-	da cui si ottiene facilmente l'enunciato.
+	Si noti che gli insiemi $S_j\cap R_j$, dove $S_j$ è l'insieme di input scelto al passo $j$ e $R_j$ è l'insieme degli elementi dell'universo rimasti da selezionare al passo $j$, costituiscono una partizione di $U$. Infatti, l'algoritmo termina solo dopo aver esaurito gli elementi di $U$, e ogni insieme $S_j\cap R_j$ aggiunge unicamente nuovi elementi.
+
+	Sia $w_j$ il costo dell'insieme $S_j$ aggiunto al passo $j$. Allora
+	\begin{equation*}
+		w = \sum_j w_j=\sum_j\sum_{s\in S_j\cap R_j} c_s=\sum_{u\in U} c_u
+	\end{equation*}
 \end{proof}
 \begin{lemma}\label{lem:gsetcov_cu_leq_harmoskwk}
-	$$
-		\forall k ~~ \sum_{u \in S_k} c_u \leq H(|S_k|) \cdot w_k
-	$$
+	\begin{equation*}
+		\forall k\in\set{1,\dots,m} \quad\sum_{s\in S_k} c_u\leq H(\card{S_k}) \cdot w_k
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Sia
-	$$
-		S_{i_j} = \{u_1, u_2, \cdots, u_d\}
-	$$
-	dove gli $u_i$ sono elencati in ordine di copertura, ossia all'inizio
-	quelli che vengono coperti prima nell'algoritmo e alla fine quelli
-	che verranno coperti dopo.
-	Nell'iterazione $j$ in cui verrà coperto un certo $u_k \in S_j$ sarà
-	$$
-		\{u_k, \cdots, u_d\} \subseteq R_j
-	$$
-	e quindi deve necessariamente essere
-	$$
-		|S_{i_j} \cap R_j| \geq d - k + 1
-	$$
-	ossia rimangono almeno tanti elementi da coprire quanti quelli non ancora
-	coperti di $S_{i_j}$ sin questo momento; pertanto
+	Sia $S_k=\set{u_1,u_2,\dots,u_d}$, dove gli elementi sono elencati in ordine di copertura.
+
+	Quando un elemento $s_j$ viene coperto dall'inserimento di un insieme $S_{k'}$, gli elementi di $S_k$ ancora da inserire spaziano almeno da $s_j$ a $s_d$, quindi:
+	\begin{equation*}
+		\card{S_k\cap R}\geq d-j+1 \text.
+	\end{equation*}
+	Quindi
+	\begin{equation*}
+		c_{s_j}=\frac{w_{k'}}{\card{S_{k'}\cap R_j}}
+		\leq\frac{w_k}{\card{S_k\cap R_j}}
+		\leq\frac{w_k}{d-j+1} \text.
+	\end{equation*}
+	E, di conseguenza
 	\begin{align*}
-		 & c_{u_k} = \frac{w_{j'}}{|S_{j'} \cap R_j|}   &  & \text{ con } j' \text{ potenzialmente diverso da } i_j \\
-		 & \leq \frac{w_{i_j}}{|S_{i_j} \cap R_j|} \leq &  & \text{ poiché l'algoritmo sceglie il minimo}           \\
-		 & \leq \frac{w_{i_j}}{d-k+1}
+		\sum_{s\in S_k} c_s & =c_{s_1}+c_{s_2}+c_{s_3}\dots+c_{s_d}                            \\
+		                    & \leq \frac{w_k}{d-1+1}+\frac{w_k}{d-2+1}+\dots+\frac{w_k}{d-d+1} \\
+		                    & \leq \frac{w_k}{d}+\frac{w_k}{d-1}+\dots+\frac{w_k}{1}           \\
+		                    & = w_k\left(1 + \frac{1}{2} + \dots + \frac{1}{d}\right)          \\
+		                    & = w_k\cdot H(\card{S_k})
 	\end{align*}
-
-	Sommando per ogni $c_{u_i}$ si ha
-	$$
-		c_{u_1} + \cdots + c_{u_d} \leq \frac{w_{i_j}}{d-1 + 1} + \frac{w_{i_j}}{d-2+1} + \cdots + \frac{w_{i_j}}{d-d+1}
-		= w_{i_j}(1 + \frac{1}{2} + \cdots + \frac{1}{d})
-		= w_{i_j} \cdot H(|S_{i_j}|)
-	$$
 \end{proof}
+
 \begin{theorem}
-	Sia $M = \max{|S_i|}$. L'algoritmo \textsc{GreedySetCover} è una $H(M)$-approssimazione per
-	il problema \textsc{SetCover}.
+	Sia $M=\max_i\card{S_i}$. \GreedySetCover è $H(M)$-approssimante per \MinSetCover.
 \end{theorem}
 \begin{proof}
-	Sia $w^* = \sum_{S_i \in S^*} w_i$.
-	Allora, grazie al \cref{lem:gsetcov_cu_leq_harmoskwk}, abbiamo
-	$$
-		w_i \geq \frac{\sum_{u \in S_i} c_u}{H(|S_i|)} \geq \frac{\sum_{u \in S_i} c_u}{H(M)}
-	$$
-	Consideriamo il valore ottenuto sommando, per ogni insieme della copertura ottima $S^*$, la somma
-	dei costi dei singoli elementi in ogni insieme. Questo valore è maggiore o uguale alla somma
-	dei costi degli elementi nell'universo $U$, poichè nel primo valore potremmo sommare più volte
-	il costo di alcuni elementi che compaiono in più insiemi scelti.
-	Per il \cref{lem:gsetcov_w_sum_c_u} la seconda sommatoria è uguale al costo della soluzione ottima.
-	$$
-		\sum_{S_i \in S^*}\sum_{u \in S_i} c_u \geq \sum_{u \in U} c_u = w
-	$$
-	Applicando queste due osservazioni alla definizione di costo della soluzione ottima otteniamo
-	\begin{align}
-		 & w^* = \sum_{S_i \in S^*} w_i \geq \frac{\sum_{S_i \in S^*} \sum_{u \in S_i} c_u}{H(M)} \geq \frac{w}{H(M)} \\
-		 & \implies \frac{w}{w^*} \leq H(M)
-	\end{align}
-
-	Inoltre, osservando che $M \leq |U| = n$, possiamo anche dire che:
-	$$
-		H(M) \leq H(n) = O(\ln(n))
-	$$
+	Sia $w\star:=\sum_{i:S_i\in C\star} w_i$.
+	Applicato l'algoritmo, in virtù del lemma \ref{lem:gsetcov_cu_leq_harmoskwk} vale, per qualunque $i$:
+	\begin{equation*}
+		w_i\geq\frac{\sum_{s\in S_i} c_s}{H(\card{S_i})}\geq\frac{\sum_{s\in S_i} c_s}{H(M)}
+	\end{equation*}
+	Essendo $C\star$ una copertura e applicando il lemma \ref{lem:gsetcov_w_sum_c_u}:
+	\begin{equation*}
+		\sum_{S_i\in C\star}\sum_{s\in S_i} c_s \geq \sum_{s\in U} c_s = w
+	\end{equation*}
+	Applicando queste due osservazioni:
+	\begin{gather*}
+		w\star = \sum_{i:S_i\in C\star} w_i \geq \sum_{i:S_i\in C\star} \frac{\sum_{s\in S_i} c_s}{H(M)} \geq \frac{w}{H(M)} \\
+		\frac{w}{w\star} \leq H(M)
+	\end{gather*}
 \end{proof}
+
+Inoltre vale:
+\begin{equation*}
+	H(M)\leq H(\card U) = O(\ln(\card U))
+\end{equation*}
+Ergo:
 \begin{corollario}
-	\textsc{GreedySetCover} è un algoritmo $O(\ln(n))-$approssimante.
+	\GreedySetCover è un algoritmo $O(\ln(n))$-approssimante per \MinSetCover, dove $n$ è la cardinalità dell'insieme universo.
 \end{corollario}
-Si può inoltre dimostrare che non esiste nessun algoritmo
-$(1 - O(1))\ln(n)$-approssimante per il \textsc{SetCoverProblem},
-ammesso che $\mathbf{P} \neq \mathbf{NP}$.
 
+Per quanto riguarda l'ottimalità di questo bound:
 \begin{theorem}
-	Il lower bound $O(\log(n))$ è \textit{stretto}.
+	Per ogni $\varepsilon>0$, \GreedySetCover non è $(O(\ln(n))-\varepsilon)$-approssimante per \MinSetCover.
 \end{theorem}
 \begin{proof}
-	\begin{figure}[h]
+	% TODO: adattare a n non potenza di 2?
+	Fissati $\varepsilon$ e $n$ (sia per semplicità $n=2^k$ per qualche $k\in\N^+,k>2$), si consideri l'input per \MinSetCover mostrato in figura \ref{fig:setcover_tightness}.
+	L'input è costituito da due insiemi disgiunti $A$ e $B$ di costo $1+\varepsilon$ e cardinalità $n/2$; e $\log_2 n$ insiemi disgiunti $S_1,S_2,\dots,S_{\log_2 n}$, di cardinalità rispettive $n/2,n/4,\dots$ e costo $1$. In ciascun insieme $S_i$, metà degli elementi è contenuta in $A$ e l'altra metà in $B$.
+
+	\begin{figure}[ht]
 		\centering
-
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Ellipse [id:dp6765246556575552] 
-			\draw   (150,155) .. controls (150,80.44) and (174.62,20) .. (205,20) .. controls (235.38,20) and (260,80.44) .. (260,155) .. controls (260,229.56) and (235.38,290) .. (205,290) .. controls (174.62,290) and (150,229.56) .. (150,155) -- cycle ;
-			%Shape: Circle [id:dp25664405112317257] 
-			\draw   (190,245) .. controls (190,236.72) and (196.72,230) .. (205,230) .. controls (213.28,230) and (220,236.72) .. (220,245) .. controls (220,253.28) and (213.28,260) .. (205,260) .. controls (196.72,260) and (190,253.28) .. (190,245) -- cycle ;
-			%Shape: Circle [id:dp365326528573394] 
-			\draw   (190,185) .. controls (190,176.72) and (196.72,170) .. (205,170) .. controls (213.28,170) and (220,176.72) .. (220,185) .. controls (220,193.28) and (213.28,200) .. (205,200) .. controls (196.72,200) and (190,193.28) .. (190,185) -- cycle ;
-			%Shape: Circle [id:dp6253156343816739] 
-			\draw   (190,125) .. controls (190,116.72) and (196.72,110) .. (205,110) .. controls (213.28,110) and (220,116.72) .. (220,125) .. controls (220,133.28) and (213.28,140) .. (205,140) .. controls (196.72,140) and (190,133.28) .. (190,125) -- cycle ;
-			%Shape: Circle [id:dp31124337530452395] 
-			\draw   (190,65) .. controls (190,56.72) and (196.72,50) .. (205,50) .. controls (213.28,50) and (220,56.72) .. (220,65) .. controls (220,73.28) and (213.28,80) .. (205,80) .. controls (196.72,80) and (190,73.28) .. (190,65) -- cycle ;
-			%Shape: Ellipse [id:dp2508338002239776] 
-			\draw   (270,155) .. controls (270,80.44) and (294.62,20) .. (325,20) .. controls (355.38,20) and (380,80.44) .. (380,155) .. controls (380,229.56) and (355.38,290) .. (325,290) .. controls (294.62,290) and (270,229.56) .. (270,155) -- cycle ;
-			%Shape: Circle [id:dp9420035211644501] 
-			\draw   (310,245) .. controls (310,236.72) and (316.72,230) .. (325,230) .. controls (333.28,230) and (340,236.72) .. (340,245) .. controls (340,253.28) and (333.28,260) .. (325,260) .. controls (316.72,260) and (310,253.28) .. (310,245) -- cycle ;
-			%Shape: Circle [id:dp3760188464261045] 
-			\draw   (310,185) .. controls (310,176.72) and (316.72,170) .. (325,170) .. controls (333.28,170) and (340,176.72) .. (340,185) .. controls (340,193.28) and (333.28,200) .. (325,200) .. controls (316.72,200) and (310,193.28) .. (310,185) -- cycle ;
-			%Shape: Circle [id:dp168355019540958] 
-			\draw   (310,125) .. controls (310,116.72) and (316.72,110) .. (325,110) .. controls (333.28,110) and (340,116.72) .. (340,125) .. controls (340,133.28) and (333.28,140) .. (325,140) .. controls (316.72,140) and (310,133.28) .. (310,125) -- cycle ;
-			%Shape: Circle [id:dp5145571449426466] 
-			\draw   (310,65) .. controls (310,56.72) and (316.72,50) .. (325,50) .. controls (333.28,50) and (340,56.72) .. (340,65) .. controls (340,73.28) and (333.28,80) .. (325,80) .. controls (316.72,80) and (310,73.28) .. (310,65) -- cycle ;
-			%Shape: Ellipse [id:dp4243150165053027] 
-			\draw   (130,215) .. controls (130,184.62) and (190.44,160) .. (265,160) .. controls (339.56,160) and (400,184.62) .. (400,215) .. controls (400,245.38) and (339.56,270) .. (265,270) .. controls (190.44,270) and (130,245.38) .. (130,215) -- cycle ;
-			%Shape: Ellipse [id:dp11852663897458593] 
-			\draw   (130,125) .. controls (130,111.19) and (190.44,100) .. (265,100) .. controls (339.56,100) and (400,111.19) .. (400,125) .. controls (400,138.81) and (339.56,150) .. (265,150) .. controls (190.44,150) and (130,138.81) .. (130,125) -- cycle ;
-			%Shape: Ellipse [id:dp343848974124522] 
-			\draw   (160,65) .. controls (160,51.19) and (180.15,40) .. (205,40) .. controls (229.85,40) and (250,51.19) .. (250,65) .. controls (250,78.81) and (229.85,90) .. (205,90) .. controls (180.15,90) and (160,78.81) .. (160,65) -- cycle ;
-			%Shape: Ellipse [id:dp2343711231016622] 
-			\draw   (280,65) .. controls (280,51.19) and (300.15,40) .. (325,40) .. controls (349.85,40) and (370,51.19) .. (370,65) .. controls (370,78.81) and (349.85,90) .. (325,90) .. controls (300.15,90) and (280,78.81) .. (280,65) -- cycle ;
-			
-			% Text Node
-			\draw (119,102) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
-			% Text Node
-			\draw (121,181) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
-			% Text Node
-			\draw (159,32) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
-			% Text Node
-			\draw (369,32) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1$};
-			% Text Node
-			\draw (188.33,2.67) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1 + \varepsilon$};
-			% Text Node
-			\draw (306.67,3) node [anchor=north west][inner sep=0.75pt]   [align=left] {$1 + \varepsilon$};
-		\end{tikzpicture}
-
-		\caption{Esempio di input ``cattivo'' per $n=8$}
+		\input{img/greedysetcover_badinput.tikz}
+		\caption{Esempio di input "cattivo" per $n=8$}
 		\label{fig:setcover_tightness}
 	\end{figure}
-	
-	Il teorema si dimostra creando un input ``cattivo''.
 
-	Fissato un $n$ costruiamo un input composto da due grandi insiemi disgiunti
-	$A$ e $B$, entrambi di costo $1 + \varepsilon$ e contenenti $n / 2$
-	elementi ciascuno. Gli elementi di questi due insiemi compongono
-	l'universo. Costruiamo inoltre $log(n)$ insiemi disgiunti
-	$S_1, S_2, ..., S_{log(n)}$ come in \cref{fig:setcover_tightness}.
-	Questi insiemi hanno tutti costo $1$ ed hanno dimensioni $n/2, n/4, n/8$
-	e così via. Ci riferiremo a questi insiemi con i nomi $S_1, S_2, ...$ in
-	ordine decrescente di dimensione.
-
-	Alla prima iterazione dell'algoritmo abbiamo i due grandi insiemi $A$ e $B$
-	che hanno costo $\frac{1 + \varepsilon}{n / 2}$, mentre l'insieme $S_1$ ha
-	costo $\frac{1}{n / 2}=2/n$, di conseguenza l'algoritmo sceglie
-	quest'ultimo. Nella prossima iterazione il costo degli insiemi $A$ e $B$ è
-	aumentato a $\frac{1 + \varepsilon}{n / 4}$, mentre il costo dell'insieme
-	$S_2$ è $\frac{1}{n / 4}$, di conseguenza l'algoritmo sceglie quest'ultimo.
-	Questo processo si ripete fino a quando l'algoritmo avrà utilizzato tutti i
-	$log(n)$ insiemi $S_i$ per coprire tutto l'universo, di conseguenza la
-	soluzione trovata avrà costo $w=log(n)$, seppur la soluzione ottima
-	consiste semplicemente nel prendere i due insiemi $A$ e $B$,
-	entrambi di costo $1 + \varepsilon$ e dunque $w^*=2 + 2\varepsilon$
+	L'algoritmo sceglie nell'ordine gli insiemi $S_i$ in quanto il costo di aggiungerli è, per ogni iterazione $j$, $\frac{1}{n/2^j}$, contro un costo di $\frac{1+\varepsilon}{n/2^j}$ per scegliere $A$ o $B$.
+	Questo porta un costo complessivo di $\log_2 n$. La soluzione ottima tuttavia è naturalmente quella composta dagli insiemi $A$ e $B$, che ha un costo di $2+2\varepsilon$. Il rapporto tra le due è necessariamente logaritmico.
 \end{proof}
 
-\begin{figure}[h]
-	\centering
 
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,477); %set diagram left start at 0, and has height of 477
-
-		%Shape: Ellipse [id:dp4588658322810296] 
-		\draw   (310.61,174.5) .. controls (376.13,87.79) and (491.77,17.5) .. (568.88,17.5) .. controls (645.98,17.5) and (655.37,87.79) .. (589.84,174.5) .. controls (524.31,261.21) and (408.68,331.5) .. (331.57,331.5) .. controls (254.46,331.5) and (245.08,261.21) .. (310.61,174.5) -- cycle ;
-		%Shape: Ellipse [id:dp4441062862246874] 
-		\draw   (327.15,184.82) .. controls (376.62,117.65) and (463.91,63.2) .. (522.11,63.2) .. controls (580.32,63.2) and (587.41,117.65) .. (537.94,184.82) .. controls (488.48,251.99) and (401.19,306.44) .. (342.98,306.44) .. controls (284.77,306.44) and (277.68,251.99) .. (327.15,184.82) -- cycle ;
-		%Shape: Ellipse [id:dp42532014972954124] 
-		\draw   (341.82,199.56) .. controls (376.94,147.86) and (438.92,105.95) .. (480.25,105.95) .. controls (521.58,105.95) and (526.61,147.86) .. (491.49,199.56) .. controls (456.37,251.26) and (394.39,293.17) .. (353.06,293.17) .. controls (311.73,293.17) and (306.7,251.26) .. (341.82,199.56) -- cycle ;
-		%Shape: Ellipse [id:dp9403889034822421] 
-		\draw   (350.81,210.25) .. controls (376.75,173.81) and (422.52,144.28) .. (453.04,144.28) .. controls (483.57,144.28) and (487.28,173.81) .. (461.34,210.25) .. controls (435.4,246.68) and (389.63,276.22) .. (359.11,276.22) .. controls (328.58,276.22) and (324.87,246.68) .. (350.81,210.25) -- cycle ;
-		%Shape: Ellipse [id:dp9056149450292196] 
-		\draw   (367.2,215.78) .. controls (380.43,196.64) and (406.86,181.13) .. (426.24,181.13) .. controls (445.62,181.13) and (450.6,196.64) .. (437.38,215.78) .. controls (424.15,234.91) and (397.71,250.42) .. (378.34,250.42) .. controls (358.96,250.42) and (353.97,234.91) .. (367.2,215.78) -- cycle ;
-		%Straight Lines [id:da10034962558485494] 
-		\draw    (638.18,160.5) -- (638.18,125.85) -- (593.29,127.26) ;
-		\draw [shift={(591.29,127.33)}, rotate = 358.2] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-
-		% Text Node
-		\draw (538.07,41.64) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\ln(n)-\mathbf{APX}$};
-		% Text Node
-		\draw (510,80.38) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\mathbf{APX}$};
-		% Text Node
-		\draw (448,117.56) node [anchor=north west][inner sep=0.75pt]   [align=left] {$3-\mathbf{APX}$};
-		% Text Node
-		\draw (430,155.6) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\cdots$};
-		% Text Node
-		\draw (394.14,202.63) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\mathbf{PO}$};
-		% Text Nodej
-		\draw (638.18,178) node   [align=left] {\begin{minipage}[lt]{51.43pt}\setlength\topsep{0pt}
-				\begin{center}
-					\textsc{SetCover}
-				\end{center}
-
-			\end{minipage}};
-
-	\end{tikzpicture}
-	% TODO: fix this
-	% \caption{$\SetCover \in \ln(n)-\APX$.}
-	\caption{$\SetCover \in \ln(n)-APX$.}
-	\label{fig:setcoverapx}
-\end{figure}
-
-La particolarità tecnica interessante risiede nell'analisi di complessità:
-abbiamo attribuito ad ogni singolo elemento un costo; questa tecnica, che
-si chiama \textit{pricing}, è a volte utile anche per il design degli algoritmi.
 
 \section{Problema della copertura dei vertici}
 \popt {VertexCover} {$G = (V,E)$ non diretto, con pesi

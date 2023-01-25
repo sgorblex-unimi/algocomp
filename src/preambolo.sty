@@ -125,6 +125,7 @@
 % linguaggi
 \renewcommand{\star}{^*} % redefined from amssymb
 \newcommand{\starsymb}{\mathchar"213F} % old \star
+\renewcommand{\angle}[1]{\langle #1 \rangle} % redefined
 \newcommand{\emptyword}{\varepsilon}
 \newcommand{\len}[1]{|#1|}
 
@@ -189,9 +190,14 @@
 \newalgo{CenterSelectionPlus}
 \newalgo{GreedyCenterSelection}
 \newalgo{GreedySetCover}
+\newalgo{PricedVertexCover}
 \newproblem{CenterSelection}
 \newproblem{MinSetCover}
 \newproblem{MinCut}
+\newproblem{VertexCover}
+\newproblem{SetCover}
+\newproblem{LinearProgramming}
+\newproblem{IntegerLinearProgramming}
 
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\select}{\mathrm{select}}
@@ -201,3 +207,4 @@
 \newcommand{\trleft}{\mathrm{left\_child}}
 \newcommand{\trright}{\mathrm{right\_child}}
 \newcommand{\trparent}{\mathrm{parent}}
+\newcommand{\trans}{^T}

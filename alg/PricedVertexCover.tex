@@ -1,0 +1,11 @@
+\KwInput{$G=(V,E)$, $\angle{w_i}_{i\in V}$}
+
+\For{$e \in E$}{
+	$P_e \asn 0$\;
+}
+\While{esiste un lato $\bar e=\set{\bar i,\bar j}$ tale che $\angle{P_{\bar e}}$ non è stretto né su $\bar i$ né su $\bar j$}{
+	$\Delta \asn \min\set{w_{\bar i}-\sum_{e\ni\bar i} P_e , w_{\bar j}-\sum_{e\ni\bar j} P_e}$\;
+	$P_{\bar e} \asn P_{\bar e} + \Delta$\;
+}
+$S \asn \set{v\in V \mid \angle{P_e} \text{ è stretto su } v}$\;
+\Return {$S$}\;

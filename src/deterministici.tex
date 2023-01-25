@@ -466,323 +466,188 @@ Per quanto riguarda l'ottimalità di questo bound:
 
 
 
-\section{Problema della copertura dei vertici}
-\popt {VertexCover} {$G = (V,E)$ non diretto, con pesi
-	$\forall i \in V ~ w_i \in \mathbb{Q}^{>0}$}
-{Insieme di vertici $X \subseteq V$}
-{Quale è il numero minimo di vertici da selezionare per coprire ogni lato?}
-{$X \subseteq V$ tale che $\forall e \in E ~ e \cap X \neq \emptyset$}
-{$Min$}{$w = \sum_{i \in X} w_i$}
+\section{\VertexCover}
+Una copertura per un grafo non orientato $G=(V,E)$ è un insieme di vertici $X\subseteq V$ tale che ogni lato di $E$ incide su un vertice in $X$.
+Il problema \VertexCover associa a ogni vertice un peso e cerca la copertura di costo complessivo minimo.
 
-\subsection{Relazione tra vertex e set cover}
-\begin{theorem}\label{thm:vc_polyred_sc}
-	Ogni istanza del problema di decisione associato $\hat{\Pi}_{VC}$ del problema \textsc{VertexCover} è
-	polinomialmente riducibile ad una istanza del problema di decisione associato
-	$\hat{\Pi}_{SC}$ di \textsc{SetCover}, ossia
-	$$
-		\hat{\Pi}_{VC} \leq_p \hat{\Pi}_{SC}
-	$$
-\end{theorem}
-\begin{proof}
-	Supponiamo di avere un'istanza $(G=(V,E), w_i, w_{max})$ di
-	$\hat{\Pi}_{VC}$; si può trasformare nell'istanza
-	$(S= \{S_1, S_2, \cdots, S_n\}, w_i, w_{max})$ di $\hat{\Pi}_{SC}$ 
-	definendo l'universo $U=E$ e creando un $S_i$ per ogni vertice $i \in V$ tale che 
-	$S_i = \{e \in E | e \text{ incide su } i\}$.
-\end{proof}
+\popt{\VertexCover}
+{Grafo non orientato $G=(V,E)$ e pesi $w_1,\dots,w_n$, con $n=\card V$ e $w_i\in\Q^+~\forall i$}
+{$X\subseteq V$}
+{Determinare una copertura di $G$ di costo minimo}
+{$X\subseteq V$ tale che $\forall e\in E ~ e\cap X\neq\emptyset$}
+{$\MIN$}
+{$w=\sum_{i\in X} w_i$}
 
-Di fatto, se abbiamo un algoritmo per
-risolvere \textsc{SetCover} con un fattore di approssimazione, allora possiamo
-risolvere anche \textsc{VertexCover} con lo stesso fattore;
-questo, ovviamente, non è necessariamente il caso generale: dati due problemi
-$\hat{\Pi}_1 \leq_p \hat{\Pi_2}$ e un algoritmo che risolve con un certo fattore
-di approssimazione $\hat{\Pi_2}$, non è detto che esso risolva
-\textit{con lo stesso fattore di approssimazione} un'istanza di $\hat{\Pi_1}$.
+Si considerino i problemi di decisione associati a \VertexCover e \MinSetCover.
+Un'istanza $\tuple{G=(V,E),\angle{w_i}_{i\in V}}$ di \VertexCover può essere convertita in tempo polinomiale in una di \MinSetCover scegliendo come insiemi gli insiemi dei lati incidenti su ogni vertice $i$:
+\begin{equation*}
+	S_i=\set{e\in E\mid i\in e}
+\end{equation*}
+L'insieme universo è $E$ e i pesi sono quelli del vertice relativo a ogni insieme.
 
 \begin{theorem}
-	\textsc{VertexCover} è $H(D)$-approssimabile (dove $D$ è il grado massimo)
-	utilizzando la riduzione polinomiale verso \textsc{SetCover}.
+	Sia $D$ il grado massimo di un grafo di input a \VertexCover. \VertexCover è $H(D)$-approssimabile.
 \end{theorem}
 
-\subsection{Algoritmo basato su pricing}
-Sia l'istanza di \textsc{VertexCover} formata da $G = (V,E)$ un grafo e
-$\langle w_i \rangle_{i \in V}$ un'insieme di costi definiti
-sui vertici; diciamo che un \textit{assegnamento di prezzi} sui lati
-$\langle P_e \rangle_{e \in E}$ è \textbf{equo} se e solo se
-$$
-	\forall i \in V \sum_{e \text{ incidente su } i} P_e \leq w_i
-$$
-e l'assegnamento si definisce \textit{stretto} su un vertice $i$ se
-$$
-	\sum_{e \text{ incidente su } i} P_e = w_i
-$$
+
+\subsection{\PricedVertexCover}
+Si consideri un'istanza di \VertexCover formata dal grafo $G=(V,E)$ e i pesi $\angle{w_i}_{i\in V}$.
+$\angle{P_e}_{e\in E}$ è un \emph{assegnamento di prezzi} sui lati.
+Un assegnamento $\angle{P_e}_{e\in E}$ si dice \emph{equo} se e solo se
+\begin{equation*}
+	\forall i\in V\quad\sum_{e\ni i} P_e\leq w_i \text.
+\end{equation*}
+Un assegnamento si dice \emph{stretto} su un vertice $i$ se e solo se
+\begin{equation*}
+	\sum_{e\ni i} P_e = w_i \text.
+\end{equation*}
+
 \begin{lemma}\label{lem:vcov_pricing_eq_sum_p_e_w_opt}
-	Se $\langle P_e \rangle_{e \in E}$ è un sistema di prezzi equo, allora
-	$$
-		\sum_{e \in E} P_e \leq w^*
-	$$
-	dove $w^*$ il costo ottimo per l'istanza di \textsc{VertexCover}.
+	Se $\angle{P_e}_{e\in E}$ è equo allora
+	\begin{equation*}
+		\sum_{e\in E} P_e \leq w\star
+	\end{equation*}
+	dove $w\star$ il costo ottimo per l'istanza di \VertexCover.
 \end{lemma}
-
 \begin{proof}
-	Per l'equità sappiamo che
-	$$
-		\forall i \in V ~ \sum_{e \text{ incidente su } i} P_e \leq w_i
-	$$
-	Sia quindi $X^*\subseteq V$ una soluzione ottima, sommiamo tutti i prezzi 
-	degli archi incidenti sui vertici di $X^*$:
-	$$
-		\sum_{i \in X^*} \sum_{e \text{ incidente su } i} P_e \leq \sum_{i \in X^*} w_i = w^*
-	$$
-	Dato che $X^*$ è una soluzione, tutti i lati del grafo incidono su almeno
-	uno dei suoi vertici, possiamo dunque dire
-	$$
-		\sum_{e \in E} P_e \leq \sum_{i \in X^*} \sum_{e \text{ incidente su } i} P_e
-	$$
-	Osservando i lati della disuguaglianza completa otteniamo il lemma:
-	$$
-		\sum_{e \in E} P_e \leq \sum_{i \in X^*} \sum_{e \text{ incidente su } i} P_e \leq \sum_{i \in X^*} w_i = w^* \\
-	$$
+	Sia $X\star\subseteq V$ una soluzione ottima. Poiché $\angle{P_e}_{e\in E}$ è equo:
+	\begin{equation*}
+		\sum_{i\in X\star} \sum_{e\ni i} P_e \leq \sum_{i\in X\star} w_i = w\star
+	\end{equation*}
+	Ogni lato del grafo incide su un vertice di $X\star$, quindi
+	\begin{equation*}
+		\sum_{e\in E} P_e \leq \sum_{i\in X\star} \sum_{e\ni i} P_e \leq w\star
+	\end{equation*}
 \end{proof}
+
+L'algoritmo \ref{algo:PricedVertexCover} usa una tecnica di pricing per costruire una soluzione per \VertexCover.
 \begin{algorithm}
-	\caption{\textsc{PricedVertexCover}}
+	\caption{\PricedVertexCover}
 	\label{algo:PricedVertexCover}
-	\KwInput{$G(V,E)$, $w_i$}
-
-	\For{$e \in E$}
-	{
-		$P_e = 0$
-	}
-
-	\While{$\exists \bar{e} = \{\bar{i},\bar{j}\}$ t.c. $P_{\bar{e}}$ non è stretto né su $\bar{i}$ né su $\bar{j}$}
-	{
-		$\Delta = \min\{w_{\bar{i}} - \sum_{e \text{ incidente su } \bar{i}} P_e, w_{\bar{j}} - \sum_{e \text{ incidente su } \bar{j}} P_e\}$
-
-		$P_{\bar{e}} = P_{\bar{e}} + \Delta$
-	}
-
-	$S = \{v \in V | \langle P_e \rangle \text{ è stretto su } v\}$
-
-	\Return {$S$}
+	\input{alg/PricedVertexCover.tex}
 \end{algorithm}
 
 \begin{lemma}\label{lem:pvcov_w_le_w_sum_P_e}
-	Al termine dell'esecuzione, per l'\cref{algo:PricedVertexCover} vale
-	$$
+	Al termine dell'esecuzione dell'algoritmo \ref{algo:PricedVertexCover} vale
+	\begin{equation*}
 		w \leq 2 \sum_{e \in E} P_e
-	$$
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Abbiamo che
-	$$
-		w = \sum_{i \in S} w_i \text { e } 
-	$$
-	inoltre, dato che l'insieme $S$ dato in output dall'algoritmo contiene per definizione
-	solo vertici stretti, vale anche
-	$$
-		\forall i \in S ~ w_i = \sum_{e \text{ inc. su } i} P_e
-	$$
-	quindi
-	$$
-		w = \sum_{i \in S} \sum_{e \text{ inc. su } i} P_e
-	$$
-	Per come è fatta la somma, ogni $e$ appare 1 o 2 volte in base a se solo uno o entrambi
-	dei suoi vertici sono stretti. Approssimando per eccesso dunque possiamo dire che
-	$$
-		w \leq 2 \sum_{e \in E} P_e
-	$$
+	All'uscita dal ciclo, non esistono lati $\set{i,j}$ tali che $\angle{P_e}$ non è stretto né su $i$ né su $j$.
+	Quindi l'insieme $S$ dei vertici su cui $\angle{P_e}$ è stretto è una copertura.
+
+	Essendo $S$ una soluzione ammissibile, per definizione:
+	\begin{equation*}
+		w = \sum_{i\in S} w_i \text.
+	\end{equation*}
+	Poiché $S$ contiene solo vertici su cui $\angle{P_e}$ è stretto:
+	\begin{equation*}
+		\forall i\in S \quad w_i = \sum_{e\ni i} P_e \text.
+	\end{equation*}
+	Ergo
+	\begin{equation*}
+		w = \sum_{i\in S} \sum_{e\ni i} P_e
+	\end{equation*}
+	Poiché un lato compare nella somma al più $2$ volte:
+	\begin{equation*}
+		w \leq 2 \sum_{e\in E} P_e
+	\end{equation*}
 \end{proof}
 
 \begin{theorem}
-	\textsc{PricedSetCover} è un algoritmo $2$-approssimante per \textsc{VertexCover}.
+	\PricedVertexCover è un algoritmo $2$-approssimante per \VertexCover.
 \end{theorem}
-
 \begin{proof}
-	$$
-		\frac{w}{w^*} \underbrace{\leq}_\text{\cref{lem:pvcov_w_le_w_sum_P_e}}
-		\frac{2\sum_{e \in E} P_e}{w^*}
-		\underbrace{\leq}_\text{\cref{lem:vcov_pricing_eq_sum_p_e_w_opt}}
-		\frac{2 \sum_{e \in E} P_e}{\sum_{e \in E} P_e} = 2
-	$$
+	\begin{equation*}
+		\frac{w}{w\star} \underset{\text{lemma \ref{lem:pvcov_w_le_w_sum_P_e}}}{\leq}
+		\frac{2\sum_{e\in E} P_e}{w\star} \underset{\text{lemma \ref{lem:vcov_pricing_eq_sum_p_e_w_opt}}}{\leq}
+		\frac{2\sum_{e\in E} P_e}{\sum_{e\in E} P_e} = 2
+	\end{equation*}
 \end{proof}
 
-% ---- MOVED  ---------------------------------------------------------------
-% lezione 7 - 20/10/2021
-% refresher sulla dimostrazione precedente
-% dimostrazione della correttezza dell'algoritmo...
-% definiamo un grafo "doppio ventaglio": s->a0, s->a1, ..., s->a_{k-1} 
-% each a_{i}->x x->y y->b0, y->b1, ..., y->b_{k-1}, 
-% each b_{i}->t. Se (s,t) compare due volte, il bridge (x, y) è selezionato 
-% la prima volta e non dovrebbe essere in grado di completare il compito.
-% --------------------------------------------------------------------------
 
-\subsection{Algoritmo basato sull'arrotondamento}
-Per poter utilizzare questa tecnica, è necessario introdurre alcune nozioni
-aggiuntive.
-\subsubsection{Programmazione lineare}
-\popt {LinearProgramming}
-{Una matrice $A \in \mathbb{Q}^{m \times n}$ che rappresenta gli $m$ vincoli per
-$n$ variabili, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$  che
-rappresenta i termini noti e un terzo vettore $\mathbf{c} \in \mathbb{Q}^m$
-usato per la funzione obiettivo}
-{Un vettore $\mathbf{x} \in \mathbb{Q}^n$}
-{Qual è il vettore $\mathbf{x}$ che implica il costo minore?}
-{$\mathbf{x}\in \mathbb{Q}^{n}$ tale che $A \mathbf{x} \geq \mathbf{b}$}
-{$Min$}
-{ $\mathbf{c}^T \mathbf{x}$ }
+\subsection{\VertexCover tramite arrotondamento di \LinearProgramming}
+Si consideri il problema di programmazione lineare e la sua versione vincolata all'integrità della soluzione, il problema di programmazione lineare intera.
 
-\subsubsection{Programmazione lineare intera}
-\popt {IntegerLinearProgramming}
-{Una matrice $A \in \mathbb{Q}^{m \times n}$, un vettore $\mathbf{b} \in \mathbb{Q}^{m}$
-	e un vettore $\mathbf{c} \in \mathbb{Q}^b$}
-{Un vettore $\mathbf{x} \in \mathbb{Z}^n$}
-{Qual è il vettore $\mathbf{x}$ che implica il costo minore?}
-{$\mathbf{x}\in \mathbb{Z}^{n}$ tale che $A \mathbf{x} \geq \mathbf{b}$}
-{$Min$}
-{ $\mathbf{c}^T \mathbf{x}$ }
-\`E chiaro che, per lo stesso input, una soluzione per \textsc{IntegerLinearProgramming}
-è peggiore o uguale ad ogni soluzione per \textsc{LinearProgramming}, in quanto una
-soluzione per quest'ultimo potrebbe utilizzare anche lo spazio di valori frazionari
-per ottenere una soluzione migliore. La trasformazione di un problema da \textsc{IntegerLinearProgramming}
-in un problema in \textsc{LinearProgramming} è detto \textit{rilassamento}.
+\popt{\LinearProgramming}
+{Sistema $Ax\geq b$, con $A\in\Q^{m\times n},b\in\Q^m$ ($x$ incognito), vettore $c\in\Q^n$.}
+{Assegnamenti per $x$ in $\Q^n$}
+{Determinare il vettore $x$ che minimizza la funzione obiettivo}
+{$x\in\Q^n\mid Ax\geq b$}
+{$\MIN$}
+{Funzione obiettivo $c\trans x$}
 
-Per lungo tempo non si è saputo se \textsc{LinearProgramming} fosse risolvibile in tempo polinomiale:
-oggi, si sa che è risolvibile in tempo polinomiale nella dimensione dell'input e nel numero di vincoli.
-\begin{theorem}\label{thm:LinearProgramming_PO}
-	\textsc{LinearProgramming} $\in \mathbf{PO}$.
-\end{theorem}
+\popt{\IntegerLinearProgramming}
+{Sistema $Ax\geq b$, con $A\in\Q^{m\times n},b\in\Q^m$ ($x$ incognito), vettore $c\in\Q^n$.}
+{Assegnamenti per $x$ in $\Z^n$}
+{Determinare il vettore $x$ che minimizza la funzione obiettivo}
+{$x\in\Z^n\mid Ax\geq b$}
+{$\MIN$}
+{Funzione obiettivo $c\trans x$}
 
-Uno degli esempi dei metodi polinomiali è il \textit{metodo del punto interno}
-di Karmarkar. Questi metodi sono molto complicati da implementare e benché siano
-dimostrabilmente polinomiali, spesso sono meno efficienti di algoritmi che
-non sono dimostrabilmente polinomiali come l'\textbf{algoritmo di Dantzig}.
+Per lo stesso input, una soluzione ottima di \IntegerLinearProgramming è ammissibile, ma non necessariamente ottima, per \LinearProgramming.
+Viceversa una soluzione ottima per \LinearProgramming può non essere ammissibile per un'istanza di \IntegerLinearProgramming dallo stesso input.
 
-Per quanto riguarda ILP, invece, la situazione è diversa.
-\begin{theorem}\label{thm:IntegerLinearProgramming_NPOc}
-	\textsc{IntegerLinearProgramming} $\in \mathbf{NPO-completi}$.
-\end{theorem}
+% TODO: cite karmakar, 1981
+\LinearProgramming è un problema appartenente a \PO (l'ottimo può essere trovato polinomialmente ad esempio con l'algoritmo di Karmakar), mentre \IntegerLinearProgramming è \NPO-completo.
 
-\begin{proof}
-	Per assurdo, assumiamo che esista un algoritmo che risolva 
-	\textsc{IntegerLinearProgramming} in tempo polinomiale, e di conseguenza
-	anche il suo problema di decisione associato.
-	Possiamo dare una riduzione in tempo polinomiale di una istanza del problema
-	di decisione \textsc{VertexCover} in una istanza del problema di decisione
-	\textsc{IntegerLinearProgramming}.
-
-	Dati $n$ nodi con costi $v_0, \cdots, v_n$ e $m$ archi, vogliamo scegliere
-	il numero massimo di nodi tale che il costo sia minimo e tutti gli archi
-	siano coperti. Per tradurre questo in un problema di programmazione lineare
-	intera, generiamo una variabile binaria per ogni nodo:
-	$$
-		x_i = \begin{cases} 0 & \text{ il vertice } i \text{ non è stato scelto} \\
-              	1 & \text{ il vertice } i \text{ è stato scelto}\end{cases}
-	$$
-	Imponiamo i seguenti vincoli sulle variabili $x_i$:
-	$$
-		\begin{cases}
-			x_i + x_j \geq 1 & \forall i, j \in E \\
-			x_i \geq 0       & \forall i \in V    \\
-			x_i \leq 1       & \forall i \in V
-		\end{cases}
-	$$
-	La funzione obiettivo per il problema \textsc{IntegerLinearProgramming}$(G,w)$
-	così costruito sarà
-	$$
-		\sum_{i \in V} w_i x_i
-	$$
-
-	Se riuscissimo a risolvere tutti i problemi di $\hat{\textsc{IntegerLinearProgramming}}$
-	in tempo polinomiale allora potremmo risolvere anche $\hat{\textsc{VertexCover}}$ in tempo
-	polinomiale. Dato che $\hat{\textsc{VertexCover}} \in \mathbf{NP-Completi}$ concludiamo
-	che anche $\hat{\textsc{IntegerLinearProgramming}} \in \mathbf{NP-Completi}$ e dunque
-	anche $\textsc{IntegerLinearProgramming} \in \mathbf{NPO-Completi}$.
-\end{proof}
-
-Essendo nell'insieme $\mathbf{NPO}-completi$, ogni problema è polinomialmente riducibile
-ad un'istanza di \textsc{IntegerLinearProgramming}; ciò che a volte accade è
-che anche la versione rilassata, ossia un'istanza di \textsc{LinearProgramming},
-abbia una relazione col problema originale: questo è ciò che faremo con
-\textsc{VertexCover}.
-
-Data un'istanza $\Pi_{VC}$, una soluzione per la sua riduzione $\Pi_{ILP}$ è
-una soluzione \textbf{esatta} anche per l'istanza originale (per la $\mathbf{NP}-$completezza
-di quest'ultimo problema).
-Se, ora, si rilassa il vincolo di interezza, ossia
-$$
-	\forall x, x_i \in \mathbb{Q}
-$$
-mantenendo le condizioni
-$$
+Data un'istanza di \VertexCover $\tuple{G=(V,E),\angle{w_i}_{i\in V}}$, con $n:=\card V$ e $m:=\card E$, si consideri l'istanza di \IntegerLinearProgramming in cui il sistema di input è così costruito:
+\begin{equation*}
 	\begin{cases}
-		x_i + x_j \geq 1 & \forall i, j \in E \\
-		x_i \geq 0                            \\
-		x_i \leq 1
+		x_i\geq 0     & \qquad \forall i\in V         \\
+		x_i\leq 1     & \qquad \forall i\in V         \\
+		x_i+x_j\geq 1 & \qquad \forall \set{i,j}\in E \\
 	\end{cases}
-$$
-si ottiene  un'istanza \textit{rilassata}, ossia \textsc{LinearProgramming}$(G,w)$,
-che è risolvibile polinomialmente (ma non è detto che la soluzione sia
-esatta anche per il problema originale).
+\end{equation*}
+e la funzione obiettivo è
+\begin{equation*}
+	w = \min\sum_{i\in V} w_i x_i
+\end{equation*}
 
-Abbiamo, da quanto detto precedentemente
-\begin{lemma}\label{lem:lp_leq_ilp}
-	$$
-		w^*_{LP} \leq w^*_{ILP}
-	$$
-\end{lemma}
+Una soluzione $x$ dell'istanza di \IntegerLinearProgramming costruita si può interpretare come una soluzione di \VertexCover in cui $x_i=1\iff i\in X$.
 
-Per sfruttare la programmazione lineare per risolvere un'istanza di
-\textsc{VertexCover}, è necessario innanzitutto trasformarla in un problema
-di programmazione lineare (non intera); a questo punto è possibile
-risolvere l'istanza in tempo polinomiale ottenendo una soluzione $\mathbf{x}^*$;
-definiamo la soluzione per l'istanza iniziale $\mathbf{r}$ come segue:
-$$
-	\forall i \in V ~~  r_i =
-	\begin{cases}
-		1 & x_i \geq \frac{1}{2} \\
-		0 & x_i < \frac{1}{2}
+Si consideri l'istanza di \LinearProgramming ottenuta rilassando il vincolo di integrità dell'istanza precedente.
+Una soluzione ottima $x$ di tale istanza può essere calcolata in tempo polinomiale, ma non è, in generale, ammissibile per la sua versione intera.
+Si consideri il vettore $r$, ottenuto dall'arrotondamento di $x$, ossia, per ciascun $i\in n$:
+\begin{equation*}
+	r_i:= \begin{cases}
+		1 & \quad x_i\geq\frac{1}{2} \\
+		0 & \quad x_i<\frac{1}{2}
 	\end{cases}
-$$
+\end{equation*}
+
 \begin{lemma}\label{lem:ilp_r_ammiss}
-	La soluzione $\mathbf{r}$ è ammissibile per \textsc{IntegerLinearProgramming}.
+	Il vettore $r$ è una soluzione ammissibile di \IntegerLinearProgramming.
 \end{lemma}
 \begin{proof}
-	Deve essere $\forall i, j \in E ~ r_i+r_j \geq 1$.
-	Per assurdo, assumiamo che $\exists i, j \in E$ tali che $r_i + r_j < 1$.
-	Allora deve necessariamente essere che $r_i = r_j = 0$, poiché altrimenti
-	la somma sarebbe già uguale a $1$. Quindi
-	\begin{align*}
-		 & x_i^* \leq \frac{1}{2} \land x_j^* \leq \frac{1}{2} \\
-		 & \implies x_i^* +x_j^* < 1
-	\end{align*}
-	Ma questo è impossible, perché nel problema di programmazione lineare
-	c'è il vincolo che per ogni arco la somma delle due variabili
-	corrispondenti fosse maggiore o uguale a $1$ -- in altre parole,
-	$x^*$ stessa non sarebbe una soluzione ammissibile per \textsc{LinearProgramming}.
+	Per definizione, $0\leq r\leq 1$. Se non fosse $r_i+r_j\geq 1~\forall \set{i,j}\in E$, siano $\bar i,\bar j$ tali che $r_{\bar i}+r_{\bar j}<1$.
+	Allora $r_{\bar i}=r_{\bar j}=0$. Per definizione di $r$ si ha $x_{\bar i}<\frac 12$ e $x_{\bar j}<\frac 12$.
+	Ma allora $x_{\bar i}+x_{\bar j}<1$, il che contraddice l'ammissibilità di $x$.
 \end{proof}
-\begin{lemma} \label{lem:ilp_r_i_leq_2_x_i}
-	$$ \forall i \in V ~~ r_i \leq 2x_i^*$$
+
+\begin{lemma}\label{lem:ilp_r_i_leq_2_x_i}
+	\begin{equation*}
+		\forall i\in V \qquad r_i \leq 2x_i
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Se $r_i = 0$ la disuguaglianza è ovvia;
-	se $r_i  = 1$ allora, $x^*_i \geq \frac{1}{2}$  e $2x_i^* \geq 1 = r_i$.
+	Se $r_i=0$ la disuguaglianza è ovvia;
+	se $r_i=1$ allora, $x_i\geq \frac 12$ e $2x_i\geq 1=r_i$.
 \end{proof}
-\begin{lemma}\label{lem:ilp_appr}
-	$$
-		\sum_{i \in V} w_i r_i \leq 2 \sum_{i \in V} w_i x_i^* = 2w^*_{LP} \leq 2w^*_{ILP}
-	$$
-\end{lemma}
-\begin{proof}
-	Diretta dal \cref{lem:lp_leq_ilp}.
-\end{proof}
-\begin{theorem}
-	L'utilizzo di \textsc{LinearProgramming} per risolvere problemi di \textsc{VertexCover}
-	porta ad un algoritmo $2$-approssimante.
+
+\begin{theorem}\label{lem:ilp_appr}
+	L'insieme $\set{i\in V\mid r_i=1}$ è una $2$-approssimazione per \VertexCover.
 \end{theorem}
 \begin{proof}
-	Diretta dal \cref{lem:ilp_appr}.
+	Sia $w:=\sum{i\in V} w_i r_i$ il costo della soluzione di \VertexCover indotta dall'istanza arrotondata di \LinearProgramming, e sia $w\star$ la soluzione ottima. Si denoti con $w\star_{\text{LP}}$ il costo ottimo dell'istanza di \LinearProgramming e $w\star_{\text{ILP}}$ quello di \IntegerLinearProgramming.
+	Applicando il lemma \ref{lem:ilp_r_i_leq_2_x_i}:
+	\begin{equation*}
+		w = \sum_{i\in V} w_i r_i \leq 2\sum_{i\in V} w_i x_i = 2w\star_{\text{LP}} \leq 2w\star_{\text{ILP}} = w\star
+	\end{equation*}
 \end{proof}
-% ----------------- END MOVED -----------------------------------------------
+
+
 
 \section{Problema dei cammini disgiunti}
 \popt {DisjointPaths} {$G = (N,A)$ orientato, $k$ coppie

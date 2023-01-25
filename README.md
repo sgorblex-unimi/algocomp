@@ -23,6 +23,7 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 	- CenterSelection
 	- MinSetCover
 	- VertexCover
+	- DisjointPaths
 - cap. 3 Algoritmi probabilistici:
 	- MinCut e Karger
 - cap. 4 Strutture succinte:

@@ -649,241 +649,140 @@ Si consideri il vettore $r$, ottenuto dall'arrotondamento di $x$, ossia, per cia
 
 
 
-\section{Problema dei cammini disgiunti}
-\popt {DisjointPaths} {$G = (N,A)$ orientato, $k$ coppie
-	$(s_1, t_1), \cdots, (s_k,t_k) \in \mathbb{N} \times \mathbb{N}$ e
-	$c \in \mathbb{N}$}
-{Un insieme di cammini}
-{Quante coppie possono essere collegate senza utilizzare nessun lato più di $c$ volte?}
-{$I \subseteq \{1,\cdots,k\}$ e, per ogni $i \in I$, un cammino $\Pi_i : s_i \leadsto t_i$
-	tale che nessun $a \in A$ sia usato da più di $c$ cammini}
-{$Max$}{Cardinalità dell'insieme $I$, $|I|$}
 
-Dato un grafo orientato $G=(N,A)$, il problema consiste nel collegare più
-coppie possibili senza usare nessun lato più di $c$ volte.
-Anche in questo caso potremo usare un'algoritmo basato sulla tecnica
-del pricing: ogni lato avrà, nell'esecuzione di questo algoritmo,
-un prezzo che aumenterà durante l'esecuzione (più un lato è congestionato,
-più vogliamo che venga scelto raramente).
-Il problema è di massimo, ossia vogliamo collegare più coppie possibili.
 
-\subsection{Algoritmo basato su pricing}
-Oltre al grafo $G$, le $k$ coppie e il numero $c$ di utilizzi massimi per ogni lato,
-l'algoritmo utilizza un parametro $\beta$ e una funzione di costo
-$$
-	l: A \rightarrow \mathbb{R}^{>0}
-$$
-estensibile ai cammini, ossia dato un cammino
-$$
-	\pi = \langle x_1, x_2, \cdots, x_k \rangle
-$$
-si definisce
-$$
-	l(\pi) = l(x_1, x_2) + l(x_2, x_3) + \cdots
-$$
-Il listato è esposto nell'\cref{algo:PricedDisjointPaths}.
-Per dimostrare che esso è polinomiale, ricordiamo che Dijkstra richiede
-tempo $O(m \log(n))$; ripetuto $k$ volte il costo di \textsc{PricedDisjointPaths}
-è $O(k m \log (n))$.
+\section{\DisjointPaths}
+Dato un grafo orientato su cui sono selezionati un numero di vertici \flang{source} e un numero di rispettivi vertici \flang{target}, il problema \DisjointPaths si pone l'obiettivo di massimizzare il numero di coppie source-target connettibili da un cammino usando ogni arco un numero massimo di $c$ volte, dove $c$ è un dato parametro. Il problema prende il nome dalla sua variante con $c=1$, in cui i cammini non hanno archi in comune.
+
+\popt{\DisjointPaths}
+{Grafo orientato $G=(V,E)$, vertici $\angle{s_i}_{i\in k}$ e $\angle{t_i}_{i\in k}$ e un parametro $c\in\N^+$}
+{$I\subseteq k$, cammini $\angle{\pi_i}_{i\in I}$, con $\pi_i:=s_i\leadsto t_i$}
+{Determinare il massimo numero di coppie $s_i,t_i$ che si possono connettere con un cammino, usando un arco al più $c$ volte complessivamente}
+{$I\subseteq k$, cammini $\angle{\pi_i}_{i\in I}$ tali che nessun arco $e\in E$ appartenga ai cammini più di $c$ volte}
+{$\MAX$}
+{$\card I$}
+
+
+\subsection{\PricedDisjointPaths}
+L'algoritmo \ref{algo:PricedDisjointPaths} usa una tecnica di pricing in cui viene definita una funzione di costo $l:E\to\Q^+$ per gli archi, estendibile ai cammini $\tuple{x_0,x_1\dots,x_{t-1},x_t}$ con $l(\tuple{x_0,x_1,\dots,x_{t-1},x_t}):=l((x_0,x_1))+\dots+l((x_{t-1},x_t))$.
+L'algoritmo fa inoltre uso di un valore $\beta$ che, come si vedrà, può essere calcolato in modo da ottimizzare il risultato.
+\SetKwFunction{MinPath}{MinPath}
+La procedura \MinPath restituisce, in tempo polinomiale, un cammino di costo minimo e l'indice $i$ dei vertici $s_i$ e $t_i$ che collega, con $i\notin I$. Se un cammino del genere non esiste, la procedura restituisce un cammino vuoto.
+L'algoritmo produce una soluzione ammissibile per \DisjointPaths, dal momento che $P$ contiene solo cammini con archi utilizzati al più $c$ volte (dopo $c$ volte un arco viene eliminato) e che collegano, per definizione di \MinPath, vertici non ancora collegati.
+\PricedDisjointPaths ha un costo polinomiale: utilizzando ad esempio Floyd-Warshall la procedura \MinPath può essere implementata in $O(\card V^3)$ e viene ripetuta un massimo di $k$ volte, per un costo totale in tempo di $O(k\card V^3)$.
 
 \begin{algorithm}
-	\caption{PricedDisjointPaths}
+	\caption{\PricedDisjointPaths}
 	\label{algo:PricedDisjointPaths}
-	\KwInput{coppie $(s_i, t_i)$, $\beta$, $G=(N,A)$, $l$}
-
-	$I = \emptyset$ \tcc*{insieme di coppie}
-
-	$P = \emptyset$ \tcc*{insieme di cammini}
-
-	\For{$a \in A$}
-	{
-		$l(a) = 1$
-	}
-	\While{$true$}
-	{
-
-		\tcc{trova il più corto cammino $\pi_i$ rispetto a $l$ che
-			connette delle coppie $(s_i, t_i)$ tali che $i \notin I$}
-
-		$ \pi_i = MinPath(l, (s_i, t_i) )$
-		\If {$!\pi_i$}
-		{
-
-			\Return {I, P}
-
-		}
-
-		$I = I \cup \{i\}$
-
-		$P = P \cup \{\pi\}$
-
-		\tcc{aggiorna i costi che pesano su ogni arco: se superano
-			il massimo, rimuovili in modo che non vengano più scelti}
-
-		\For{$a \in \pi_i$}
-		{
-
-			$l(a) = l(a) \cdot \beta $
-
-
-			\If {$l(a) = \beta^c$}
-			{
-				$\mathbf{delete} ~ a$
-			}
-		}
-	}
-
+	\input{alg/PricedDisjointPaths.tex}
 \end{algorithm}
 
-\noindent
-Con lo scopo di esplorare alcuni aspetti dell'algoritmo, diamo alcune
-definizioni: fissata la funzione $l(\cdot)$, definiamo un cammino $\pi$
-\textbf{corto} se e solo se $l(\pi) \leq \beta^c$; inoltre, un cammino $\pi$ è
-definito \textbf{utile} \textit{in un determinato momento dell'esecuzione dell'algoritmo}
-se e solo se collega una coppia $i \notin I$.
+A una data iterazione dell'algoritmo, un cammino $\pi$ si dice \emph{corto} se e solo se $l(\pi)<\beta^c$.
+Un cammino $\pi$ si dice \emph{utile} se e solo se collega una coppia $i\notin I$.
 
-\begin{lemma}\label{lem:priceddpaths_su}
-	Durante l'algoritmo, finché esistono cammini utili e corti,
-	l'algoritmo sceglie uno di essi.
-\end{lemma}
-\begin{proof}
-	Siccome l'algoritmo sceglie tra tutti i cammini utili quello più corto,
-	è chiaro che se c'è un cammino di costo minore di $\beta^c$ l'algoritmo
-	non andrà mai a sceglierne uno lungo.
-\end{proof}
-
-Inoltre, come osservazione marginale, durante la prima fase dell'esecuzione
-dell'algoritmo possiamo evitare di cancellare gli archi: si supponga di non
-cancellare gli archi finché l'algoritmo ha modo di scegliere i cammini corti;
-si supponga quindi che per errore venga scelto un cammino \textit{corto}
-che passa per un arco già utilizzato $c$ volte. Questo è impossibile, poiché
-se quel cammino contiene un arco già utilizzato $c$ volte, il suo costo è
-maggiore o uguale a $\beta^c$, pertanto non è corto.
-
-Quando la disponibilità di cammini corti termina, l'algoritmo si ferma
-oppure comincia a scegliere dei cammini lunghi. A noi interessa proprio lo
-stato del sistema in questo momento: sia quindi $c_t$ l'insieme dei cammini
-\textit{utili} e \textit{corti} all'inizio della $t$-esima
-iterazione. \`E chiaro che sia
-$$
-	c_0 \supseteq c_1 \supseteq \cdots \supset c_{t}
-$$
-poiché un cammino utile e corto può diventare (o essere rimpiazzato da
-un altro, a causa dell'eliminazione degli archi) inutile o lungo.
-Può accadere quindi che ad una certa iterazione $\bar{t}$ che sia $c_{\bar{t}} = \emptyset$;
-chiamiamo quindi $\bar{l}$ la funzione $l$ a tale iterazione (o, se non accade,
-al termine dell'esecuzione). Sia quindi $\bar{P} \subseteq P$ l'insieme dei cammini $\bar{l}$-corti
-nell'output e $\bar{I} \subseteq I$ l'insieme delle coppie collegate da tali cammini.
+Finché esistono cammini corti e utili, l'algoritmo seleziona uno di essi a ogni iterazione.
+Quando nessun cammino corto è utile, l'esecuzione si ferma oppure iniziano a venire selezionati cammini lunghi.
+Si consideri la prima iterazione $\bar t$ in cui non esistono cammini corti e utili, o il termine dell'esecuzione se tale iterazione non esiste.
+Sia $\bar l$ la funzione di costo in tale iterazione e $\bar I$ l'insieme degli indici dei vertici collegati da cammini.
 
 \begin{lemma}\label{lem:priceddpaths_non_included_non_short}
-	Sia $i \in I^* \setminus I$. Si ha $\bar{l}(\pi_{i}^*) \geq \beta^c$; in altre
-	parole il costo di un cammino ottimo per una coppia che non è stato incluso
-	nella soluzione dall'algoritmo è, all'istante $\bar{t}$, maggiore o uguale
-	di $\beta^c$.
+	Se all'iterazione $\bar t$ la coppia $\tuple{s_i,t_i}$ non è stata collegata dalla soluzione corrente, allora il costo del relativo cammino ottimo è maggiore o uguale a $\beta^c$:
+	\begin{equation*}
+		\bar l(\pi\star_i)\geq\beta^c\qquad\forall i\notin I
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Se così non fosse, allora $\pi_*$ sarebbe corto e, in quel momento, utile,
-	pertanto verrebbe selezionato, contraddicendo l'ipotesi iniziale.
-	In altre parole, $\pi_{i}^*$ resta utile fino alla fine;
-	se fosse $\bar{l}(\pi_i^*) < \beta^c$, allora $\pi_i^*$ sarebbe corto nell'istante $\bar{t}$.
+	Se fosse $\bar l(\pi\star_i)<\beta^c$, allora $\pi\star$ sarebbe corto e utile, pertanto sarebbe stato selezionato prima dell'iterazione $\bar t$.
 \end{proof}
 
 \begin{lemma}\label{lem:priceddpaths_sum_l_a_leq_bc_i_m}
-	$$
-		\sum_{a \in A} \bar{l}(a) \leq \beta^{c+1} |\bar{I}| + m
-	$$
+	Sia $m:=\card E$.
+	\begin{equation*}
+		\sum_{e\in E}\bar l(e) \leq \beta^{c+1}\card{\bar I} + m
+	\end{equation*}
 \end{lemma}
-\begin{proof}
+\begin{proof}~
 	\begin{itemize}
-		\item per $t = 0$, $\sum_{a \in A} l_0(a) = \sum_{a \in A} 1  = m$
-		\item consideriamo il $j$-esimo passo, in cui si modificano i pesi
-		      di alcuni archi modificando la funzione $l_{j}$ creando
-		      $l_{j+1}$ in questo modo:
-		      $$
-			      l_{j+1}(a) =
+		\item Alla prima iterazione, $\sum_{e\in E} l_0(e) = \sum_{e\in E} 1 = m$.
+		\item Al termine di ogni iterazione $j<\bar t$, si modificano i valori $l_j$ in valori $l_{j+1}$ così scelti:
+		      \begin{equation*}
+			      l_{j+1}(e) =
 			      \begin{cases}
-				      l_j(a)             & \text{se } a \notin \pi_i \\
-				      \beta \cdot l_j(a) & \text{se } a \in \pi_i
+				      l_j(e)            & \quad\text{se } e\notin\pi_i \\
+				      \beta\cdot l_j(e) & \quad\text{se } e\in\pi_i
 			      \end{cases}
-		      $$
-		      Possiamo quindi calcolare la differenza di prezzi degli archi
-		      nel passaggio tra iterazioni:
+		      \end{equation*}
+		      Si consideri la differenza tra i pesi complessivi all'iterazione $j$ e quelli all'iterazione $j+1$:
 		      \begin{align*}
-			       & \sum_{a\in A} l_{j+1}(a) - \sum_{a \in A} l_j (a) = \sum_{a \in A} (l_{j+1}(a) - l_{j}(a)) =      \\
-			       & \underbrace{\sum_{a \in A\setminus{\pi}} 0}_{\text{nessun cambio di peso negli archi non in }\pi}
-			      + \sum_{a \in \pi}(\beta l_{j}(a) - l_{j}(a)) =                                                      \\
-			       & = \sum_{a \in \pi_i} (\beta -1 ) l_j (a) \leq \beta \sum_{a \in \pi_i}l_j(a)
+			      \sum_{e\in E} l_{j+1}(e) - \sum_{e\in E} l_j(e) & = \sum_{e\in E} (l_{j+1}(e)-l_j(e))   \\
+			                                                      & = \sum_{e\in\pi}(\beta l_j(e)-l_j(e)) \\
+			                                                      & = \sum_{e\in\pi} (\beta-1)l_j(e)      \\
+			                                                      & \leq \beta\sum_{e\in\pi}l_j(e)
 		      \end{align*}
-			  Sappiamo dal \cref{lem:priceddpaths_non_included_non_short} che 
-			  tutti i $\pi$ aggiunti fino al passo corrispondente a $\bar{l}$
-			  sono cammini utili e corti, dunque abbiamo che
-			  $$
-			  	  \beta \underbrace{\sum_{a \in \pi_i}l_j(a)}_{\leq \beta^c \text{ dato che è un cammino utile}} \leq \beta^{c + 1}
-			  $$
+		      Tale valore è al più uguale a $\beta^{c+1}$, essendo il cammino $\pi$ corto perché $j<\bar t$.
 	\end{itemize}
-	Abbiamo dunque che alla prima iterazione il peso totale degli archi è $m$
-	mentre in quelle successive abbiamo un incremento nel peso totale degli archi 
-	di un valore $\leq \beta^{c+1}$. Sappiamo che ad ogni iterazione 
-	corrisponde l'aggiunta di un singolo cammino $\pi \in \bar{I}$, dunque $|\bar{I}|$ è
-	anche il numero di iterazioni fatte dall'algoritmo quando la funzione di costo è $\bar{l}$. 
-	Mettendo insieme queste osservazioni concludiamo che
-	$$
-	    \sum_{a \in A} \bar{l}(a) \leq \beta^{c+1} |\bar{I}| + m
-	$$
+	Quindi, all'inizio dell'iterazione $\bar t$, a un costo iniziale di $m$ sono state aggiunte $\card{\bar I}$ variazioni (una per ogni iterazione e quindi aggiunta di cammini a $I$) di al più $\beta^c$ l'una, ergo:
+	\begin{equation*}
+		\sum_{e\in E} \bar l(e) \leq \beta^{c+1}\card{\bar I}+m \text.
+	\end{equation*}
 \end{proof}
 
 \begin{corollario}\label{cor:priceddpaths_cor_1}
-	Dal \cref{lem:priceddpaths_non_included_non_short} abbiamo
-	$$
-		\sum_{i \in I^* \setminus I} \bar{l}(\pi_i^*) \geq \beta^c |I^*\setminus I|
-	$$
+	\begin{equation*}
+		\sum_{i\in I\star\setminus I} \bar l(\pi_i\star) \geq \beta^c \card{I\star\setminus I} \text.
+	\end{equation*}
 \end{corollario}
+\begin{proof}
+	Ottenuto dal lemma \ref{lem:priceddpaths_non_included_non_short} sommando per i valori in $I\star\setminus I$.
+\end{proof}
 
 \begin{corollario}\label{cor:priceddpaths_cor_2}
-	\begin{align*}
-		 & \sum_{i \in I^* \setminus I} \bar{l}(\pi_i^*) \leq \sum_{i \in I^*}\bar{l}(\pi_i^*) \leq c \sum_{a \in A} \bar{l}(a) &  & \text{ poiché  } I^* \text{ è una soluzione ogni arco è usato al più } c \text { volte}           \\
-		 & \leq c (\beta^{c+1}|\bar{I}|+m)                                                                                      &  & \text{ dal \cref{lem:priceddpaths_sum_l_a_leq_bc_i_m}}
-	\end{align*}
+	\begin{equation*}
+		\sum_{i\in I\star\setminus I} \bar l(\pi\star_i) \leq c(\beta^{c+1}\card{\bar I}+m) \text.
+	\end{equation*}
 \end{corollario}
+\begin{proof}
+	\begin{align*}
+		\sum_{i\in I\star\setminus I} \bar l(\pi\star_i) & \leq \sum_{i\in I\star} \bar l(\pi\star_i)                                                                                     \\
+		                                                 & \leq c \sum_{e\in E} \bar l(e)             &  & \text{ogni arco è usato al più $c$ volte nella soluzione ammissibile $I\star$} \\
+		                                                 & \leq c (\beta^{c+1}\card{\bar I}+m)        &  & \text{dal lemma \ref{lem:priceddpaths_sum_l_a_leq_bc_i_m}}
+	\end{align*}
+\end{proof}
 
 \begin{theorem}\label{thm:priceddpaths_approx}
-	\textsc{PricedDisjointPaths} è un algoritmo $O(1 + 2cm^{\frac{1}{c+1}})-$approssimante per
-	\textsc{DisjointPaths}.
+	\PricedDisjointPaths è un algoritmo $1+c(\beta+\beta^{-c}m)$-approssimante per \DisjointPaths.
+	Se $\beta=m^{\frac{1}{c+1}}$, \PricedDisjointPaths fornisce una $(1+2cm^{\frac{1}{c+1}})$-approssimazione.
 \end{theorem}
 \begin{proof}
-	Dalle proprietà degli insiemi è possible affermare che
+	Sia $I\star$ la soluzione ottima e $I$ la soluzione prodotta da \PricedDisjointPaths.
 	\begin{align*}
-		 & \beta^c |I^*| = \beta^c |I^* \cap I| + \beta^c |I^* \setminus I| \leq                                                                                         \\
-		 & \leq \beta^c|I^*\cap I| + \sum_{i \in I^* \setminus I} \bar{l}(\pi_i^*)                                        &  &
-		\text{ dal \cref{cor:priceddpaths_cor_1}}                                                                                                                        \\
-		 & \leq \beta^c |I| + \sum_{i \in I^* \setminus I} \bar{l}(\pi_i^*) \leq \beta^c |I| + c (\beta^{c+1}|\bar{I}|+m) &  & \text{ dal \cref{cor:priceddpaths_cor_2}}
+		\beta^c\card{I\star} & = \beta^c\card{I\star\cap I}+\beta^c\card{I\star\setminus I}                                                                                  \\
+		                     & \leq \beta^c\card{I\star\cap I} + \sum_{i\in I\star\setminus I} \bar l(\pi\star_i) &  & \text{per il corollario \ref{cor:priceddpaths_cor_1}} \\
+		                     & \leq \beta^c\card I + \sum_{i\in I\star\setminus I} \bar l(\pi\star_i)                                                                        \\
+		                     & \leq \beta^c\card I + c(\beta^{c+1}\card{\bar I}+m)                                &  & \text{per il corollario \ref{cor:priceddpaths_cor_2}} \\
+		                     & \leq \beta^c\card I + c(\beta^{c+1}\card I+m)                                      &  & \text{essendo $\bar I\subseteq I$} \text.
 	\end{align*}
-
-	Siccome $\bar{I} \subseteq I$, possiamo continuare affermando
-	\begin{align}
-		 & \beta^c |I| + c (\beta^{c+1}|\bar{I}|+m) \leq \beta^c |I| + c (\beta^{c+1}|I|+m) \nonumber       \\
-		 & \implies \beta^c |I^*| \leq \beta^c |I| + c (\beta^{c+1}|I|+m) \label{eqn:priceddpaths_approx_1}
-	\end{align}
-	dividendo entrambi i membri dell'\cref{eqn:priceddpaths_approx_1} per $\beta^c$ si ottiene
-	$$
-		|I^*| \leq |I| + c\beta|I| + c \beta^{-c}m
-	$$
-	sostituiamo $c \beta^{-c}m$ con $c \beta^{-c}m |I|$ per semplificare i calcoli, possiamo farlo 
-	perchè $|I| \geq 1$. Otteniamo
-	$$
-		|I^*| \leq |I| + c\beta|I| + c \beta^{-c}m|I|
-	$$
-	dividendo entrambi i membri per $|I|$ si ottiene
-	$$
-		\frac{|I^*|}{|I|} \leq 1 + c\beta + c\beta^{-c}m = 1 + c(\beta + \beta^{-c}m)
-	$$
-	Scegliamo quindi $\beta=m^{\frac{1}{c+1}}$:
-	$$
-		\frac{|I^*|}{|I|} \leq 1 + c (m^{\frac{1}{c+1}} + m^{\frac{-c}{c+1}}m)
-		= 1 + c (m^{\frac{1}{c+1}} + m^{\frac{-c + c + 1}{c+1}})
-		= 1 + 2 c m^{\frac{1}{c+1}}
-	$$
+	Dividendo per $\beta^c$:
+	\begin{align*}
+		\card{I\star} & \leq \card I+c\beta\card I+c\beta^{-c}m                                                   \\
+		              & \leq \card I+c\beta\card I+c\beta^{-c}m\card I &  & \text{essendo $\card I\geq 1$} \text.
+	\end{align*}
+	Dividendo per $\card I$:
+	\begin{equation*}
+		\frac{\card{I^*}}{\card I} \leq 1+c\beta+c\beta^{-c}m = 1+c(\beta+\beta^{-c}m)
+	\end{equation*}
+	% TODO: dimostrare in un'appendice
+	Questo valore è minimizzato per $\beta=m^{\frac{1}{c+1}}$, ottenendo:
+	\begin{align*}
+		\frac{\card{I^*}}{\card I} & \leq 1+c\left(m^{\frac{1}{c+1}}+m^{\frac{-c}{c+1}}m\right) \\
+		                           & = 1+c\left(m^{\frac{1}{c+1}}+m^{\frac{-c+c+1}{c+1}}\right) \\
+		                           & = 1+2cm^{\frac{1}{c+1}}
+	\end{align*}
 \end{proof}
+
+In effetti, l'analisi dimostra che le sole prime $\bar t$ iterazioni producono una $(1+2cm^{\frac{1}{c+1}})$-approssimazione. Dal momento che, come mostrato nella dimostrazione, $\bar I\subseteq I$, l'algoritmo al termine dell'esecuzione produce una soluzione quantomeno non peggiore.
+
+
 
 \section{Problema del commesso viaggiatore}
 Il problema del commesso viaggiatore, o \textsc{TravelingSalesman} (problem), è uno

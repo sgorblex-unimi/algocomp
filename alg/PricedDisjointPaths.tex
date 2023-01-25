@@ -1,0 +1,24 @@
+\KwInput{$G=(V,E), \angle{s_i}_{i\in k}, \angle{t_i}_{i\in k}, c\in\N^+$}
+
+$I \asn \emptyset$\;
+$P \asn \emptyset$\;
+\For{$e\in E$}{
+	$l(a) \asn 1$\;
+}
+\While{true}{
+	$\pi,i \asn \MinPath(G,l)$\;
+	\If{$\pi=\langle\rangle$}{
+		\Return{$I,P$}\;
+	}
+	$I \asn I\cup\set{i}$\;
+	$P \asn P\cup\set{\pi}$\;
+
+	\tcc{Aggiorna i costi ed elimina gli archi già usati $c$ volte}
+	\For{$a\in\pi$}{
+		$l(a) = l(a) \cdot \beta $\;
+		\If{$l(a) = \beta^c$}{
+			delete $a$
+		}
+	}
+}
+

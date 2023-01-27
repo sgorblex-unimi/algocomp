@@ -3,7 +3,7 @@
 
 
 % TODO: Estendere a MaxMatching?
-\section{\BiMaxMatching}
+\section{\BiMaxMatching}\label{sec:BiMaxMatching}
 Sia $G=(V,E)$ un grafo non orientato. Un \emph{matching} (matrimonio) in $G$ è una selezione di lati in $E$ tale che su nessun vertice in $V$ incide più di un lato.
 \MaxMatching è il problema di trovare il matching di cardinalità massima in un dato grafo.
 
@@ -784,361 +784,198 @@ In effetti, l'analisi dimostra che le sole prime $\bar t$ iterazioni producono u
 
 
 
-\section{Problema del commesso viaggiatore}
-Il problema del commesso viaggiatore, o \textsc{TravelingSalesman} (problem), è uno
-dei problemi più famosi della teoria dei grafi. Prima di affrontarlo, è utile
-introdurre altre nozioni.
+\section{\TravelingSalesman}
+Il problema del commesso viaggiatore, o \TravelingSalesman (problem, abbreviato in TSP), è uno dei problemi più famosi della teoria dei grafi.
+Il problema consiste nel trovare un circuito hamiltoniano di costo minimo in un grafo pesato sugli archi.
+Dato un grafo non orientato, un \emph{circuito hamiltoniano} è un circuito che passa per ogni vertice del grafo una e una sola volta.
 
-\subsection{Problema dei sette ponti di Könisberg}
-K\"onisberg, un tempo facente parte della Prussia Orientale e oggi odierna
-Kaliningrad, Russia, è percorsa dal fiume Pregel, e le aree della città
-sono collegate da sette ponti.
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{img/konigsberg.png}
-		\subcaption{Rappresentazione dei ponti come descritta da Eulero.}
-	\end{subfigure}
-	\begin{subfigure}[b]{0.45\textwidth}
-		\centering
-		\begin{tikzpicture}
-			\node[shape=circle,inner sep=2pt,draw,thick] (A) {A};
-			\node[shape=circle,inner sep=2pt,draw,thick, below=of A] (B) {B};
-			\node[shape=circle,inner sep=2pt,draw,thick, above=of A] (C) {C};
-			\node[shape=circle,inner sep=2pt,draw,thick, right=of A] (D) {D};
+\popt{\TravelingSalesman}
+{Grafo non orientato $G=(V,E)$, pesi $\angle{\delta_e}_{e\in E}$}
+{$\pi\subseteq E$ ordinato}
+{Determinare il circuito hamiltoniano di minor costo}
+{$\pi$ forma un circuito hamiltoniano}
+{$\MIN$}
+{$\sum_{e\in\pi} \delta_e$}
 
-			\draw[thick, bend left=10] (A) to (C);
-			\draw[thick, bend right=10] (A) to (C);
-			\draw[thick, bend left=10]  (A) to (B);
-			\draw[thick, bend right=10] (A) to (B);
-			\draw[thick]  (A) to (D);
-			\draw[thick, bend left=10]  (C) to (D);
-			\draw[thick, bend right=10]  (B) to (D);
-		\end{tikzpicture}
-		\subcaption{Rappresentazione come multigrafo.}
-	\end{subfigure}
-	\caption{I ponti di Könisberg.}
-	\label{fig:ponti_konigsberg}
-\end{figure}
+Con un abuso di notazione useremo $\delta$ per indicare il costo del suo argomento, inteso come la somma dei pesi degli archi che lo compongono.
 
-Un antico problema chiedeva: è possibile partire da un punto qualsiasi della
-città e attraversare tutti i ponti esattamente una ed una sola volta?
-Per studiare questo problema, Eulero pensò di trasformare questa mappa in un
-grafo, dove i vertici rappresentano le zone $A$, $B$, $C$, $D$ e i lati
-sono i sette ponti della città. I grafi fatti in questo modo sono chiamati, oggi,
-\textit{multigrafi}, ossia grafi i cui lati non sono un insieme ma un \textit{multinsieme},
-insiemi con ripetizioni distinte: formalmenti, sono rappresentati con una mappa
-che associa agli elementi il numero di ripetizioni. In termini di teoria dei
-grafi, il problema si traduce come segue: $G$ ha un circuito (o ciclo)  che
-passi esattamente una volta per ogni lato, ossia un \textbf{circuito euleriano}?
+L'algoritmo di Christofides, che descriveremo a breve, mette insieme una serie di risultati, problemi e algoritmi e trova un'approssimazione della soluzione ottima di \TravelingSalesman. Introduciamo ora tali nozioni.
 
-La risposta, in questo caso specifico, è no.
-\begin{theorem}\label{thm:circ_euleriano}
-	Esiste un circuito euleriano se e solo se tutti i vertici di un
-	grafo connesso hanno grado pari.
+
+\subsection{Requisiti}
+
+\subsubsection{Circuiti euleriani}
+Dato un grafo non orientato, un \emph{circuito euleriano} è un circuito che include ogni lato del grafo una e una sola volta. Si noti che possono esistere circuiti euleriani che includono un vertice multiple volte.
+
+Il problema di trovare un circuito euleriano in un grafo (o multigrafo) è stato formalizzato da Eulero a partire dal problema dei ponti di Könisberg, che chiedeva se fosse possibile attraversare tutti i ponti della città una volta e tornare al punto di partenza.
+Eulero dimostra una condizione necessaria e sufficiente per l'esistenza di un cammino euleriano in un multigrafo:
+\begin{theorem}[di Eulero]\label{thm:eulero}
+	Un multigrafo ammette un circuito euleriano se e solo se è connesso e tutti i suoi vertici hanno grado pari.
 \end{theorem}
 
-\begin{proof}
-	$\impliedby$ (Se tutti i vertici di un grafo hanno grado pari, allora esiste un
-	circuito euleriano.) Sia $G$ un grafo in cui tutti i vertici hanno grado  pari.
-	Partendo da un vertice a caso e seguendo un cammino formato da lati non
-	ancora scelti (ossia si tiene traccia di quelli già ``consumati''), non può
-	accadere che ci sia un arco non ancora scelto per planare sul nodo ma non
-	un altro per uscirne, poiché questo significherebbe che il grado di tale nodo
-	sia dispari.
-
-	In questa costruzione succede, ad un certo punto, che si torna su uno
-	dei vertici già visitati. Anche in questa situazione deve esistere un arco
-	che permette di uscire da tale vertice: si segue quindi il lato non ancora
-	utilizzato e si continua il percorso. Prima o poi, con questo ragionamento,
-	si tornerà al vertice dal quale si è partiti, e questo è l'unico modo
-	per costruire un circuito, che non è detto che sia euleriano, poiché non
-	è detto che visiti tutti i lati. Tuttavia, si può ricominciare la visita partendo
-	da un lato non ancora visitato: siccome il grafo è connesso, ci sarà modo
-	di ricongiungersi al circuito iniziale.
-
-\end{proof}
-
-\noindent
-Definiamo, invece, \textbf{circuito hamiltoniano} un circuto che passa esattamente una volta su ogni
-vertice del grafo.
-
-Un lemma utile è il seguente:
-\begin{lemma}[Handshaking lemma]\label{lem:handshaking}
+Un risultato fondamentale inerente alla parità del grado dei vertici è il lemma delle strette di mano (\flang{handshaking lemma}):
+\begin{lemma}[delle strette di mano]\label{lem:handshaking}
 	In ogni grafo, il numero di vertici di grado dispari è pari.
 \end{lemma}
 \begin{proof}
-	Deve essere
-	$$
-		\sum_{x \in V} d(x) = 2m
-	$$
-	ma la parità di una sommatoria dipende solo dai numeri dispari, infatti gli
-	addendi pari non cambiano la parità. Se tale somma è pari, è necessario
-	che il numero di addendi dispari sia pari.
+	Dal momento che ogni arco aumenta il grado di due vertici, la somma dei gradi di tutti i vertici è pari. Ma una somma di interi è pari se e solo se il numero di addendi dispari è pari.
 \end{proof}
 
+\subsubsection{Il TSP metrico su cricca}\label{subsub:tsp:criccametrica}
 
-\noindent
-Possiamo ora tornare al problema del commesso viaggiatore.
-
-\popt {TravelingSalesman} {un grafo $G = (V,E)$ e un costo $\forall e \in E \delta_e$}
-{Insieme ordinato di lati}
-{Qual è il circuito hamiltoniano di minor costo?}
-{Insieme ordinato di lati che formi un circuito hamiltoniano}
-{$Min$}
-{$\sum_{e \in \pi} \delta_e$}
-
-\subsection{Algoritmo di Christofides}
-\subsubsection{TSP su clique}
-Si noti che non è necessario che esistano delle soluzioni ammissibili!
-Per facilitare l'analisi e ottenere risultati migliori specializzeremo il problema in un certo modo:
-analizzeremo il TSP su \textit{clique} (cricche), ossia un grafo
-$G = (V, {V \choose{2}})$.
-
-In quanto non è necessariamente vero che il grafo sia una cricca,
-supponiamo di avere un grafo pesato non completo: lo trasformiamo in un
-grafo completo
-$$
-	G = (V, E), \delta_e ~~ \leadsto ~~ K = (V, {V \choose 2}), \bar{\delta_e}
-$$
-definendo
-$$
-	\bar{\delta_e} =
-	\begin{cases}
-		\delta_e                    & e \in E    \\
-		1 + \sum_{e \in E} \delta_e & e \notin E
+\paragraph{Il TSP su cricca} A partire da un'istanza di \TravelingSalesman composta dal grafo $G=(V,E)$ e i pesi $\angle{\delta_e}_{e\in E}$, si consideri l'istanza composta dalla cricca $K=\left(V,\binom V 2\right)$ e dai pesi $\angle{\bar\delta}_{e\in\binom V 2}$ così definiti:
+\begin{equation*}
+	\bar\delta_e = \begin{cases}
+		\delta_e                 & \quad e \in E    \\
+		1+\sum_{e\in E} \delta_e & \quad e \notin E
 	\end{cases}
-$$
-Se si trova una soluzione per $K$ che non utilizza nessun lato fittizio,
-chiaramente tale soluzione è valida anche per $G$ ed è anche ottima, poiché
-nessun circuito hamiltoniano può costare più di anche solo un lato fittizio.
-In altre parole, la soluzione ottima coinvolge un lato fittizio se e solo se
-per $K$ non vi sono soluzioni ammissibili.
+\end{equation*}
+Trovando la soluzione ottima di \TravelingSalesman su questa istanza, è facile determinare se il circuito hamiltoniano trovato è una soluzione per il grafo originale.
+Poiché ogni arco viene percorso al più una volta (altrimenti i vertici verrebbero ripetuti nel circuito), se il costo totale è al più $\sum_{e\in E} \delta_e$ allora nessun arco assente nel grafo originale è stato usato, e la soluzione è ottima anche per l'istanza originale.
+Viceversa, se il costo totale è almeno $1+\sum_{e\in E} \delta_e$ allora non è stato possibile trovare un circuito euleriano che non usasse un arco assente nell'istanza originale, e quindi questa non ha soluzione.
+Si può semplificare la risoluzione di \TravelingSalesman limitandosi a risolvere il problema nel caso di cricche.
 
-\subsubsection{TSP metrico su clique}
-Tuttavia, anche sulle clique il TSP è un problema estremamente complesso da
-risolvere e, in generale, non è approssimabile a meno di una costante.
-Con un ulteriore rilassamento riusciremo ad approssimare TSP, ossia
-imponendo che le distanze formino una \textit{metrica} su $G$:
-richiediamo che $G$ sia una cricca e $\delta_e$ sia una metrica, ossia $$
-	\delta_{ij} \leq \delta_{ik} + \delta_{kj}
-$$
-% PROBLEMA: Se si crea il grafo completo utilizzando la costruzione precedente, la distanza 
-% non è più una metrica..
-Prima di designare l'algoritmo risolvente, introduciamo brevemente due problemi che
-saranno utili.
-\subsubsection{Minimo albero ricoprente}
-\popt {MinimumSpanningTree} {$G = (V,E)$ \textit{bipartito}} {Insieme di lati}
-{Qual è l'insieme di archi che copre i vertici con un costo minore?}
-{L'insieme di lati è un albero, ossia un grafo connesso e aciclico}
-{$Min$}{Cardinalità dell'insieme di lati}
+\paragraph{Il TSP metrico} Semplifichiamo ora il problema, imponendo una caratteristica "metrica" alla funzione dei pesi, cioè la disuguaglianza triangolare:
+\begin{equation*}
+	\delta_{\set{i,j}} \leq \delta_{\set{i,k}} + \delta_{\set{k,j}}
+\end{equation*}
+Come vedremo, solo grazie a questa assunzione è possibile costruire algoritmi approssimanti per \TravelingSalesman.
 
-Questo problema è risolvibile esattamente dall'algoritmo di Kruskal in tempo  $O(m\log(n))$.
+\subsubsection{L'albero ricoprente minimo}
+Dato un grafo non orientato connesso, un albero ricoprente è un sottografo che sia un albero e mantenga tutti i vertici.
+Se il grafo è pesato sui lati, un albero ricoprente minimo è quello che minimizza la somma dei costi dei lati che mantiene.
+\MinimumSpanningTree (MST) è il problema di ottimizzazione che cerca l'albero ricoprente minimo.
+Il problema è risolvibile esattamente in tempo polinomiale, ad esempio dall'algoritmo di Kruskal in tempo $O(m\log n)$.
 
-\subsubsection{Matching perfetto a costo minimo}
+\popt{\MinimumSpanningTree}
+{Grafo connesso $G=(V,E)$, pesi $\angle{\delta_e}_{e\in E}$}
+{Albero $T=(V',E')$}
+{Trovare un albero ricoprente minimo per $G$}
+{$T$ è un albero tale che $V'=V$}
+{$\MIN$}
+{$\sum_{e\in E'} \delta_e$}
 
-\popt {MinimumWeightPerfectMatching} {$G = (V,E)$ con un numero pari di vertici}
-{Insieme di lati}
-{Esiste un matching perfetto?}
-{Insieme di lati che formano un matching, ossia nessun vertice compare più di una volta, perfetto,
-	ossia in cui compaiono tutti i vertici}
-{$Min$}{Somma dei pesi degli archi scelti}
+\subsubsection{\MinimumWeightPerfectMatching}
+Dato un grafo non orientato con un numero pari di vertici, un \emph{matching perfetto} è un matching (vedi \ref{sec:BiMaxMatching}) che coinvolge tutti i vertici.
+In un grafo pesato sugli archi, \MinimumWeightPerfectMatching è il problema di trovare il matching perfetto a costo complessivo minimo.
+\MinimumWeightPerfectMatching è risolvibile esattamente in tempo polinomiale, ad esempio con il \flang{blooming algorithm} in tempo $O(m\log n)$.
 
-Anche questo problema è risolvibile in tempo polinomiale: un algoritmo famoso è
-l'algoritmo \textit{dell'infiorescenza} che ha complessità $O(m \log(n))$.
+\popt{\MinimumWeightPerfectMatching}
+{Grafo $G=(V,E)$ tale che $\card V$ è pari, pesi $\angle{\delta_e}_{e\in E}$}
+{Matching $M\subseteq E$}
+{Determinare un matching perfetto di costo minimo}
+{$M$ è un matching perfetto su $G$}
+{$Min$}
+{$\sum_{e\in M} \delta_e$}
 
-\noindent
-Possiamo ora passare all'algoritmo per risolvere istanze di \textsc{TravelingSalesman} su grafi
-completi dotati di una distanza metrica.
-\begin{algorithm}
-	\caption{\textsc{ChristofidesTSP}}
-	\KwInput{grafo $G = (V, {V \choose 2})$ con pesi $\delta_e$ che formano una metrica}
 
-	$T = FindMST(G)$
+\subsection{L'algoritmo di Christofides}
+L'algoritmo di Christofides per TSP metrico su cricca applica i concetti precedentemente descritti manipolando diverse strutture fino a ottenere un cammino hamiltoniano. Ricevendo in input una cricca $G=(V,E)$ e pesi $\angle{\delta_e}_{e\in E}$, i passi dell'algoritmo sono i seguenti:
+\begin{enumerate}
+	\item identificare un albero ricoprente minimo $T$ per $G$;
+	\item sia $D$ il grafo indotto su $G$ dall'insieme dei suoi vertici che hanno grado dispari in $T$.
+	      Questi sono in numero pari per il lemma \ref{lem:handshaking}. È quindi possibile identificare un matching perfetto minimo $M$ su $D$;
+	\item sia $H$ il multigrafo indotto su $G$ dall'unione disgiunta dei lati di $T$ ed $M$. In $H$ tutti i vertici hanno grado pari, poiché quelli che avevano grado dispari in $T$ hanno un nuovo arco grazie a $M$. In virtù del lemma \ref{thm:eulero} si può trovare un circuito euleriano $\pi$ in $H$;
+	\item trasformare il circuito euleriano $\pi$, valido anche per $G$, in un hamiltoniano $\tilde\pi$.
+	      Ogni volta che $\pi$ passa su un vertice $v$ una seconda volta tramite i lati $\set{a,v}$ e $\set{v,b}$, è sufficiente "saltare" tale vertice sostituendo in $\tilde\pi$ i due lati con il lato $\set{a,b}$ (esistente in quanto si sta lavorando sulla cricca originale), con conseguente diminuzione del costo in virtù della disuguaglianza triangolare.
+\end{enumerate}
 
-	\tcc{$D$ è l'insieme dei vertici di grado dispari nel minimo albero ricoprente $T$. Per il
-		\cref{lem:handshaking}, è $|D| \mod 2 = 0$.}
-	$D = FindOddDegreeVertices(T)$
-
-	\tcc{$G[D]$ è il grafo ristretto sui nodi di $D$}
-	$G[D] = G(V \cap D, \cdots)$
-
-	$M = FindPerfectMatching(G[D])$
-
-	\tcc{\`E possibile che lo stesso lato appaia due volte, rendendo $H$ un multigrafo. Tutti i vertici
-		in $H$ hanno grado pari, poiche' quelli che in $D$ hanno grado dispari hanno un nuovo lato.}
-	$ H = T \cup M$
-
-	$\pi = FindEulerianWalk(H)$
-
-	$R = FindRepeatingVertices(\pi)$
-
-	\For{$v : R$}
-	{
-		\tcc{per ogni vertice $v$ ripetuto nel cammino si cancellano due lati (uno entrante e uno uscente) e,
-			siccome il grafo è una cricca, si inserisce un nuovo lato che collega i due vertici disconnessi
-			(quello che portava a $v$ e quello raggiunto da $v$)}
-		$\pi = RemoveAndReplace(\pi, v)$
-	}
-
-	\Return{$\pi$}
-\end{algorithm}
-
-\begin{lemma}\label{lem:tsp_T_leq_delta}
-	Il costo dell'albero $T$ su $G$ è minore o uguale del costo ottimale del cammino hamiltoniano su $G$ metrico
-	e completo:
-	$$
-		\delta(T) \leq \delta^*
-	$$
-\end{lemma}
-
-\begin{proof}
-	Sia $\pi^*$ un circuito hamiltoniano ottimo. Sia $e$ un qualunque lato che compare in $\pi^*$ e si
-	consideri $\pi^* \setminus e$: il risultato è uno spanning tree (possibilmente minimo). Pertanto,
-	$$
-		\delta(T) \leq \delta(\pi^* \setminus e) \leq \delta^*
-	$$
-	poiché $T$ è \textit{un} minimo albero ricoprente.
-\end{proof}
-\begin{lemma}\label{lem:tsp_M_leq_hdelta}
-	$$
-		\delta(M) \leq \frac{1}{2}\delta^*
-	$$
+L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione rispetto al TSP metrico su cricca.
+\begin{lemma}\label{lem:chri_spanning}
+	In una cricca $G$ pesata metricamente sui lati, il costo $\delta(T)$ dell'albero ricoprente minimo $T$ non è peggiore del costo minimo $\delta\star$ di un cammino hamiltoniano su $G$:
+	\begin{equation*}
+		\delta(T) \leq \delta\star
+	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Sia $\pi^*$ un circuito hamiltoniano ottimo.
-	Dal \cref{lem:handshaking} sappiamo che un numero pari di vertici appare in $D$ come costruito
-	nell'algoritmo: sia quindi $\pi'$ un qualunque circuito sui vertici di $D$.
-	Questo circuito $\pi'$ attraverserà un numero minore o uguale di vertici attraversati da $\pi^*$,
-	per ogni vertice in meno che deve attraversare dunque, invece di avere un lato che lo raggiunge
-	ed uno da cui esce, ci sarà un solo lato che lo salta.
-	Essendo $\delta$ una metrica dunque "saltare" un vertice dovrà costare per forza meno di prenderlo,
-	quindi
-	$$
-		\delta(\pi') \leq \delta(\pi^*)
-	$$
-	Dividiamo i lati di $\pi'$ in due insiemi $M_1$ e $M_2$, in modo che si
-	alternino nel cammino: essi sono due perfect matching su $D$. Allora
-	\begin{align*}
-		 & \delta(M_1) \geq \delta(M) \land \delta(M_2) \geq \delta(M)                      \\
-		 & \implies \delta^* \geq \delta(\pi') = \delta(M_1) + \delta(M_2) \geq 2 \delta(M)
-	\end{align*}
+	Sia $\pi\star$ un circuito hamiltoniano ottimo e sia $e\in\pi\star$.
+	Il grafo indotto da $\pi\star\setminus e$ è un albero ricoprente. Pertanto:
+	\begin{equation*}
+		\delta(T) \leq \delta(\pi\star\setminus e) \leq\delta\star \text.
+	\end{equation*}
 \end{proof}
+
+\begin{lemma}\label{lem:chri_matching}
+	\begin{equation*}
+		\delta(M) \leq \frac 1 2 \delta\star
+	\end{equation*}
+\end{lemma}
+
 \begin{theorem}
-	L'algoritmo di Christofides è una $\frac{3}{2}$-approssimazione per il problema del
-	commesso viaggiatore su grafi completi con distanza metrica.
+	L'algoritmo di Christofides è $\frac 3 2$-approssimante per il TSP metrico su cricca.
 \end{theorem}
 \begin{proof}
-	Siano $\tilde{\pi}$ il cammino hamiltoniano e $\pi$ il cammino euleriano costruiti dall'algoritmo.
-	Allora deve essere $\delta(\tilde{\pi}) \leq \delta(\pi)$: $\pi$ passa per tutti
-	gli archi di $H$ esattamente una volta:
-
-	\begin{align*}
-		 & \delta(\pi) = \sum_{e \in H} \delta(e)  = \delta(M) + \delta(T) \leq
-		\underbrace{\frac{1}{2} \delta^*}_{\cref{lem:tsp_M_leq_hdelta}} +
-		\underbrace{\delta^*}_{\cref{lem:tsp_T_leq_delta}}  = \frac{3}{2} \delta^*
-	\end{align*}
+	Per la costruzione del circuito hamiltoniano $\tilde\pi$ a partire dal circuito euleriano $\pi$ e grazie ai lemmi sopra dimostrati:
+	\begin{equation*}
+		\delta(\tilde\pi)\leq\delta(\pi) = \delta(T)+\delta(M)\leq
+		\underbrace{\delta\star}_{\text{lemma \ref{lem:chri_matching}}} + \underbrace{\frac{\delta\star}{2}}_{\text{lemma \ref{lem:chri_spanning}}} =
+		\frac 3 2 \delta\star \text.
+	\end{equation*}
 \end{proof}
 
 \begin{theorem}
-	L'analisi di approssimazione  di TSP metrico su clique con Christofides è stretta.
+	Per ogni $\varepsilon>0$ esiste un input del TSP metrico su cricca su cui l'algoritmo di Christofides produce una soluzione $\pi$ tale che
+	\begin{equation*}
+		\frac 3 2-\varepsilon \leq \frac{\delta(\pi)}{\delta\star}
+	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Dato $n$ pari ed $\epsilon \in (0,1)$, esibiamo il seguente grafo:
+	Dato $n$ pari e $\epsilon\in(0,1)$, si consideri il grafo in figura \ref{fig:christotight}, in cui gli archi sono etichettati con i loro pesi. Si estenda il grafo a una cricca $G$, in cui ogni lato $\set{u,v}$ non rappresentato ha come peso il peso del cammino minimo tra $u$ e $v$ sul grafo originale.
 
-	\begin{figure}[h]
+	\begin{figure}[ht]
 		\centering
-		\begin{tikzpicture}
-			\node[minimum size=15pt, draw, circle] (1) {$v_1$};
-			\node[minimum size=15pt, draw, circle, right =of 1] (2) {$v_2$};
-			\node[minimum size=15pt, draw, circle, right =of 2] (3) {$v_3$};
-			\node[minimum size=15pt, draw, circle, right =of 3] (4) {$v_4$};
-			\node[minimum size=15pt, draw, circle, right =of 4] (5) {$v_{n-2}$};
-			\node[minimum size=15pt, draw, circle, right =of 5] (6) {$v_{n-1}$};
-			\node[minimum size=15pt, draw, circle, right =of 6] (7) {$v_{n}$};
-
-			\draw[] (1) to node [auto] {$1$} (2);
-			\draw[bend right=35] (1) to node [below] {$1 + \epsilon$} (3);
-
-			\draw[] (2) to node [auto] {$1$} (3);
-			\draw[bend left=35] (2) to node [auto] {$1+\epsilon$} (4);
-
-			\draw[] (3) to node [auto] {$1$} (4);
-			\draw[bend right=30] (3) edge node [below] {$1 + \epsilon$}(5.5,-1);
-
-			\draw[dotted] (4) to (5);
-
-			\draw[] (5) to node [auto] {$1$} (6);
-			\draw[bend left=35] (5) to node [auto] {$1+\epsilon$} (7);
-
-			\draw[] (6) to node [auto] {$1$} (7);
-
-			\draw[bend left=30] (6) edge node [auto] {$1 + \epsilon$} (7.5,-1);
-
-		\end{tikzpicture}
+		\input{img/christo_tight.tikz}
+		\caption{Esempio di input "cattivo" per l'algoritmo di Christofides.}
+		\label{fig:christotight}
 	\end{figure}
-	Tutti i lati mancanti hanno costo pari al costo del cammino minimo tra i due vertici del lato.
-	L'algoritmo di Christofides seleziona il \textsc{MinimumSpanningTree} $T$, ossia il cammino composto da
-	lati di costo $1$, quindi $\delta(T) = n - 1$. I nodi di grado dispari in $T$ sono
-	i due estremi, quindi $D = \{v_1, v_n\}$. Il cammino minimo che li collega è
-	un singolo lato che ha peso $\delta(M) = (1 + \epsilon) \frac{n}{2} + 1$.
 
-	Al termine dell'algoritmo, il costo del circuito hamiltoniano ottenuto è
-	$$
-		\delta = n - 1 +  (1 + \epsilon) \frac{n}{2} + 1 = \frac{3}{2}n + \frac{\epsilon n}{2}
-	$$
-	Il costo del cammino ottimo è
-	$$
-		\delta^* = (1 + \epsilon) \frac{n}{2} + (1 + \epsilon) \frac{n}{2} +2 = (1 + \epsilon) n + 2
-	$$
-	quindi
-	$$
-		\frac{\delta}{\delta^*} = \frac{\frac{3}{2}n + \frac{\epsilon n}{2}}{(1 + \epsilon)n +2}
-		= \frac{\frac{3}{2} n + \frac{n}{2}\epsilon}{n + 2 + \epsilon n} = \frac{3}{2}
-	$$
-	per $n \rightarrow \infty$ e $\epsilon \rightarrow 0$.
+	L'algoritmo di Christofides identifica l'albero ricoprente $T$ indotto da tutti i lati di peso $1$, quindi $\delta(T)=n-1$.
+	L'algoritmo seleziona poi $D=\set{v_1,v_n}$ e su di esso il matching $M$ composto dal solo lato $\set{v_1,v_n}$ di peso $\delta(M)=(1+\varepsilon)\left(\frac n2-1\right)+1$.
+	Sul grafo indotto dall'unione $H$ di $T$ e $M$ l'algoritmo costruisce il circuito euleriano, nonché hamiltoniano, composto dall'unione degli archi di peso $1$ e l'arco che compone $M$.
+	Il costo $\delta$ del circuito costruito è quindi:
+	\begin{equation*}
+		\delta = n-1 + (1+\varepsilon)\left(\frac n2-1\right)+1 = \frac32n+\varepsilon\left(\frac n2-1\right)-1 \text.
+	\end{equation*}
+	Ma il circuito hamiltoniano ottimo è quello che, a partire da $v_1$, percorre tutti gli archi di peso $1+\varepsilon$ che uniscono vertici di indice dispari, l'arco $\set{v_{n-1},v_n}$, tutti gli archi di peso $1+\varepsilon$ di indice pari e infine l'arco $\set{v_1,v_2}$.
+	Il costo $\delta\star$ di tale circuito è:
+	\begin{equation*}
+		\delta\star = 2(1+\varepsilon)\left(\frac n2-1\right) + 2 = n+\varepsilon(n-2) \text.
+	\end{equation*}
+	Quindi
+	\begin{equation*}
+		\frac{\delta}{\delta\star} = \frac{\frac32n+\varepsilon\left(\frac n2-1\right)-1}{n+\varepsilon(n-2)} \geq \frac 3 2-\varepsilon \text.
+	\end{equation*}
+	Inoltre, per $n\to\infty$ e $\varepsilon\to0$:
+	\begin{equation*}
+		\frac{\delta}{\delta\star} \to \frac 3 2 \text.
+	\end{equation*}
 \end{proof}
 
-\subsection{Inapprossimabilità di TSP}
-La situazione non è altrettanto positiva per il caso generale del TSP:
-\begin{theorem}
-	Decidere se un grafo contiene un cammino hamiltoniano è un problema in $\mathbf{NP-completi}$.
-\end{theorem}
+
+\subsection{Inapprossimabilità di \TravelingSalesman}
+Abbandonando l'ipotesi di disuguaglianza triangolare della funzione $\delta$, il problema \TravelingSalesman è inapprossimabile.
+Al fine di dimostrare ciò ricordiamo che decidere se un grafo contiene un cammino hamiltoniano è un problema \NP-completo.
 
 \begin{theorem}
-	Non esiste alcun $\alpha$ tale che \textsc{TravelingSalesman} sia $\alpha$-approssimabile a meno che
-	$\mathbf{P} \neq \mathbf{NP}$.
+	Se $\P\neq\NP$, non esiste alcun $\alpha>1$ tale che \TravelingSalesman sia $\alpha$-approssimabile.
 \end{theorem}
 \begin{proof}
-	(per assurdo.)
-	Sia $G = (V,E)$ un grafo che si completa creando $G'$: su questo grafo definiamo
-	una nozione di distanza
-	$$
-		d(x,y) =
-		\begin{cases}
-			1                         & x, y \in E    \\
-			\lceil \alpha n \rceil +1 & x, y \notin E
+	Fissato $\alpha>1$, sia $G=(V,E)$ un grafo non orientato in cui tutti i lati hanno peso $1$.
+	Sia $G'$ la sua estensione a cricca, ottenuta con il metodo citato nel paragrafo \ref{subsub:tsp:criccametrica}, ossia in cui la funzione peso $\delta$ è così definita:
+	\begin{equation*}
+		\delta(x,y) = \begin{cases}
+			1                 & \quad \set{x,y}\in E    \\
+			% TODO: è davvero necessario il ceil, avendo già il +1?
+			\ceil{\alpha n}+1 & \quad \set{x,y}\notin E
 		\end{cases}
-	$$
-	Se $G$ ammette un circuito hamiltoniano, in $G'$ quel circuito ha costo
-	$n$, poiché tocca tutti i vertici concludendo il circuito. Se $G$ non ammette
-	un circuito hamiltoniano su di esso, possiamo concludere che in $G'$ tutti i
-	circuiti hamiltoniani passano per almeno un lato di costo $\lceil \alpha n \rceil +1 $,
-	quindi il circuito del costo hamiltoniano minimo è almeno $\lceil \alpha n \rceil + 1$.
-	Se $G$ ha un circuito hamiltoniano l'algoritmo $\alpha$ approssimante per
-	trovare cammini hamiltoniani in $G'$ (che, per assurdo, assumiamo esistere),
-	troverà un circuito di costo minore o uguale a $\alpha n$ (poiché è $\alpha$-approssimante);
-	se $G$ non ammette un circuito hamiltoniano, troverà un circuito di costo
-	maggiore di $\lceil \alpha n \rceil +1$.
-	\`E impossibile che $\alpha < \lceil \alpha n \rceil + 1$, altrimenti sapremmo
-	decidere se $G$ ammette circuiti hamiltoniani. Ossia, deve essere
-	$$
-		\alpha > \frac{\lceil \alpha n \rceil + 1}{n} \geq \frac{\alpha n +1}{n} = \alpha + \frac{1}{n}
-	$$
-	ossia $\alpha \geq \alpha + \frac{1}{n}$, impossibile.
-	Concludiamo che \textsc{TravelingSalesman} $\notin \mathbf{APX}$.
+	\end{equation*}
+	Se $G$ ammette un circuito hamiltoniano, allora tale circuito è ammesso anche in $G'$ e ha costo $n<\alpha n$.
+	Viceversa, se $G$ non ammette un circuito hamiltoniano allora ogni circuito hamiltoniano in $G'$ ha costo di almeno $\ceil{\alpha n}+1$.
+
+	Se esiste un algoritmo $\alpha$-approssimante per \TravelingSalesman, questo trova in tempo polinomiale un circuito hamiltoniano in $G'$ di costo al più $\alpha n$. Ma un tale circuito esiste se e solo se esiste un cammino hamiltoniano in $G$. L'algoritmo decide quindi in tempo polinomiale se un grafo $G$ ammette un cammino hamiltoniano, il che è impossibile se $\P\neq\NP$.
 \end{proof}
+
+
 
 \section{Problema del 2-carico}
 In \textsc{LoadBalancing}, l'input era composto da  $t_0, t_1, \cdots, t_{n-1} \in \mathbb{N}^+$

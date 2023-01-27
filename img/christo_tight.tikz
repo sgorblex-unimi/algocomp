@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+	\node[minimum size=15pt, draw, circle] (1) {$v_1$};
+	\node[minimum size=15pt, draw, circle, right =of 1] (2) {$v_2$};
+	\node[minimum size=15pt, draw, circle, right =of 2] (3) {$v_3$};
+	\node[minimum size=15pt, draw, circle, right =of 3] (4) {$v_4$};
+	\node[minimum size=15pt, draw, circle, right =of 4] (5) {$v_{n-2}$};
+	\node[minimum size=15pt, draw, circle, right =of 5] (6) {$v_{n-1}$};
+	\node[minimum size=15pt, draw, circle, right =of 6] (7) {$v_{n}$};
+
+	\draw[] (1) to node [auto] {$1$} (2);
+	\draw[bend right=35] (1) to node [below] {$1 + \epsilon$} (3);
+	\draw[] (2) to node [auto] {$1$} (3);
+	\draw[bend left=35] (2) to node [auto] {$1+\epsilon$} (4);
+	\draw[] (3) to node [auto] {$1$} (4);
+	\draw[bend right=30] (3) edge node [below] {$1 + \epsilon$}(5.5,-1);
+	\draw[dotted] (4) to (5);
+	\draw[] (5) to node [auto] {$1$} (6);
+	\draw[bend left=35] (5) to node [auto] {$1+\epsilon$} (7);
+	\draw[] (6) to node [auto] {$1$} (7);
+	\draw[bend left=30] (6) edge node [auto] {$1 + \epsilon$} (7.5,-1);
+\end{tikzpicture}

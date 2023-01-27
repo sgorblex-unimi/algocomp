@@ -24,6 +24,7 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 	- MinSetCover
 	- VertexCover
 	- DisjointPaths
+	- TravelingSalesman
 - cap. 3 Algoritmi probabilistici:
 	- MinCut e Karger
 - cap. 4 Strutture succinte:

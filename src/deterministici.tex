@@ -977,93 +977,61 @@ Al fine di dimostrare ciò ricordiamo che decidere se un grafo contiene un cammi
 
 
 
-\section{Problema del 2-carico}
-In \textsc{LoadBalancing}, l'input era composto da  $t_0, t_1, \cdots, t_{n-1} \in \mathbb{N}^+$
-tasks e un numero $m$ di macchine. L'obiettivo era costruire degli assegnamenti
-tali per cui il carico massimo di una macchina è il minimo possibile. La versione
-\textsc{$2$-LoadBalancing} è una specializzazione in cui $m = 2$.
+% TODO: spostare insieme a LB? (se sì, sistemare l'introduzione)
+\section{\texorpdfstring{$2$}{2}-\LoadBalancing}
+$2$-\LoadBalancing è una specializzazione di \LoadBalancing in cui il numero di macchine $m$ è uguale a $2$.
+Questo problema è anche chiamato \MinimumPartition in quanto è equivalente al bilanciare una partizione insiemistica di due elementi.
 
-\subsection{Algoritmo PTAS}
-Due algoritmi per risolvere \textsc{LoadBalancing} sono stati proposti: greedy
-(\cref{algo:greedybalance}) o con ordinamento iniziale delle task
-(\cref{algo:sortedbalance}).
-Ora, faremo molto meglio descrivendo un algoritmo che porta \textsc{$2$-LoadBalancing} in $\mathbf{PTAS}$:
-daremo quindi un tasso di approssimazione vincolante per la soluzione trovata -
-tuttavia l'algoritmo risulterà esponenziale in tale tasso.
+L'algoritmo \ref{algo:partitionbalance} è un algoritmo \PTAS-caratterizzante per $2$-\LoadBalancing.
+L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed esponenziale rispetto a $\varepsilon$.
 
-\begin{algorithm}[h]
-	\caption{PartitionBalance}
+\begin{algorithm}
+	\caption{Algoritmo \PTAS per $2$-\LoadBalancing.}
 	\label{algo:partitionbalance}
-	\KwInput{$m_1, m_2, t_0, ..., t_{n-1}, \epsilon$}
-
-	\If {$\epsilon \geq 1$}
-	{
-		$m_1.tasks = \{t_0, \cdots, t_{n-1}\}$
-
-		\Return
-	}
-
-	$tasks = [t_0,\cdots, t_{n-1}].nonDecreasingSort()$
-
-	$k = \lceil \frac{1}{\epsilon} -1 \rceil$
-
-	\tcc{Esegui l'algoritmo esaustivo sui primi $k$ task}
-	$optPartition = findOptimalPartition(tasks[0\cdots k-1])$
-
-	$GreedyBalance(m_1, m_2, tasks[k\cdots])$
-
+	\input{alg/PartitionBalance.tex}
 \end{algorithm}
 
 \begin{theorem}
-	L'\cref{algo:partitionbalance} è polinomiale in $n$ (ma non in $\epsilon$) e
-	produce una $1+ \epsilon$ approssimazione per \textsc{$2$-LoadBalancing}.
+	Dato $\varepsilon>0$, l'algoritmo \ref{algo:partitionbalance} produce in tempo polinomiale in $n$ una $1+\varepsilon$-approssimazione per $2$-\LoadBalancing.
 \end{theorem}
-
 \begin{proof}
-	Se $\epsilon \geq 1$, assegnare tutte le task ad una sola macchina non può
-	essere peggio del doppio del costo ottimale.
-	Altrimenti, proseguiamo seguendo l'esecuzione dell'algoritmo.
-	I primi $k$ task vengono assegnati in modo ottimale. I seguenti $n - k$ task
-	vengono assegnati in maniera greedy. Assumiamo, senza perdita di generalità,
-	che $w(m_1) \geq w(m_2)$. Sia $h$ l'indice dell'ultimo task assegnato alla
-	macchina $m_1$. Abbiamo due casi:
+	Sia $L:=\frac12\sum_{i=1}^n t_i$.
+	Il costo ottimo è almeno $L$, perciò se $\varepsilon\geq1$, assegnando tutti i task alla stessa macchina si ottiene un costo di $\sum_{i=1}^n t_i=2L\leq(1+\varepsilon)L\star$.
+
+	Se $\varepsilon<1$, si consideri lo stato delle macchine al termine dell'esecuzione e sia $L_1\geq L_2$ senza perdita di generalità.
+	Sia $t_h$ l'ultimo task assegnato alla macchina $1$.
 	\begin{itemize}
-		\item $h < k$. Tutti i task assegnati in maniera greedy appartengono alla
-		      macchina $m_2$. Siccome i task assegnati a $m_1$ sono assegnati in
-		      modo ottimale, il costo massimo $w(m_1)$ è ottimale.
-		\item $h \geq k$. Dopo la fase ottima la macchina $m_1$ riceve altri task.
-		      Sia $L = \frac{\sum_{i} t_i}{2}$, facciamo due osservazioni che ci 
-			  torneranno utili:
+		% TODO: inserire considerazioni della dispensa aggiuntiva del prof
+		\item Se $h\leq k$, $t_h$ è stato assegnato nella fase esaustiva e pertanto la soluzione costruita è ottima.
+		\item Se $h>k$, allora $t_h$ è assegnato nella fase greedy, quindi, se $L_2'$ è il carico della macchina $2$ all'assegnamento di $t_h$, vale:
+		      \begin{equation}\label{eq:2lb:1}
+			      L_1-t_h\leq L_2'\leq L_2
+		      \end{equation}
+		      Quindi, ricordando che $L_1+L_2=2L$:
+		      \begin{align}
+			      L_1-t_h  & \leq L_2 \nonumber                    \\
+			      2L_1-t_h & \leq L \nonumber                      \\
+			      L_1      & \leq L+\frac{t_h}{2} \label{eq:2lb:2}
+		      \end{align}
+		      Inoltre vale
+		      \begin{equation*}
+			      2L = \underbrace{t_0+t_1+\dots+t_k}_{\geq t_hk}+\underbrace{\dots+t_h+\dots+t_{n-1}}_{\geq t_h} \geq t_h(k+1)
+		      \end{equation*}
+		      Ergo:
 		      \begin{align*}
-			       & w(m_1) - t_h  \leq w(m_2) \text{ nel momento in cui si assegna } h \leq w(m_2)                        \\
-			       & \implies 2*w(m1) - t_h \leq w(m_1) + w(m_2) = 2L                                                      \\
-			       & \implies w(m_1) - \frac{t_h}{2} \leq L
-			  \end{align*}
-			  e
-			  \begin{align*}
-				   & 2L  = t_0 + t_1 + \cdots + t_k + t_h + \cdots + t_{n-1} \geq t_h (k+1)                                \\
-			  \end{align*}
-			  Ora consideriamo il rapporto tra il valore restituito dall'algoritmo,
-			  cioè il carico della macchina più carica (dunque $w(m_1)$). Ricordiamo che
-			  $w^* \geq L$
-			  \begin{align*}
-				   & \frac{w}{w^*} = \frac{w(m_1)}{w^*} \leq \frac{w(m_1)}{L} \leq                                         \\
-				   & \leq \frac{\frac{t_h}{2}+L}{L} = 1 + \frac{t_h}{2L} \leq & \text{per la prima osservazione}           \\
-				   & \leq 1 + \frac{t_h}{2 \frac{t_h}{2} \cdot (k + 1)} = 1 + \frac{1}{1 + k} & \text{per la seconda osservazione} \\
-		      \end{align*}
-		      Ma $k = \lceil \frac{1}{\epsilon}\rceil - 1 \geq \frac{1}{\epsilon} - 1$, quindi:
-		      \begin{align*}
-				   & 1 + \frac{1}{1 + k} \leq 1 + \frac{1}{1 + \frac{1}{\epsilon} - 1} = 1 + \epsilon
+			      \frac{L_1}{L\star} & \leq \frac{L+\frac{t_h}{2}}{L\star}        &  & \text{per la \ref{eq:2lb:1}} \\
+			                         & \leq \frac{L+\frac{t_h}{2}}{L}             &  & L\star\geq L                 \\
+			                         & = 1+\frac{t_h}{2L}                                                           \\
+			                         & \leq 1+\frac{t_h}{t_h(k+1)}                &  & \text{per la \ref{eq:2lb:2}} \\
+			                         & = 1+\frac{1}{k+1}                                                            \\
+			                         & \leq 1+\frac{1}{\frac{1}{\varepsilon}-1+1} &  & k\geq\frac{1}{\varepsilon}-1 \\
+			                         & = \varepsilon+1 \text.
 		      \end{align*}
 	\end{itemize}
+	Considerate le complessità delle operazioni di ordinamento, della ricerca esaustiva delle $2^k$ combinazioni per la parte ottima, e della coda per la parte greedy, l'algoritmo ha tempo d'esecuzione $O(n\log n+2^{\frac{1}{\epsilon}}n)$.
 \end{proof}
 
-\begin{theorem}
-	L'algoritmo ha tempo d'esecuzione $O(n\log{n} + 2^{\frac{1}{\epsilon}})$.
-\end{theorem}
-\begin{corollario}
-	Essendo uguale a \textsc{2-LoadBalancing},  \textsc{MinimumPartition} $\in \mathbf{PTAS}$.
-\end{corollario}
+
 
 \section{Problema dello zaino}
 \popt {Knapsack} {$n$ oggetti con valori $v_0, \cdots, v_{n-1} \in \mathbb{N}$ e

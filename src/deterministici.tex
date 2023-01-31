@@ -1033,169 +1033,109 @@ L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed es
 
 
 
-\section{Problema dello zaino}
-\popt {Knapsack} {$n$ oggetti con valori $v_0, \cdots, v_{n-1} \in \mathbb{N}$ e
-	pesi $w_0, \cdots, w_{n-1} \in \mathbb{N}$ e una capacità $W \in \mathbb{N}$} {Insieme di oggetti $S$}
-{Qual è l'insieme di oggetti di valore maggiore che si può scegliere senza eccedere
-	la capacità $W$?}
-{Scelta di oggetti che non eccedono $W$: $\sum_{i \in S} w_i \leq W$}
-{$Max$}{Valore degli oggetti in $S$: $\sum_{i \in S} v_i$}
+\section{\Knapsack}
+\popt{\Knapsack}
+{$n$ oggetti con valori $\angle{v_i}_{i\in n}\in\N^+$ e pesi $\angle{w_i}_{i\in n}\in\N^+$, capacità $W\in N$}
+{$I\subseteq n$}
+{Determinare l'insieme di oggetti di valore complessivo maggiore il cui peso complessivo non superi $W$}
+{$\sum_{i\in I}w_i\leq W$}
+{$\MAX$}
+{$\sum_{i\in I} v_i$}
 
-\begin{theorem}
-	\textsc{KnapsackProblem} $\in \mathbf{NPO-completi}$.
-\end{theorem}
 
-\subsection{Algoritmo esponenziale basato su programmazione dinamica}
-Come solitamente accade quando si desidera trovare un algoritmo basato
-sulla \textit{programmazione dinamica}, suddividiamo il problema in problemi
-più piccoli: costruiamo una matrice
-$$
-	vOPT[i, w] =  \text{ massimo valore di } i \text{ oggetti con zaino di capacità } w
-$$
-con $ i \leq n$ e $w \leq W$. Ovviamente, ciò che ci interessa è $vOPT[n, W]$,
-ossia il valore massimo ottenibile considerando tutti gli $n$ oggetti
-e con capacità $W$.
-In quanto il valore ottenibile scegliendo $0$ oggetti è $0$, abbiamo che, per qualsiasi
-capacità, $vOPT[0, \_] = 0$ - analogamente, siccome nessun oggetto può essere scelto
-se la capacità è $0$, deve essere $vOPT[\_, 0]  = 0$.
+\subsection{\DynamicKnapsack}
+Il problema può essere risolto in modo esatto dall'algoritmo \DynamicKnapsack, basato su programmazione dinamica.
+L'algoritmo costruisce una matrice in cui costruisce le soluzioni ottime per istanze di complessità minore di quella in input, usandole per calcolare la soluzione ottima complessiva.
 
-L'entry della $i+1$-esima riga nella $w+1$-esima colonna
-si costruisce decidendo se inserire o meno l'$i$-esimo oggetto:
-$$
-	vOPT[i+1, w] = max
+L'elemento $A[i,w]$ della matrice $A\in{\N^+}^{(n+1)\times (W+1)}$ è associato semanticamente al massimo valore ottenibile con i primi $i$ oggetti con una capacità massima di $w$.
+Gli elementi $A[0,w]$, per ogni $w\in W+1$, sono vincolati al valore $0$ dal momento che nessun oggetto può essere utilizzato, mentre i restanti valori sono così calcolati:
+\begin{equation*}
+	A[i+1,w] =
 	\begin{cases}
-		vOPT[i, w]             & \text{non prendo l'oggetto} \\
-		vOPT[i, w - w_i] + v_i & \text{prendo l'oggetto } i \text{ (solo se } w_i \leq w \text{)}
+		A[i,w]                       & \quad w_i>w     \\
+		\max(A[i,w], A[i,w-w_i]+v_i) & \quad w_i\leq w
 	\end{cases}
-$$
+\end{equation*}
+L'algoritmo valuta quindi se l'oggetto $i+1$ ha volume compatibile con la capacità massima: in caso negativo reitera la soluzione che non usa l'ultimo oggetto, in caso positivo sceglie la migliore tra tale soluzione e quella che fa uso dell'ultimo oggetto (costruita aggiungendolo alla soluzione ottima dell'istanza con capacità $w-w_i$).
 
-Questo algoritmo, ovviamente, non può essere polinomiale (altrimenti sarebbe
-$\mathbf{P} = \mathbf{NP}$) -- è vero che il
-numero di entry nella matrice è $n \cdot w$, ma l'algoritmo non è polinomiale nella
-lunghezza binaria dell'input $W$, bensì è esponenziale, rendendo quindi l'algoritmo
-\textit{pseudopolinomiale}.
+Riempita la tabella, l'algoritmo può ricostruire la soluzione che produce il valore ottimo $A[n,W]$.
+L'algoritmo opera in tempo pseudopolinomiale, in quanto opera su una matrice di dimensione lineare nel valore di $W$, che è esponenziale nella lunghezza dell'input.
 
-\subsection{Algoritmo FPTAS basato su programmazione dinamica}
-Per cercare di ovviare al problema della pseudopolinomialità del metodo precedente,
-scomponiamo il problema in termini di oggetti e valore (invece che peso):
-$$
-	wOPT[i, v] = \text{minimo peso necessario per avere un valore totale } \geq v \text{ usando solo i primi } i \text { oggetti }
-$$
-In $wOPT$ le colonne rappresentano valori tra $[0, \sum_{i}v_i]$ - in realtà,
-approssimiamo questo range con $[0, n\cdot v_{max}]$, con $v_{max} = \max_i v_i$.
 
-Sull'ultima riga troveremo il minimo peso necessario per scegliere $n$ oggetti;
-potrà accadere che per molte colonne $wOPT[i,v] > W$, cioè rappresentano
-soluzioni non accettabili; dovremo quindi cercare la entry con massimo valore $v$
-sull'ultima riga ma con capacità $w \leq W$, ergo la entry più "a destra" che
-non sfori $W$. La prima colonna sarà $wOPT[\_,0] = 0$, mentre, inizialmente,
-si imposta $wOPT[0,\geq1] = \infty$.
+\subsection{\WeightDynamicKnapsack}
+Una variante dell'algoritmo \DynamicKnapsack costruisce una matrice $B\in{\N^+}^{(\sum_{i\in n} v_i)\times (n+1)}$ in cui l'elemento $B[i,v]$ rappresenta il minimo peso necessario per raggiungere un valore di $v$ usando i primi $i$ oggetti.
 
-La regola di riempimento che definiamo è
-$$
-	wOPT[i+1, v] = min
-	\begin{cases}
-		wOPT[i, v]						& \text{non prendo l'oggetto } i \\
-		wOPT[i, \max(v-v_i, 0)] + w_i	& \text{prendo l'oggetto } i
-	\end{cases}
-$$
+L'elemento $B[0,0]$ è posto uguale a $0$. Gli elementi $B[0,v]$, per ogni $v\in\sum_{i\in n} v_i$, sono vincolati al valore $+\infty$ dal momento che il valore $v$ è irraggiungibile. I restanti valori sono così calcolati:
+\begin{equation*}
+	B[i+1,v] = \min(B[i,v], w_i+B[i,\max(v-v_i,0)])
+\end{equation*}
+L'algoritmo sceglie quindi la migliore soluzione tra quella che non fa uso dell'oggetto $i+1$-esimo e quella che lo aggiunge alla soluzione che utilizza i primi $i$.
 
-Benché apparentemente sembra non ci sia alcun vantaggio, in questo frangente
-possiamo operare delle modifiche sulla matrice: l'idea è quella di ``schiacciare''
-le colonne, operando una divisione o un cambio di misura, nonostante venga
-in questo modo introdotta un'approssimazione dei valori. Introduciamo,
-quindi, un \textit{valore di scala}:
-$$
-	\theta = \frac{\epsilon v_{max}}{2n}
-$$
-e l'obiettivo finale sarà avere una $1+\epsilon$-approssimazione.
-Sia quindi $X=(v_i, w_i, W)$ l'input del problema; siano
+Un algoritmo che usa questa matrice può trovare la soluzione ottima cercando sulla riga $n$ la colonna di indice massimo il cui valore non supera $W$. Un tale algoritmo sarebbe tuttavia poco efficiente per via dell'utilizzo di una matrice con un tale numero di colonne.
 
-$$
-	\bar{v_i} = \lceil\frac{v_i}{\theta}\rceil\cdot \theta, ~~ \hat{v_i} = \lceil \frac{v_i}{\theta}\rceil
-$$
-ai quali associamo i relativi problemi $\bar{X} = (\bar{v_i}, w_i, W)$
-e $\hat{X} = (\hat{v_i}, w_i, W)$
-che avranno delle soluzioni ottime $v^*, \bar{v}^*$ e $\hat{v}^*$, derivanti
-da insiemi $S^*, \bar{S}^*$ e $\hat{S}^*$.
+L'algoritmo può essere migliorato, a costo di perdere l'esattezza, introducendo una normalizzazione che ridimensiona i valori in base al valore massimo $v_{\max}$.
+L'algoritmo risultante approssima a piacere in tempo polinomiale.
 
-\begin{oss} \label{oss:knapsack_barv_t_hatv}
-	Banalmente,
-	$$
-		\bar{v}^* = \theta \hat{v}^*
-	$$
-	In altre parole, risolvere $\hat{X}$ o risolvere $\bar{X}$ restituisce le
-	stesse soluzioni, pertanto
-	$$
-		\bar{S}^* = \hat{S}^*
-	$$
+Dati un'istanza $\pi=\tuple{\angle{v_i}_{i\in n},\angle{w_i}_{i\in n},W}$ di \Knapsack e dato un valore $\varepsilon\in(0,1]$, si definisce il valore di scala $\theta$ come
+\begin{equation*}
+	\theta:=\frac{\varepsilon v_{\max}}{2n} \text.
+\end{equation*}
+Si considerino le istanze $\bar\pi:=\tuple{\angle{\bar v_i=\ceil{\frac{v_i}{\theta}}\theta}_{i\in n},\angle{w_i}_{i\in n},W}$ e $\hat\pi:=\tuple{\angle{\hat v_i=\ceil{\frac{v_i}{\theta}}}_{i\in n},\angle{w_i}_{i\in n},W}$, che scalano in modo diverso i valori e lasciano invariati pesi e capacità.
+Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\star$ e $\hat v\star$ i loro valori.
 
-\end{oss}
+\begin{lemma}\label{lem:knap_barhat}
+	$\bar S\star = \hat S\star \land \bar v\star = \theta\hat v\star$
+\end{lemma}
+\begin{proof}
+	La funzione obiettivo del problema $\bar\pi$ non è altro che una dilatazione di fattore $\theta$ di quella del problema $\hat\pi$, pertanto le soluzioni ottime sono le stesse e i valori ottimi subiscono una dilatazione.
+\end{proof}
 
 \begin{lemma}
-	Sia S una soluzione ammissibile per il problema. Allora
-	$$
-		(1+\epsilon)\sum_{i \in \hat{S}^*} v_i \geq \sum_{i \in S^*} v_i
-	$$
+	Sia $I$ una soluzione ammissibile per $\pi$. Allora
+	\begin{equation*}
+		(1+\varepsilon)\sum_{i\in\hat I\star} v_i \geq \sum_{i\in I} v_i
+	\end{equation*}
 \end{lemma}
 \begin{proof}
 	\begin{align*}
-		 \sum_{i \in S^*} v_i & \leq \sum_{i \in S^*} \bar{v}_i  \text{ grazie all'arrotondamento per eccesso}                      \\
-		 & \leq \sum_{ i \in \bar{S}^*} \bar{v}_i  \text{ poiché è la soluzione ottima}                                         \\
-		 & = \sum_{ i \in \hat{S}^*} \bar{v}_i \text{ poiché } \hat{S}^* = \bar{S}^* \text{ da \cref{oss:knapsack_barv_t_hatv}} \\
-		 & = \sum_{i \in \bar{S}^*} \bar{v}_i \leq \sum_{i \in \hat{S}^*} (v_i + \theta) \leq
-		\sum_{i \in \hat{S}^*} v_i + n \theta = \sum_{i \in \hat{S}^*} v_i + n \frac{\epsilon v_{max}}{2 n}
+		\sum_{i\in I} v_i & \leq \sum_{i\in I} \bar v_i                                   &  & \quad \text{arrotondamento per eccesso}      \\
+		                  & \leq \sum_{ i\in\bar I\star} \bar v_i                                                                           \\
+		                  & = \sum_{ i\in\hat I\star} \bar v_i                            &  & \quad \text{per lemma \ref{lem:knap_barhat}} \\
+		                  & \leq \sum_{i\in\hat I\star} (v_i+\theta)                      &  & \quad \text{in quanto
+		$\bar v_i=\ceil{\frac{v_i}{\theta}}\theta\leq\left(\frac{v_i}{\theta}+1\right)\theta=v_i+\theta$}                                   \\
+		                  & = n\theta+\sum_{i\in\hat I\star} v_i                                                                            \\
+		                  & = \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
 	\end{align*}
-	quindi
-	$$
-		\sum_{i \in S} v_i  \leq \sum_{i \in \hat{S}^*} v_i + \frac{\epsilon v_{max}}{2}
-	$$
 
-	Assumendo che l'input non contenga oggetti di peso maggiore dello zaino,
-	dunque impossibili da prendere, consideriamo la soluzione composta
-	solamente dall'oggetto con valore massimo $S = \{max\}$;
-	da questa segue
-	\begin{align*}
-		 & v_{max} \leq \sum_{i \in \hat{S}^*} v_i + \frac{\epsilon v_{max}}{2}
-		\leq \sum_{i \in \hat{S}^*} v_i + \frac{v_{max}}{2} \text{ poiché } \epsilon \leq 1         \\
-		 & \implies \sum_{i \in \hat{S}^*} v_i \geq \frac{v_{max}}{2}                               \\
-		 & \implies \sum_{i \in S} v_i \leq \sum_{i \in \hat{S}^*} v_i + \frac{\epsilon v_{max}}{2}
-		\leq \sum_{i \in \hat{S}^*}v_i + \epsilon \sum_{i \in \hat{S}^*} v_i = (1 + \epsilon) \sum_{i \in \hat{S}^*} v_i
-	\end{align*}
+	% TODO: e se l'input contiene oggetti di peso maggiore alla capacità massima?
+	Si consideri la soluzione ammissibile $I$ composta dal solo peso massimo. Applicando quanto appena dimostrato:
+	\begin{gather*}
+		v_{\max} \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \leq \frac{v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \\
+		\sum_{i\in\hat I\star} v_i \geq \frac{v_{\max}}{2} \\
+		\sum_{i\in I} v_i \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
+		\leq \varepsilon\sum_{i\in\hat I\star} v_i + \sum_{i\in\hat I\star} v_i = (1+\varepsilon)\sum_{i\in\hat I\star} v_i
+	\end{gather*}
 \end{proof}
+\begin{corollario}\label{corol:knapapprox}
+	$\displaystyle(1+\varepsilon)\sum_{i\in\hat I\star} v_i \geq v\star$
+\end{corollario}
+
 \begin{theorem}
-	$$
-		(1+\epsilon)\sum_{i \in \hat{S}^*} v_i \geq \sum_{i \in S^*} v_i = v^*
-	$$
-	Risolvendo il problema $\hat{X}$ si ottiene una soluzione il cui valore
-	per il problema originale è
-	$\frac{1}{1+\epsilon}$
-	volte l'ottimo.
+	$\Knapsack\in\FPTAS$.
 \end{theorem}
+\begin{proof}
+	Risolvendo il problema $\hat\pi$ ottimamente con $\WeightDynamicKnapsack$ si trova una soluzione $\hat I\star$ che ha valore, nella funzione obiettivo originale, di $\sum_{i\in\hat I\star} v_i$. In virtù del corollario \ref{corol:knapapprox} tale valore produce un rapporto di approssimazione di $1+\varepsilon$.
 
-\begin{algorithm}
-	\caption{FPTASKnapsack}
-	\label{algo:FPTASKnapsack}
-	\KwInput{$X = (v_i, w_i, W), \epsilon$}
+	Per verificare che questo metodo sia effettivamente polinomiale in $n$ e $\frac{1}{\varepsilon}$, valutiamo il numero di colonne della matrice $B$.
+	Nel caso peggiore tutti i pesi sono uguali a $\hat v_{\max}$, pertanto esso sarà $n \hat v_{\max}$.
+	Ma vale
+	\begin{equation*}
+		\hat v_{\max}=\ceil{\frac{v_{\max}}{\theta}}=\ceil{\frac{2nv_{\max}}{\varepsilon v_{\max}}}=\ceil{\frac{2n}{\varepsilon}}\leq\frac{2n}{\varepsilon}+1 \text,
+	\end{equation*}
+	quindi la dimensione complessiva della matrice è
+	\begin{equation*}
+		n\cdot n\hat v_{\max}\leq n^2\left(\frac{2n}{\varepsilon}+1\right)=\frac{2n^3}{\varepsilon}+1
+	\end{equation*}
+\end{proof}
 
-	$
-		\hat{X} = getFrom(X, \epsilon)
-	$
-
-	\tcc*{La soluzione così trovata è una $(1 + \epsilon)-$approssimazione}
-
-	\Return {$solveWithWOpt(\hat{X})$}
-\end{algorithm}
-
-Dobbiamo ora convincerci che \cref{algo:FPTASKnapsack} termini
-in tempo polinomiale: l'ultima colonna sarà $n \hat{v}_{max}$;
-sappiamo che
-$$
-	\hat{v}_{max} = \lceil \frac{v_{max}}{\theta} \rceil = \lceil \frac{v_{max} n}{\epsilon v_{max}} \rceil
-	=\lceil \frac{n}{\epsilon}\rceil \leq \frac{n}{\epsilon} + 1
-$$
-pertanto il numero di colonne
-$$
-	n\hat{v}_{max} \leq \frac{n^2}{\epsilon} + n
-$$
-polinomiale nell'input e in $\epsilon$.
+Non si può applicare alla variante originale di \DynamicKnapsack un approccio analogo a quello sopra descritto, in quanto la compressione porterebbe a un'approssimazione, invece che nei valori, nei pesi, perdendo quindi la garanzia di ammissibilità delle soluzioni ottenute.

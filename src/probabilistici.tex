@@ -164,158 +164,99 @@ Proviamo ora due lemmi che ci serviranno per dimostrare che l'algoritmo di Karge
 	\end{equation*}
 \end{proof}
 
-\section{Problema della copertura d'insiemi}
-Abbiamo già definito il \textsc{SetCoverProblem}:
-dato una serie di insiemi
-$$
-	S_1, \cdots, S_m \subseteq U
-$$
-con pesi
-$$
-	w_1 \cdots, w_m \in \mathbb{Q}^+
-$$
-definiamo $n = |U|$; vogliamo trovare un $S \subseteq m$ tale che
-$$
-	\bigcup_{i \in S} S_i = U
-$$
-e il suo costo $ \sum_{i \in S} w_i$ sia minimo.
 
-\subsection{Algoritmo probabilistico basato sull'arrotondamento}
-Il problema può essere trasposto in un problema di programmazione lineare intera:
-creiamo delle variabili
-$$
-	x_1, \cdots, x_m
-$$
-tali che
-$$
+
+\section{\MinSetCover}
+Si faccia riferimento al paragrafo \ref{sec:SetCover} per la formalizzazione di \MinSetCover.
+
+Il problema può essere trasposto in un problema di programmazione lineare intera di variabili $x_1,\dots,x_m$ e vincoli
+\begin{equation*}
 	\begin{cases}
-		x_j \leq 1                     & \forall j = 1, \cdots, m \\
-		x_j \geq 0                     & \forall j = 1, \cdots, m \\
-		\sum_{i: u \in S_i} x_i \geq 1 & \forall u \in U
+		x_j \leq 1                   & \quad \forall j\in m \\
+		x_j \geq 0                   & \quad \forall j\in m \\
+		\sum_{i:u\in S_i} x_i \geq 1 & \quad \forall u\in U
 	\end{cases}
-$$
-Come sappiamo, i problemi di programmazione lineare intera appartengono alla
-classe \textbf{NP-Completi}. Consideriamo dunque il problema $\Pi$ nella
-sua versione non intera, $\Pi_{PL}$.
+\end{equation*}
+Questo problema, in quanto equivalente, ha soluzioni ottime di valore $v\star$ coincidenti con quelle per \MinSetCover.
 
-\`E importante richiamare ora alcune proprietà statistiche.
-\begin{theorem}[Disuguaglianza di Markov]\label{thm:markov}
-	Per ogni variabile aleatoria $X$ non negativa e per ogni $\alpha > 0$
-	$$
-		P[X \geq \alpha] \leq \frac{E[X]}{\alpha}
-	$$
-\end{theorem}
+L'algoritmo probabilistico \ref{algo:ProbRoundingSetCover} risolve polinomialmente all'ottimo il rilassamento continuo $\hat\pi$ di un'istanza così ottenuta, ottenendo una soluzione $\hat x_1,\dots,\hat x_m$ di valore $\hat v\leq v\star$.
+Quindi usa i valori $\hat x_i$ come probabilità per scegliere l'insieme $S_i$.
+Questa operazione viene ripetuta $\ceil{k+\ln n}$ volte, dove $n:=\card U$ e $k$ è un parametro.
 
-\begin{theorem}[Union bound o disuguaglianza di Boole]\label{thm:boole}
-	$$
-		P[\bigcup_{i} E_i] \leq \sum_i P[E_i]
-	$$
-\end{theorem}
-
-\begin{algorithm}[h]
-	\caption{\textsc{ProbabilisticRoundingSetCover}}
+\begin{algorithm}
+	\caption{Algoritmo probabilistico basato su arrotondamento per \MinSetCover.}
 	\label{algo:ProbRoundingSetCover}
-	\KwInput{$S_1, \cdots, S_m$, $w_1, \cdots, w_m$  e un intero $k$}
-
-	$\hat{x_1}, \cdots, \hat{x_m} = solve(\Pi_{PL}) $
-
-	$S =  \emptyset$
-
-	\For {$t = \{1, \lceil k + \log(n) \rceil \}$}
-	{
-
-		\For {$i = 1, ..., m$}
-		{
-			\tcc*{Inserisci $i$ in $S$ con probabilità $\hat{x_i}$}
-			$S = probInsert(S, i, \hat{x_i})$
-		}
-	}
-
-	\Return {$S$}
+	\input{alg/ProbRoundingSetCover.tex}
 \end{algorithm}
 
-L'\cref{algo:ProbRoundingSetCover} potrebbe trovare una soluzione non ammissibile. Dimostriamo
-ora che \textit{spesso} è ammissibile e che quando è ammissibile è una soluzione molto buona.
+Per l'analisi dell'algoritmo \ref{algo:ProbRoundingSetCover} si richiamano due risultati di probabilità:
+\begin{theorem}[disuguaglianza di Markov]\label{thm:markov}
+	Per ogni variabile aleatoria $X$ non negativa e per ogni $\beta>0$
+	\begin{equation*}
+		P[X\geq\beta] \leq \frac{\ev{X}}{\beta}
+	\end{equation*}
+\end{theorem}
+\begin{theorem}[union bound o disuguaglianza di Boole]\label{thm:boole}
+	\begin{equation*}
+		P\left[\bigcup_i E_i\right] \leq \sum_i P[E_i]
+	\end{equation*}
+\end{theorem}
 
-\begin{theorem}
-	La probabilità che l'\cref{algo:ProbRoundingSetCover} produca una soluzione ammissibile è
-	$$
-		p \geq 1 - e ^ {-k}
-	$$
-	parametrica in $k$, che determina il numero di tentativi di inserimento.
+\begin{theorem}\label{thm:ammisetcover}
+	La probabilità che l'algoritmo \ref{algo:ProbRoundingSetCover} produca una soluzione ammissibile è almeno $1-e^{-k}$.
 \end{theorem}
 \begin{proof}
-	$$
-		P[\text{soluzione ammissibile}] = 1 - P[\text{almeno un elemento dell'universo non è coperto}]
-	$$
-	chiamiamo $B_u$ l'evento per cui $u$ non è coperto nella soluzione. Allora
-	$$
-		P[\text{soluzione ammissibile}] = 1 - P[\bigcup_{u \in U} B_u]
-	$$
-	Possiamo quindi usare il \cref{thm:boole}:
-	$$
-		1 - P[\bigcup_{u \in U} B_u] \geq 1 - \sum_{u \in U} P[B_u]
-	$$
-	L'elemento $u$ non è coperto quando nessuno degli elementi che contentono
-	$u$ non è stato scelto. Ad ogni iterazione, che sono
-	$\lceil k + \log(n) \rceil$ in totale, ogni insieme ha probabilità
-	$\hat{x_i}$ di essere scelto:
+	\newcommand{\eve}{\mathcal E}
+	La probabilità di trovare una soluzione ammissibile è complementare a quella di non coprire almeno un elemento.
+	Chiamiamo $\eve_u$ l'evento dato dalla non copertura dell'elemento $u$.
+	La probabilità che l'output sia ammissibile è
 	\begin{align*}
-		1 - \sum_{u \in U} \prod_{i: u \in S_i} P[S_i \text{ non è stato scelto}] & = 1 - \sum_{u \in U} \prod_{i: u \in S_i} (1 - \hat{x_i})^{\lceil k + \log(n) \rceil}	\\
-		& \geq 1 - \sum_{u \in U} \prod_{i : u \in S_i} e^{-\hat{x_i} (k + \log(n))} & \text{nota che } 1 - x \leq e^{-x}													\\
-		& = 1 - \sum_{u \in U} \exp(- (k + \log (n)) \sum_{i: u \in S_i} \hat{x_i})
-	\end{align*}
-	Siccome $S_i$ è ammissibile, deve essere $\sum_{i: u \in S_i} \hat{x_i}  \geq 1$, quindi
-	\begin{align*}
-		\geq 1 - \sum_{u \in U} e^{- (k + \log(n))} = 1 - \sum_{u \in U} \frac{e^{-k}}{n}  = 1 - e^{-k} \frac{1}{n}|U| = 1 - e^{-k}
+		1-P\left[\bigcup_{u\in U} \eve_u\right] & \geq 1-\sum_{u\in U} P[\eve_u]                                     &  & \quad \text{teorema \ref{thm:boole}}                                             \\
+		                                        & = 1-\sum_{u\in U}\prod_{i:u\in S_i} P[i\notin I]                   &  & \quad \parbox{5cm}{$u$ non è coperto da nessuno degli insiemi che lo contengono} \\
+		                                        & = 1-\sum_{u\in U}\prod_{i:u\in S_i} (1-\hat x_i)^{\ceil{k+\ln n}}                                                                                        \\
+		                                        & \geq 1-\sum_{u\in U}\prod_{i:u\in S_i} e^{-\hat x_i\ceil{k+\ln n}} &  & \quad \text{$1-x\leq e^{-x}$}                                                    \\
+		                                        & = 1-\sum_{u\in U} e^{-\ceil{k+\ln n}\sum_{i:u\in S_i} \hat x_i}                                                                                          \\
+		                                        & \geq \sum_{u\in U} e^{-\ceil{k+\ln n}}                             &  & \quad \text{per vincolo su $\hat x_i$}                                           \\
+		                                        & = 1-ne^{-\ceil{k+\ln n}} \geq 1-ne^{-(k+\ln n)}                                                                                                          \\
+		                                        & = 1-ne^{-k}e^{-\ln n} = 1-e^{-k} \text.
 	\end{align*}
 \end{proof}
 
-\begin{theorem} \label{thm:ProbRoundingSetCoveralpha}
-	$$\forall \alpha  ~~ 0 \leq \alpha \leq 1 ~~ P[\frac{v_{out}}{v^*}\geq \alpha (k + \log(n))] \leq \frac{1}{\alpha}$$
+\begin{theorem}\label{thm:ProbRoundingSetCoveralpha}
+	Per ogni $\alpha>0$ e dato $k$, sia $v$ la soluzione prodotta dall'algoritmo \ref{algo:ProbRoundingSetCover}.
+	\begin{equation*}
+		P\left[\frac{v}{v\star}\geq\alpha(k+\ln n)\right] \leq \frac{1}{\alpha}
+	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Abbiamo che $\hat{v} = \sum_{i} w_i \hat{x_I} \leq v^*$; inoltre,
-	la probabilità che $S_i$ venga scelto è
-
+	Calcoliamo il valore atteso di $v$ rispetto all'esecuzione dell'intero algoritmo:
 	\begin{align*}
-		P[ S_i \text{ sia scelto}] & = P[ \bigcup_{t} S_i \text{ sia scelto durante l'iterazione } t] 	\\
-		& \leq \sum_t P[S_i \text{ sia scelto durante l'iterazione } t] & \text{per \cref{thm:boole}}	\\ 
-		& = (k + \log (n))\hat{x}_i
+		\ev{v} & = \ev{\sum_{i=1}^m w_i [i\in I]}                                                  \\
+		       & = \sum_{i=1}^m w_i \ev{i\in I}                                                    \\
+		       & = \sum_{i=1}^m w_i P[i\in I]                                                      \\
+		       & \leq \sum_{i=1}^m w_i \hat x_i(k+\ln n) &  & \quad \text{teorema \ref{thm:boole}} \\
+		       & = (k+\ln n)\hat v \leq (k+\ln n)v\star
 	\end{align*}
-
-	Per poter utilizzare il \cref{thm:markov} calcoliamo il valore atteso di $v_{out}$:
-	\begin{align*}
-		E[v_{out}] & = \sum_{i} w_i P[S_i \text{ sia scelto}] 							\\
-		& \leq \sum_i w_i (k + \log(n)) \hat{x_i} & \text{per osservazione precedente} 	\\
-		& = \hat{v} (k + \log(n)) & \text{ricorda che } \hat{v}=\sum_i w_i \hat{x_i} 	\\
-		& \leq v^* (k + \log(n))
-	\end{align*}
-
-	Infine utilizziamo questa osservazione per determinare la probabilità che
-	la nostra soluzione approssimi bene il problema:
-	\begin{align*}
-		P [ \frac{v_{out}}{v^*} \geq \alpha (k + \log(n))] & = P [ v_{out} \geq v^* \alpha (k + \log(n)) ] 	\\
-		& \leq \frac{E[v_{out}]}{\alpha (k + \log(n))v^*} & \text{applico Markov} 							\\
-		& \leq \frac{v^* (k + \log(n))}{\alpha (k + \log(n))v^*} & \text{applico l'osservazione precedente}	\\ 
-		& = \frac{1}{\alpha}		
-	\end{align*}
+	Applicando la disuguaglianza di Markov con $X:=\frac{v}{v\star}$ e $\beta:=\alpha(k+\ln n)$:
+	\begin{equation*}
+		P\left[\frac{v}{v\star}\geq\alpha(k+\ln n)\right] \leq \frac{\ev{\frac{v}{v\star}}}{\alpha(k+\ln n)} \leq \frac{v\star(k+\ln n)}{v\star}\cdot\frac{1}{\alpha(k+\ln n)}=\frac{1}{\alpha} \text.
+	\end{equation*}
 \end{proof}
 
-\begin{oss}
-	Se si esegue l'\cref{algo:ProbRoundingSetCover} con $k = 3$ c'è il $45\%$ di probabilità di ottenere
-	una soluzione ammissibile con fattore di approssimazione $\frac{v_{out}}{v^*}\leq 6 + 2 \log (n)$.
-\end{oss}
+\begin{corollario}
+	Eseguendo l'algoritmo \ref{algo:ProbRoundingSetCover} con $k=3$ la probabilità di ottenere una soluzione ammissibile con fattore di approssimazione $\frac{v}{v\star}\leq 6+2\ln n$ è almeno $45\%$.
+\end{corollario}
 \begin{proof}
-	Sia $E_{ammissibile}$ l'evento per cui si ottiene una soluzione ammissible e
-	$E_{buona}$ l'evento per cui l'output sia entro $6 + 2 \log(n)$ dall'ottimo.
-	Ci interessa
-	\begin{align*}
-		 & P[E_{ammissibile} \land E_{buona}] = 1 - P[\neg E_{ammissible} \lor
-		\neg E_{buona}] \geq 1 - P[\neg E_{ammissibile}] - P[\neg E_{buona}]                                  \\
-		 & \geq 1 - e^{-3} - \frac{1}{2} \approx 0.45  ~~~  (\text{dal \cref{thm:ProbRoundingSetCoveralpha}})
-	\end{align*}
+	\begin{itemize}
+		\item La probabilità che l'algoritmo emetta una soluzione non ammissibile è, in virtù del teorema \ref{thm:ammisetcover}, al più $1-e^{-k}$;
+		\item La probabilità che l'algoritmo emetta una soluzione con fattore di approssimazione non inferiore a $6+2\ln n$ è, in virtù del teorema \ref{thm:ammisetcover}, al più $1/2$.
+	\end{itemize}
+
+	L'algoritmo emette una soluzione ammissibile e con fattore di approssimazione di al più $6+2\ln n$ complementarmente al produrre una soluzione non ammissibile oppure non buona.
+	Pertanto, per union bound, la probabilità di ottenere una soluzione ammissibile e buona è almeno $1-(e^{-3}+\frac12)\geq 45\%$.
 \end{proof}
+
+
 
 \section{Problema MaxEkSat}
 \textsc{MaxEkSat} è la versione $k$-indicizzata di \textsc{MaxSat}: date $t$ clausole

@@ -1,0 +1,11 @@
+\KwInput{$S_1,\dots,S_m,w_1,\dots,w_m\in\Q^+,k\in\N^+$}
+
+Sia $\hat\pi$ il problema equivalente di \IntegerLinearProgramming rilassato poi a \LinearProgramming.\;
+Siano $\hat x_1,\dots,\hat x_m$ le soluzioni ottime, trovate polinomialmente, per il problema $\hat\pi$.\;
+$S\asn\emptyset$\;
+\For{$\ceil{k+\log n}$ volte}{
+	\For{$i\asn1,\dots,m$}{
+		$S\asn S\cup i$ con probabilità $\hat x_i$.\;
+	}
+}
+\Return{$S$}\;

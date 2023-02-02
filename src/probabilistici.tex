@@ -347,259 +347,75 @@ Il seguente lemma estende il teorema \ref{thm:probassgn} asserendo che il lower 
 
 
 \section{Il teorema PCP}
-Un punto fondamentale nell'analisi degli algoritmi proposta in questo corso sarà
-l'analisi dell'inapprossimabilità di alcuni problemi. Per poter analizzare la questione
-sarà necessario introdurre uno dei più importanti teoremi della teoria della complessità
-dal teorema di Cook: il teorema PCP, \textit{probabilistically checkable proofs}.
-Il punto di partenza per arrivare all'enunciato di PCP è descrivere un'estensione delle
-macchine di Turing deterministiche.
+Il teorema PCP, \flang{Probabilistically Checkable Proofs}, è uno dei più importanti teoremi della teoria della complessità dal teorema di Cook
+Il teorema mette in relazione classi di problemi di decisione riconosciuti da macchine deterministiche con classi riconosciute da macchine con aspetti randomici.
 
+
+% TODO: decidere se spostare insieme alla definizione di NP nel primo capitolo e includere qui solo i probabilistic checkers
 \subsection{Macchine di Turing oracolari}
-Le MdT oracolari ricevono in input un certo $x \in 2^*$ e in output restituiscono
-un valore booleano, una risposta $True$ o $False$ per un certo problema di decisione.
-Queste MdT hanno però anche accesso ad una \textit{stringa} o
-\textit{nastro dell'oracolo} $w \in 2^*$;
-se vuole accedere alla stringa dell'oracolo, la MdT ha un nastro speciale,
-definito \textit{nastro di query} sul quale all'occorrenza può scrivere un numero
-binario; una volta scritto tale numero, la macchina entra in uno stato speciale
-che ``aspetta'' la risposta dell'oracolo: la MdT userà il numero scritto sul nastro
-di query come posizione in cui leggere $w$, che conterrà un $1$ o uno $0$.
-La MdT passerà ad uno stato relativo al numero trovato in $w$:
-$$
-	\text{stato speciale di interrogazione: } q?
-	\begin{cases}
-		w[n] = 1 & \rightarrow q_1 \\
-		w[n] = 0 & \rightarrow q_0
-	\end{cases}
-$$
-\begin{figure}[h]
-	\begin{center}
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
+Le macchine di Turing oracolari sono estensioni delle macchine di Turing che hanno accesso a un oracolo, una stringa $w\in 2\star$ che ha la semantica di certificato.
+Una macchina può effettuare una query del bit $w_i$ dell'oracolo inserendo la sua posizione $i$ in un apposito \emph{nastro di query}.
+Può poi cambiare stato in funzione del valore del bit restituito.
 
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,437); %set diagram left start at 0, and has height of 437
-
-			%Rounded Rect [id:dp7665142760923608] 
-			\draw   (280,152) .. controls (280,145.37) and (285.37,140) .. (292,140) -- (358,140) .. controls (364.63,140) and (370,145.37) .. (370,152) -- (370,188) .. controls (370,194.63) and (364.63,200) .. (358,200) -- (292,200) .. controls (285.37,200) and (280,194.63) .. (280,188) -- cycle ;
-			%Straight Lines [id:da12014265713573546] 
-			\draw    (170,168.67) -- (277,168.67) ;
-			\draw [shift={(280,168.67)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da500409813700509] 
-			\draw    (370,168.67) -- (477,168.67) ;
-			\draw [shift={(480,168.67)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da6813515968969535] 
-			\draw    (320.13,199.88) -- (320.13,214.71) -- (320.13,229.21) -- (454.13,229.85) -- (454.5,229.85) ;
-			\draw [shift={(457.5,229.85)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da0793943852727933] 
-			\draw    (500,242.31) -- (500,319.25) -- (226,319.25) -- (226,285.75) ;
-			\draw [shift={(226,282.75)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-			% Text Node
-			\draw (311,160.67) node [anchor=north west][inner sep=0.75pt]   [align=left] {MdT};
-			% Text Node
-			\draw (204.67,144) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle x\ \in 2^{*}$};
-			% Text Node
-			\draw (383.83,144.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle True/False$};
-			% Text Node
-			\draw    (179.33,257) -- (462.33,257) -- (462.33,281) -- (179.33,281) -- cycle  ;
-			\draw (182.33,261.4) node [anchor=north west][inner sep=0.75pt]    {$1\ 0\ 1\ 1\ 0\ 0\ 0\ 0\ 1\ 1\ 1\ 1\ 1\ 0\ 0\ 0\ 0\ 1\ 1\ 1\ ...\ $};
-			% Text Node
-			\draw (262,284.83) node [anchor=north west][inner sep=0.75pt]   [align=left] {nastro dell'oracolo $\displaystyle w\in 2^{*}$};
-			% Text Node
-			\draw    (458,218) -- (557,218) -- (557,242) -- (458,242) -- cycle  ;
-			\draw (461,222.4) node [anchor=north west][inner sep=0.75pt]    {$0\ 0\ \cdots \ 0\ 1\ 1$};
-			% Text Node
-			\draw (458,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {nastro di query};
-			% Text Node
-			\draw (392.5,322) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle 3^{a}$ posizione};
-
-
-		\end{tikzpicture}
-
-	\end{center}
-	\caption{La MdT è dotata di un nastro di query sulla quale scrive un numero quando necessario e, in base al numero scritto, accede al nastro dell'oracolo.}
+\begin{figure}[ht]
+	\centering
+	\input{img/mdt_oracolari.tikz}
+	\caption{Macchina di Turing oracolare}
 	\label{fig:mdtoracle}
 \end{figure}
 
-Le MdT con oracolo sono il modo moderno per definire le classi nondeterministiche di macchine
-di Turing.
-
-\begin{theorem}
-	Un linguaggio binario $L \subseteq 2^*$ appartiene a $\mathbf{NP}$ se e solo
-	se esiste una MdT oracolare $v$ tale che:
+\begin{defin}
+	Un linguaggio $L\subseteq 2^*$ appartiene a $\NP$ se e solo se esiste una macchina di Turing oracolare $V$ tale che:
 	\begin{itemize}
-		\item $v(x,w)$ termina in un numero polinomiale nella lunghezza $|x|$; e
-		\item $\forall x \in 2^* ~ \exists w \in 2^* : v(w,x) = True$
-		      se e solo se $x \in L$.
+		\item $V(x,w)$ termina in un numero di passi polinomiale in $\len x$;
+		\item $\forall x\in 2\star \quad \exists w\in 2\star \mid v(x,w)$ accetta $\iff x\in L$.
 	\end{itemize}
-\end{theorem}
-
-\subsection{Probabilistic checkers}
-Un'estensione delle MdT oracolari sono i \textit{probablistic checkers}:
-anch'essi hanno accesso ad un oracolo e, in più, possono accedere ad una
-\textit{sorgente di bit casuali} forniti su un nastro apposito. Nuovamente,
-questo verificatore emetterà un valore tra $True$ e $False$; il suo comportamento,
-ovviamente, dipenderà da $x$, $w$, e $r \in 2^*$, la stringa casuale.
-\begin{figure}[h]
-	\begin{center}
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,437); %set diagram left start at 0, and has height of 437
-
-			%Rounded Rect [id:dp7665142760923608] 
-			\draw   (280,152) .. controls (280,145.37) and (285.37,140) .. (292,140) -- (358,140) .. controls (364.63,140) and (370,145.37) .. (370,152) -- (370,188) .. controls (370,194.63) and (364.63,200) .. (358,200) -- (292,200) .. controls (285.37,200) and (280,194.63) .. (280,188) -- cycle ;
-			%Straight Lines [id:da12014265713573546] 
-			\draw    (170,168.67) -- (277,168.67) ;
-			\draw [shift={(280,168.67)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da500409813700509] 
-			\draw    (370,168.67) -- (477,168.67) ;
-			\draw [shift={(480,168.67)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da6813515968969535] 
-			\draw    (320.13,199.88) -- (320.13,214.71) -- (320.13,229.21) -- (454.13,229.85) -- (454.5,229.85) ;
-			\draw [shift={(457.5,229.85)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da0793943852727933] 
-			\draw    (500,242.31) -- (500,319.25) -- (226,319.25) -- (226,285.75) ;
-			\draw [shift={(226,282.75)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-			%Straight Lines [id:da08824377097646874] 
-			\draw    (294.61,80.53) -- (294.61,111.03) -- (325.61,111.03) -- (325.61,137.03) ;
-			\draw [shift={(325.61,140.03)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-			% Text Node
-			\draw (311,160.67) node [anchor=north west][inner sep=0.75pt]   [align=left] {MdT};
-			% Text Node
-			\draw (204.67,144) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle x\ \in 2^{*}$};
-			% Text Node
-			\draw (383.83,144.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle True/False$};
-			% Text Node
-			\draw    (179.33,257) -- (462.33,257) -- (462.33,281) -- (179.33,281) -- cycle  ;
-			\draw (182.33,261.4) node [anchor=north west][inner sep=0.75pt]    {$1\ 0\ 1\ 1\ 0\ 0\ 0\ 0\ 1\ 1\ 1\ 1\ 1\ 0\ 0\ 0\ 0\ 1\ 1\ 1\ ...\ $};
-			% Text Node
-			\draw (262,284.83) node [anchor=north west][inner sep=0.75pt]   [align=left] {nastro dell'oracolo $\displaystyle w\in 2^{*}$};
-			% Text Node
-			\draw    (458,218) -- (557,218) -- (557,242) -- (458,242) -- cycle  ;
-			\draw (461,222.4) node [anchor=north west][inner sep=0.75pt]    {$0\ 0\ \cdots \ 0\ 1\ 1$};
-			% Text Node
-			\draw (458,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {nastro di query};
-			% Text Node
-			\draw (392.5,322) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle 3^{a}$ posizione};
-			% Text Node
-			\draw    (129.94,55.78) -- (419.94,55.78) -- (419.94,79.78) -- (129.94,79.78) -- cycle  ;
-			\draw (132.94,60.18) node [anchor=north west][inner sep=0.75pt]    {$1\ 1\ 1\ 1\ 0\ 0\ 1\ 1\ 0\ 1\ 0\ 1\ 1\ 0\ 1\ 1\ 1\ 0\ 0\ 0\ \cdots $};
-			% Text Node
-			\draw (129.11,31.28) node [anchor=north west][inner sep=0.75pt]   [align=left] {sorgente di bit random $\displaystyle r\in 2^{*}$};
+\end{defin}
 
 
-		\end{tikzpicture}
-	\end{center}
-	\caption{I probabilistic checkers hanno accesso alla sorgente casuale e alle informazioni
-		dell'oracolo.}
+\subsection{Verificatori probabilistici}
+I verificatori probabilistici (\flang{probabilistic checkers}) estendono ulteriormente le macchine di Turing oracolari potendo accedere a una stringa $r$ di bit casuali giacenti su un apposito nastro.
+
+\begin{figure}[ht]
+	\centering
+	\input{img/probchecker.tikz}
+	\caption{Verificatore probabilistico}
 	\label{fig:probcheck}
 \end{figure}
 
-\subsubsection{Sottoclassi di PCP}
-In particolare, ci interessano i PC che effettuano un numero massimo di
-accessi alla stringa casuale e all'oracolo: definiamo
-$\mathbf{PCP}[r,q]$ come la classe dei verificatori che leggono al massimo $r$ bit random
-ed effettuano al massimo $q$ query all'oracolo. Utilizziamo inoltre la stessa
-notazione per identificare i linguaggi accettabili dalle macchine così definite:
-un linguaggio $L$ è  in $\mathbf{PCP}[r,q]$ se e solo se esiste una macchina
-$v \in \mathbf{PCP}[r,q]$ tale che
-\begin{enumerate}
-	\item $v(x,R,W)$ funziona in tempo polinomiale in $|x|$,
-	\item $v(x,R,W)$ effettua al massimo $q(|x|)$ query,
-	\item $v(x,R,W)$ legge al massimo $r(|x|)$ bit casuali, infine
-	\item se $x \in L$ esiste una $w \in 2^*$ tale che $v$ accetta $x$ con probabilità
-	      $1$ -- cioè $v(x, -, W) = True$. Viceversa, se $x \notin L$, $v$ rifiuta
-	      con probabilità $\geq \frac{1}{2}$ per qualunque $w$.
-\end{enumerate}
-In altre parole, fissando $x$ e $w$, a seconda di quale delle $2^{r(|x|)}$\footnote{
-	Accadrà certe volte di scrivere direttamente $r$ o $q$ come se fossero
-	costanti, nonostante in verità siano funzioni: l'interpretazione è
-	considerarle come delle funzioni che restituiscono un valore costante
-	per qualunque parametro, e dunque non è utile specificare quale quest
-	ultimo sia.
-}
-possibili stringhe casuali è a disposizione la macchina $v$ accetta o rifiuta:
-la probabilità di accettazione è il numero di sequenze random per cui per gli specifici
-$x$ e $w$ si accetta sul numero totale di sequenze possibli.
+% TODO: approfondire con completeness e soundness? Eventualmente in appendice
+I linguaggi binari possono essere classificati in base alle caratteristiche dei verificatori probabilistici che li riconoscono:
+\begin{defin}
+	Siano $r,q:\N\to\N$ e $L$ un linguaggio.
+	$L\in\PCP[r,q]$ se e solo se esiste un verificatore probabilistico $V$ tale che
+	\begin{itemize}
+		\item $\forall x,R,w$, $V(x,R,w)$ termina in un numero di passi polinomiale in $\len x$;
+		\item $\forall x,R,w$, $V(x,R,w)$ effettua al massimo $q(\len x)$ query all'oracolo;
+		\item $\forall x,R,w$, $V(x,R,w)$ fa uso di al più $r(\len x)$ bit casuali;
+		\item se $x\in L$ allora esiste $w\in 2\star$ tale che $V$ accetta $x$ con probabilità $1$, ossia per ogni stringa casuale $R\in 2^{\leq r(\len x)}$;
+		\item se $x\notin L$ allora per qualunque $w$, $V$ rifiuta con probabilità maggiore di $\frac12$, ossia per più di metà delle stringhe casuali $R\in 2^{\leq r(\len x)}$.
+	\end{itemize}
+	Con abuso di notazione, se $R,Q\subseteq\set{f:\N\to\N}$ allora $\PCP[R,Q]=\bigcup_{r\in R,q\in Q} \PCP[r,q]$.
+\end{defin}
+\noindent Ad esempio, $\PCP[0,0]=\P$ e, se $\mathrm{Poly}$ è l'insieme delle funzioni al più polinomiali, $\PCP[0,\mathrm{Poly}]=\NP$.
 
-Alcune sottoclassi sono interessanti: $\mathbf{PCP}[0,0]$ è una normale macchina deterministica,
-pertanto la classe di linguaggi $\textbf{PCP}[0,0]$ è $\textbf{P}$.
-$\textbf{PCP}[0, Poly]$ è una macchina nondeterministica senza stringhe casuali che riconosce
-i linguaggi $\textbf{PCP}[0, Poly]$, ossia $\textbf{NP}$.
-
-\subsection{Enunciato di PCP}
-\begin{theorem}[Arora, Safra 1998: PCP]\label{thm:pcp}
-	$\textbf{NP} = \textbf{PCP}[O(log(n)), O(1)]$.
+Il teorema PCP limita il nondeterminismo dei verificatori per linguaggi in \NP sostituendolo con un grado di casualità:
+\begin{theorem}[PCP \cite{Arora:98:PCP}]\label{thm:pcp}
+	$\NP=\PCP[O(\log(n)),O(1)]$.
 \end{theorem}
-\begin{proof}
-	Omessa.
-\end{proof}
 
-In pratica,  dato un $L \in \mathbf{NP}$, si può costruire un probabilistic checker $v$
-che necessita una quantità logaritmica in $|x|$ di bit casuali e che accede ad una stringa
-oracolare di lunghezza finita che funziona ``come promesso'': se $x \in L$ esiste un $w$
-per il quale $v$ accetterà con probabilità $1$, mentre
-se $x \notin L$ la macchina rifiuterà con probabilità almeno $\frac{1}{2}$.
-Questo determina il \textit{tradeoff} tra casualità e nondeterminismo: è più utile
-avere informazione casuale piuttosto che la stessa ``quantità'' di nondeterminismo.
 
-Si può inoltre notare che questo significa che l'albero di query nondeterministiche
-ha un'altezza finita e nota aprioristicamente.
-
-\subsubsection{Verificatori in forma normale}
-Assumeremo, senza perdita di generalità, che
-$v$ usi \textit{esattamente} $r(|x|)$ (che sarà sempre $O(\log n)$) bit
-random e che effettui \textit{esattamente} $q \in \mathbb{N}$ query all'oracolo,
-ossia i probabilistic checker che esamineremo saranno $v \in \mathbf{PCP}[r(n), q]$
-con $r(n) \in O(\log n)$.
-Inoltre, assumeremo anche che:
+\subsubsection{Verificatori probabilistici normalizzati}
+Un verificatore probabilistico è normalizzato se e solo se
 \begin{itemize}
-	\item $v$ estrae tutti gli $r(|x|)$ bit random all'inizio;
-	\item $v$, dopo aver estratto i bit random, effettua tutte le $q$ query all'oracolo;
-	      le query, pertanto, non potranno essere adattive e il verificatore
-	      dovrà effettuare, in caso, tutte le $2^q$ possibili chiamate all'inizio.
+	\item estrae tutti i bit casuali all'inizio della computazione;
+	\item estratti i bit random effettua tutte le query all'oracolo;
+	\item effettuate le query all'oracolo prosegue con il resto della computazione.
 \end{itemize}
-Un verificatore che si comporta in questo modo è definito \textit{verificatore in forma normale}.
 
-% disegno matrice pagina 1 Alg17 Nov 2021
-\subsubsection{Esemplificazione dei probabilistic checkers}
-Sia $L \in \mathbf{PCP}[r(n), q(n)]$. Analizziamo cosa accade, secondo il
-\cref{thm:pcp}, per una qualsiasi $x \in L$; ipotizziamo che $r(|x|) =  17$,
-quindi vi saranno $2^{17}$ possibili $r$ e $q(|x|) = 15$, quindi vi saranno
-$2^{15}$ possibili $w$.
-
-\paragraph{$x \in L$}
-In questo caso, tra le $2^{15}$ possibili, deve esistere una stringa $w$ tale per cui $v$, compiute le $15$ richieste, accetta con probabilità $1$.
-Per ognuna di queste esistono $2^{17}$ possibili stringhe random\footnote{Descrivendo la forma normale abbiamo
-	definito il comportamento del checker nella maniera esattamente opposta, ossia prima si estraggono informazioni
-	dalla sorgente casuale e poi si effettuano le richieste all'oracolo; per ora, a scopo illustrativo,
-	ipotizziamo tacitamente l'opposto.} e per ogni $w$ ognuna di queste può conferire una diversa probabilità
-di accettazione, tranne nel caso di ``\textit{quella}'' stringa $w$ che conferisce la probabilità
-di accettazione $1$.
-\begin{table}[h]
-	\centering
-	\begin{tabular}{c|c|c|c|c|c}
-		\textbf{risposte dell'oracolo} & $000 \cdots 000$                & $\cdots$ & $i_0i_1i_2\cdots i_{14}i_{15}i_{16}$ & $\cdots$ & $000\cdots000$            \\ \cline{1-1}
-		\textbf{spazio dei bit random} & \tikz\pic{sema=white/90/black}; & $\cdots$ & \tikz\pic{sema=black/90/};           & $\cdots$ & \tikz\pic{sema=white/0/};
-	\end{tabular}
-	\caption{Rappresentazione delle associazioni $w$-$r$: nelle aree di  probabilità, la
-		parte nera rappresenta le stringhe $r$ che causano l'accettazione, mentre la parte bianca rappresenta
-		le stringhe $r$ che, tra tutte le $2^{17}$ possibili, causano la non accettazione.}
-\end{table}
+Si può dimostrare che la classe $\NP=\PCP[O(\log n),O(1)]$ è caratterizzabile unicamente da verificatori probabilistici in forma normale.
 
 
-\paragraph{$x \notin L$}
-In questo caso, tra le $2^{15}$ possibili, non può esistere una stringa $w$ tale per cui $v$, compiute le $15$ richieste, accetta con probabilità
-maggiore di $1/2$.
-\begin{table}[h]
-	\centering
-	\begin{tabular}{c|c|c|c|c|c}
-		\textbf{risposte dell'oracolo} & $000 \cdots 000$                & $\cdots$ & $i_0i_1i_2\cdots i_{14}i_{15}i_{16}$ & $\cdots$ & $000\cdots000$                   \\ \cline{1-1}
-		\textbf{spazio dei bit random} & \tikz\pic{sema=white/90/black}; & $\cdots$ & \tikz\pic{sema=white/45/black};      & $\cdots$ & \tikz\pic{sema=white/180/black};
-	\end{tabular}
-\end{table}
 
 \section{Inapprossimabilità}
 \subsection{MaxEkSat}

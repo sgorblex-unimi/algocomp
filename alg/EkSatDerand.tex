@@ -1,0 +1,30 @@
+\SetKw{Continue}{continue}
+
+$D \asn \emptyset$
+\For{$i\asn1,\dots,n$}{
+	$\Delta_0 \asn 0$\;
+	$\Delta_1 \asn 0$\;
+	$\Delta D_0 \asn \emptyset$\;
+	$\Delta D_1 \asn \emptyset$\;
+	\For{$j\asn1,\dots,t$}{
+		\If{$j\in D$}{
+			\Continue\;
+		}
+		\If {$x_i\notin c_j\land\neg x_i\notin c_j$}{
+			\Continue\;
+		}
+		$h \asn \card{\set{k\mid k>i\land (x_k\in c_j \lor \neg x_k\in c_j)}}$\;
+		\If{$\neg x_i\notin c_j$}{
+			$\Delta_0 \asn \Delta_0 - \frac{1}{2^h}$\;
+			$\Delta_1 \asn \Delta_1 + \frac{1}{2^h}$\;
+			$\Delta D_1 \asn \Delta D_1 \cup \{j\}$\;
+		}\Else{
+			$\Delta_0 \asn \Delta_0 + \frac{1}{2^h}$\;
+			$\Delta_1 \asn \Delta_1 - \frac{1}{2^h}$\;
+			$\Delta D_0 \asn \Delta D_0 \cup \{j\}$\;
+		}
+	}
+	$u \asn \arg\max_{0,1}(\Delta_0,\Delta_1)$\;
+	$X_i \asn u$\;
+	$D \asn D \cup \Delta D_u$\;
+}

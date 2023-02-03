@@ -18,12 +18,7 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 - sec. 0 Notazione
 - cap. 1 Problemi e complessità
 - cap. 2 Algoritmi deterministici
-- cap. 3 Algoritmi probabilistici:
-	- MinCut e Karger
-	- MinVertexCover
-	- MaxEkSat
-	- PCP
-	- Inapprossimabilità MaxSat
+- cap. 3 Algoritmi probabilistici
 - cap. 4 Strutture succinte:
 	- Introduzione
 	- Rango e selezione: struttura di Jacobson

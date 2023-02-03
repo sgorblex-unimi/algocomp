@@ -482,88 +482,64 @@ Si può dimostrare che la classe $\NP=\PCP[O(\log n),O(1)]$ è caratterizzabile 
 \end{proof}
 
 
-\subsection{Problema dell'insieme indipendente}
-\popt {IndependentSet} {$G = (V,E)$} {Sottoinsieme $X \subseteq V$}
-{Qual è l'insieme indipendente maggiore?}
-{
-	$X \subseteq V$ tale che $X$ è un insieme indipendente, ossia
-	tale che $\forall i,j \in X ~ (i,j) \notin E$
-}
-{$Max$}{$|X|$}
+\subsection{\IndependentSet}
+Il problema dell'insieme indipendente consiste nel determinare l'insieme indipendente di cardinalità massima in un dato grafo.
+Dato un grafo $G=(V,E)$, un insieme indipendente è un insieme $X\subseteq V$ che non contiene vertici a due a due adiacenti, ossia tale che $\forall i,j\in X:\set{i,j}\notin E$.
 
+\popt{\IndependentSet}
+{Grafo $G=(V,E)$}
+{$X\subseteq V$}
+{Determinare l'insieme indipendente di cardinalità massima in $G$}
+{$X$ è un insieme indipendente}
+{$\MAX$}
+{$\card X$}
+
+Grazie al teorema PCP si può limitare l'approssimabilità di \IndependentSet a non meno di $2$:
 \begin{theorem}\label{thm:ind_set_inapprox}
-	Per ogni $\epsilon > 0$ \textsc{IndependentSet} non è $(2-\epsilon)-$approssimabile
-	in tempo polinomiale se $\mathbf{P} \neq \mathbf{NP}$.
+	Se $\P\neq\NP$ allora, per ogni $\varepsilon>0$, \IndependentSet non è $(2-\varepsilon)$-approssimabile in tempo polinomiale.
 \end{theorem}
 \begin{proof}
-	Sia $L \in \mathbf{NP-completi}$; per \cref{thm:pcp} è anche $L \in \mathbf{PCP}[r(n), q]$
-	con $r(n) \in O(\log(n))$ e $q \in \mathbb{N}$.
+	Sia $L$ \NP-completo. Allora per il teorema PCP esistono $q\in O(1)$ e $r\in O(\log n)$ tali che $L\in\PCP[r,q]$.
+	Sia $V$ il verificatore probabilistico caratteristico di $L$.
 
-	Per ogni $z \in 2^*$ si consideri l'insieme $\mathcal{R}_z$ sequenze
-	di bit random di cardinalità $|\mathcal{R}_z| = 2 ^ {r(|z|)}$
-	e, per ogni possibile $R \in \mathcal{R}$
-	tutte le $Q_z^R$ possibili risposte dell'oracolo di cardinalità
-	$|Q_z|^R = 2^q$; costruiamo quindi
-	l'insieme $\mathcal{C}_z = \cup_{R \in \mathcal{R}_z} \{R\} \times Q_z^R$
-	dei possibili input al probabilistic checker,
-	ognuno dei quali porta ad una risposta \textit{sì} o \textit{no}.
-	Definiamo quindi  $\mathcal{A}_z \subseteq \mathcal{C}_z$
-	l'insieme delle configurazioni accettanti nella forma
-	$$
-		c = (R, \langle i_1^R: v_1, i_2^R: v_2, \cdots, i_q^R:v_q \rangle)
-	$$
-	abbiamo inoltre che
-	$$
-		|\mathcal{A}_z| \leq 2^{r(|z|)}2^q = 2^{O(\log(|z|))}2^q = O(|z|)
-	$$
-	Costruiamo un grafo $G_z = (\mathcal{A}_z, E_{\mathcal{A}_z})$ sulle configurazioni accettanti e
-	inseriamo un arco tra due configurazioni
-	$$
-		(R, \langle i_1^R: v_1, i_2^R: v_2, \cdots, i_q^R:v_q\rangle) \rightarrow (R', \langle i_1^{R'}: v_1', i_2^{R'}: v_2', \cdots, i_q^{R'}:v_q'\rangle)
-	$$
-	se e solo se le configurazioni sono \textit{incompatibili}, ossia 
-	$$
-	R = R' \lor \exists k, k': i^R_k = i^{R'}_{k'} \land v_k \neq v'_{k'}
-	$$
-	definiamo questi lati come \textit{lati di incompatibilità}.
-\begin{oss} \label{lem:ind_set_zinl}
-	Se $z \in L$, $G_z$ ha un insieme indipendente di cardinalità maggiore o
-	uguale a $2^{r(|z|)}$.
-\end{oss}
-\begin{proof}
-	Siccome $z \in L$, deve esistere $\bar{w} \in 2^q$ tale che il verificatore
-	accetta con probabilità $1$ - questo significa che tutte le
-	configurazioni ottenute al variare delle possibili stringhe random in cui
-	la seconda parte è compatibile con $\bar{w}$ sono accettanti: la quantità
-	di queste configurazioni accettanti è $2^{r(|z|)}$, ossia l'enumerazione di
-	tutte le possibili stringhe random compatibili con $\bar{w}$.
+	Fissato un input $z$ accettato da $V$, si dice configurazione di $V$ una tupla $C:=\tuple{R,I,f}$ composta da:
+	\begin{itemize}
+		\item una stringa $R\in 2^{r(\len z)}$ di bit random;
+		\item un insieme $I\subseteq\N$ di indici di posizioni dell'oracolo di cui effettuare query, di cardinalità al più $\card I=q(\len z)$;
+		\item una funzione $f:I\to 2$ che restituisce il valore di ogni query all'oracolo.
+	\end{itemize}
+	Due configurazioni $C_1$ e $C_2$ si dicono compatibili se e solo se si verificano le due seguenti condizioni
+	\begin{itemize}
+		\item $R_{C_1}\neq R_{C_2}$;
+		\item $\forall i\in I_{C_1}\cap I_{C_2},\quad f_{C_1}(i)=f_{C_2}(i)$.
+	\end{itemize}
+
+	Fissato $z$, sia $G$ un grafo non orientato in cui i vertici sono le configurazioni di $V$ e due vertici sono adiacenti se e solo se le rispettive configurazioni sono incompatibili (cioè non compatibili).
+	Il grafo si può costruire in tempo polinomiale in $\len z$ essendo il numero dei suoi vertici nell'ordine di $2^{r(\len z)}\cdot 2^q$.
+
+	\begin{fact}\label{fac:indip1}
+		Se $z\in L$, $G$ ha un insieme indipendente di cardinalità maggiore o uguale a $2^{r(\len z)}$.
+	\end{fact}
+	\begin{proof}
+		Se $z\in L$, per definizione di verificatore probabilistico esiste un certificato $w$ tale per cui $V$ accetta su ogni stringa casuale.
+		Tutte le configurazioni $C$ di $V$ con query compatibili con $w$, ossia tali che $f_C(i)=w_i\forall i\in I_C$ e che spaziano su tutti i valori $R_C\in 2^{r(\len z)}$, sono tra loro compatibili, quindi i rispettivi vertici danno luogo a un insieme indipendente.
+		Questi sono nel numero delle stringhe casuali, cioè $2^{r(\len z)}$.
+	\end{proof}
+
+	\begin{fact}\label{fac:indip2}
+		Se $z\notin L$, ogni insieme indipendente di $G$ ha cardinalità minore di $\frac{2^{r(\len z)}}{2}$.
+	\end{fact}
+	\begin{proof}
+		Per assurdo, si ammetta l'esistenza di un insieme indipendente $X$ con cardinalità di almeno $\frac{2^{r(\len z)}}{2}$.
+		I vertici in tale insieme corrispondono a configurazioni con diverse sequenze di bit randomici e con query non discordanti.
+		Si può quindi costruire una stringa $w$ compatibile con tutte le query di ogni configurazione, cioè tale per cui per ogni configurazione $C\in X$, $f_C(i)=w_i\forall i\in I_C$.
+		Poiché la stringa è un oracolo accettante per più di $\frac{2^{r(\len z)}}{2}$ stringhe casuali, la macchina accetta con probabilità di almeno $\frac12$, il che è impossibile se $z\notin L$.
+	\end{proof}
+
+	Per assurdo, sia $A$ un algoritmo $2-\varepsilon$-approssimante per \IndependentSet.
+	\begin{itemize}
+		\item Se $z\in L$ allora in virtù del fatto \ref{fac:indip1} l'algoritmo emette un output dal valore di almeno $\frac{2^{r(\len z)}}{2-\varepsilon}>\frac{2^{r(\len z)}}{2}$;
+		\item se $z\notin L$ allora in virtù del fatto \ref{fac:indip2} l'algoritmo emette un output di valore minore di $\frac{2^{r(\len z)}}{2}$.
+	\end{itemize}
+	L'algoritmo potrebbe quindi decidere in tempo polinomiale il linguaggio $L$, il che è impossibile se $\P\neq\NP$.
 \end{proof}
-\begin{oss}\label{lem:ind_set_znotinl}
-	Se $z \notin L$ ogni insieme indipendente di $G_z$ ha cardinalità
-	$\leq 2^{r(|z|)-1}$.
-\end{oss}
-\begin{proof}
-	Consideriamo l'insieme indipendente che questo ipotetico algoritmo
-	$2-\epsilon$-approssimante ci ha restituito in output.
-	Essendo un indipendent set allora questi vertici non hanno lati che li
-	collegano; per come abbiamo definito i lati dunque nessuno di questi
-	vertici è in disaccordo sui valori restituiti dalle query fatte da ogni
-	configurazione nelle posizioni. Possiamo dunque costruire una stringa
-	oracolo $w$ che sia compatibile con tutte le query fatte da tutte queste
-	configurazioni, ma allora vuol dire che questo indipendent set non può
-	avere più di $2^{r(|z|) - 1}$ vertici.
-
-	Il motivo è che, per definizione, il verificatore associato dovrebbe
-	rifiutare con probabilità $\geq \frac{1}{2}$ per qualunque testimone $w$.
-	Avendo fissato un singolo testimone $w$ per tutti questi vertici, che
-	rappresentano ognuno un caso in cui il verificatore ha risposto SI, allora
-	questi devono essere meno della metà di tutte le risposte possibili, cioè
-	$\frac{1}{2}\cdot 2^{r(|z|)} = 2^{r(|z|) - 1}$.
-\end{proof}
-
-Dall'\cref{lem:ind_set_zinl} e dall'\cref{lem:ind_set_znotinl} si arriva alla
-dimostrazione del \cref{thm:ind_set_inapprox}: qualunque algoritmo che sia in
-grado di dare un'approssimazione migliore di $2$ riesce a distinguere i due
-casi, sapendo quindi decidere se $z \in L$ o meno in tempo polinomiale.
-\end{proof}
-

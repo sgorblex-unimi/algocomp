@@ -418,126 +418,69 @@ Si può dimostrare che la classe $\NP=\PCP[O(\log n),O(1)]$ è caratterizzabile 
 
 
 \section{Inapprossimabilità}
-\subsection{MaxEkSat}
-La prima applicazione del \cref{thm:pcp} che affronteremo è l'inapprossimabilità di
-\textsc{MaxEkSat}. La conclusione alla quale arriveremo è che l'\cref{algo:DerandomMaxEkSat} derandomizzato
-per \textsc{MaxEkSat} è \textit{ottimo}, ossia non si può fare meglio di così.
-Il punto di partenza per questa dimostrazione è scegliere un linguaggio
-$L \in \mathbf{NP-completi}$ (quindi anche $L \in \mathbf{PCP}[O(\log(n), O(1)]$ se $\mathbf{P} \neq \mathbf{NP}$).
-Consideriamo la macchina $v \in \mathbf{PCP}[O(\log(n)), O(1)]$ e consideriamo un
-certo input $z \in 2^*$, per il quale genereremo una sequenza
-di $r(|z|)$ bit random -- le sequenze possibili, che denotano lo \textit{spazio probabilistico}
-$\mathcal{R}$ su $z$, sono $2^{r(|z|)}$.
-Per ogni specifica sequenza $R \in \mathcal{R}$, il verificatore produrrà $q$ query all'oracolo:
-$$
-	i_{1}^R, i_{2}^R, \cdots, i_{q}^R
-$$
-Per ognuna delle query il verificatore otterrà delle risposte in base alle
-quali l'input verrà accettato o meno. Definiamo quindi
-$$
-	f^R(w_{i_{1}^R}, w_{i_{2}^R}, \cdots, w_{i_{q}^R})
-$$
 
-la funzione che, dati i bit alle posizioni $i_{j}^R$, restituisce \textit{True} se $v$
-accetta dati $r = R \in \mathcal{R}$ e $w$ con le relative query oppure \textit{False}
-in caso contrario:
-$$
-	f^R(w_{i_{1}^R}, w_{i_{2}^R}, \cdots, w_{i_{q}^R}) = True \iff v(z, r, w) = True
-$$
 
-L'idea è quindi descrivere il comportamento di $f$ (e di conseguenza di $v$) come una
-formula booleana. In questo modo si dimostra che si può ridurre una qualsiasi istanza
-del problema del riconoscimento $z \in L$ per un arbitrario $L$ in $\mathbf{NP-completi}$
-ad un'istanza di \textsc{MaxEkSat};
-introduciamo quindi $|w|$ variabili booleane $x_1, x_2, \cdots x_{|w|}$.
-La funzione $f^R$ si può descrivere con una formula logica, che chiamiamo
-$\varphi^R_z$ che utilizza come letterali
-proprio le variabili $x_i$ che compongono $w$:
-$$
-	\varphi^R_z = (x_1 = 1 \lor x_2 = 0 \cdots) \land (x_ 1 = 1 \lor x_4 = 1 \lor x_8 = 0 \lor X_9 = 1) \land \cdots
-$$
-è importante notare che la CNF così descritta ha clausole con al massimo
-$q$ letterali e possiamo assumere che sia esattamente così, ossia ogni clausola
-abbia esattamente $q$ letterali. Complessivamente, il comportamento del verificatore è
-esprimibile come la congiunzione di tutte le possibili $\varphi^R_z$:
-$$
-	\Phi_z = \bigwedge_{R \in \mathcal{R}} \varphi_{z}^R
-$$
-$\Phi_z$ ha una sottoformula per ogni possibile stringa random, quindi ci sono
-$|\mathcal{R}|$ sottoformule ognuna con al più $2^q$ clausole, per un totale di
-$|\mathcal{R}|2^q = 2^{r(|z|)}2^q = 2^{r(|z|) + q} = 2^{O(\log(|z|) + q} = O(|z|)$ clausole (al massimo).
-
-In secondo luogo, notiamo che se $z \in L$ il verificatore deve accettare
-con probabilità $1$ per un qualche $\bar{w}$ che quindi rende vera $\Phi_z$ e di conseguenza
-anche ogni $\varphi_z^R$ - il che significa che $\Phi_z$ è soddisfacibile.
-Al contrario, se $z \notin L$ per ogni possibile $w$ si soddisfa al più meno
-della metà delle $\varphi_z^R$, ossia non è possibile che esista un $w$ che soddisfi
-la metà o più delle possibili $\varphi_z^R$. Questo significa inoltre che delle
-$|\mathcal{R}|2^q$ clausole di cui $\Phi_z$ è costituita, nel caso $z \notin L$,
-ogni $w$ rende vere al massimo un numero di clausole minore o uguale a
-$$
-	\frac{|\mathcal{R}|}{2}2^q + \frac{|\mathcal{R}|}{2} (2^{q} - 1)
-$$
-\noindent
-Il seguente teorema conduce all'inapprossimabilità di \textsc{MaxEkSat}.
+\subsection{\MaxSat}
 \begin{theorem}
-	Esiste $\epsilon > 0$ tale che \textsc{MaxSat} non è $(1+\epsilon)-$approssimabile in
-	tempo polinomiale a meno che $\mathbf{P} = \mathbf{NP}$.
+	Se $\P\neq\NP$, esiste $\varepsilon>0$ tale che \MaxSat non è $(1+\varepsilon)$-approssimabile in tempo polinomiale.
 \end{theorem}
 \begin{proof}
-	Sia $L \in \mathbf{NP-completi}$. Per questo linguaggio esisterà una specifica
-	funzione $r(|n|) \in O (\log(n))$ e uno specifico $q \in \mathbb{N}$ tale
-	che $L \in \mathbf{PCP}[r,q]$. Definiamo
-	$$
-		\bar{\epsilon} = \frac{1}{2^{q+1}}
-	$$
-	e supponiamo che \textsc{MaxSat} sia $(1 + \epsilon)-$approssimabile.
+	\newcommand{\Rand}{\mathcal R}
+	Sia $L$ \NP-completo. Allora per il teorema PCP esistono $\bar q\in O(1)$ e $r\in O(\log n)$ tali che $L\in\PCP[r,q]$.
+	Sia $V$ il verificatore probabilistico caratteristico di $L$.
+	% TODO: includere approfondimento riguardo al caso in cui il numero di query cambi in base a input e stringa randomica. Quale epsilon si sceglie in quel caso?
+	Per semplicità, si assuma che il verificatore effettui esattamente $q\in\N$ query per ogni input e su ogni stringa randomica.
+	Il verificatore, ricevuto in input $z\in 2\star$, fa uso di una stringa random $R\in\Rand$ e di un oracolo $w$ su cui effettua al più $q$ query.
 
-	Per ogni input $z \in 2^*$ possiamo costruire $\Phi_z$ sulla quale potremo
-	eseguire l'algoritmo $(1+\epsilon)$-approssimabile per \textsc{MaxSat}, il quale
-	termina in tempo polinomiale. Se $z \in L$ sappiamo che $\Phi_z$ è soddisfacibile,
-	cioè il vero valore calcolato risolvendo l'istanza di \textsc{MaxSat} è
-	$t^*(\Phi_z) = |\mathcal{R}|2^q$, mentre se $z \notin L$ sappiamo che il valore restituito risolvendo
-	l'istanza di \textsc{MaxSat} è $t^*(\Phi_z) = \frac{|\mathcal{R}|}{2}2^q + \frac{|\mathcal{R}|}{2}(2^{q} -1) = 2^q |\mathcal{R}| - \frac{|\mathcal{R}|}{2}$.
+	Siano $x^{z,R}_{i_j}$ variabili booleane, dove $i_j$ è la posizione su cui interrogare l'oracolo per la $j$-esima query, con $j\in q$.
+	Fissati $z$ ed $R$, il valore di queste variabili è in funzione di $w$, ponendo $x^{z,R}_i:=1\iff w_i=1$.
 
-	Se $z \in L$  allora
-	$$
-		t(\Phi_z) \geq \frac{t^*(\Phi_z)}{1 + \bar{\epsilon}} = \frac{2^q |\mathcal{R}|}{1 + \frac{1}{2^{q+1}}} = A
-	$$
-	mentre se $z \notin L$
-	$$
-		t(\Phi_z) \leq t^*(\Phi_z) \leq 2^q|\mathcal{R}| - \frac{|\mathcal{R}|}{2}  = B
-	$$
-	Calcoliamo $A- B$:
+	Poiché la computazione di $V$ è completamente determinata da $z$, $R$ e $w$, è possibile costruire\footnote{Con una costruzione analoga a quella del teorema di Cook-Levin ciò è possibile in tempo polinomiale.} con le variabili $x^z,R$ una formula booleana $\phi^{z,R}$ che, una volta scelto $w$, abbia valore positivo se e solo se $z$ viene accettato.
+	Senza perdita di generalità assumiamo che la formula sia in forma normale congiuntiva e, poiché le variabili sono al più $q$, $\phi^{z,R}$ ha al più $2^q$ clausole con al più $q$ letterali l'una. La dimensione della formula è quindi costante nella lunghezza dell'input.
+
+	Costruiamo una formula $\Phi_z$ che astrae $\phi^{z,R}$ rispetto alla stringa casuale come segue
+	\begin{equation*}
+		\Phi_z := \bigwedge_{R\in\Rand} \phi^{z,R}
+	\end{equation*}
+	$\Phi_z$ è in forma normale congiuntiva e, poiché $\Rand$ ha cardinalità logaritmica nella lunghezza dell'input, si può costruire in tempo e spazio polinomiali.
+
+	Fissato $z$, per definizione di verificatore probabilistico uno e uno solo dei seguenti casi si verifica:
+	\begin{itemize}
+		\item se $z\in L$, esiste un oracolo $w$ per cui $V$ accetta a prescindere dalla stringa casuale $R$. La formula $\Phi_z$ è quindi interamente soddisfacibile usando come assegnamento i valori dei bit di $w$. Il numero di clausole soddisfatte è $\card\Rand 2^q$;
+		\item se $z\notin L$, scelto un qualunque oracolo, $V$ accetta con probabilità inferiore a $1/2$, ossia per meno della metà delle stringhe casuali. È possibile soddisfare meno della metà delle sottoformule $\phi^{z,R}$ della formula $\Phi_z$. In termini di clausole, sono soddisfatte $2^q$ clausole per ognuna delle al più $\frac{\card\Rand}{2}$ sottoformule soddisfatte e al più $2^q-1$ per le altre almeno $\frac{\card\Rand}{2}$, per un totale di $\frac{\card\Rand}{2}2^q+\frac{\card\Rand}{2}(2^q-1)$ clausole.
+	\end{itemize}
+
+	Sia $\varepsilon:=\frac{1}{2^{q+1}}$.
+	Per assurdo, si ammetta che \MaxSat ammetta un algoritmo $\varepsilon$-approssimabile e sia $t$ la soluzione approssimante prodotta da questo algoritmo sull'istanza che consiste nella formula $\Phi_z$.
+	Sia $t\star$ la soluzione ottima su tale istanza.
+	\begin{itemize}
+		\item se $z\in L$ allora
+		      \begin{equation*}
+			      t \geq \frac{t\star}{1+\varepsilon} = \frac{2^q |\mathcal{R}|}{1+\frac{1}{2^{q+1}}} =: A
+		      \end{equation*}
+		\item se $z\notin L$ allora
+		      \begin{equation*}
+			      t \leq t\star < \frac{\card\Rand}{2}2^q+\frac{\card\Rand}{2}(2^q-1) = 2^q\card\Rand-\frac{\card\Rand}{2} =: B
+		      \end{equation*}
+	\end{itemize}
+	Studiando la differenza $A-B$:
 	\begin{align*}
-		A - B = & \frac{2^q|\mathcal{R}|}{1 + \frac{1}{2^{q+1}}} - 2^q |\mathcal{R}| + \frac{|\mathcal{R}|}{2}                            \\
-		=       & |\mathcal{R}| \frac{2^{q +1} - 2^{q + 1}(1 + \frac{1}{2^{q+1}}) + (1 + \frac{1}{2 ^{q + 1}})}{2(1 + \frac{1}{2^{q+1}})} \\
-		=       & |\mathcal{R}| \frac{2^{q +1} - 2^{q + 1} -1 + 1 + \frac{1}{2^{q+1}}}{2(1 + \frac{1}{2^{q+1}})}                          \\
-		=       & |\mathcal{R}| \frac{\frac{1}{2^{q+1}}}{2(1 + \frac{1}{2^{q+1}})}                                                        \\
-		>       & 0
+		A-B & = \frac{2^q\card\Rand}{1+\frac{1}{2^{q+1}}} - 2^q\card\Rand+\frac{\card\Rand}{2}                           \\
+		    & = \card\Rand \frac{2^{q+1} - 2^{q+1}(1+\frac{1}{2^{q+1}}) + (1+\frac{1}{2^{q+1}})}{2(1+\frac{1}{2^{q+1}})} \\
+		    & = \card\Rand \frac{2^{q+1} - 2^{q+1}-1 + 1+\frac{1}{2^{q+1}}}{2(1+\frac{1}{2^{q+1}})}                      \\
+		    & = \card\Rand \frac{\frac{1}{2^{q+1}}}{2(1 + \frac{1}{2^{q+1}})}                                            \\
+		    & > 0 \text.
 	\end{align*}
-	che implica $A > B$.
-	Quindi tutta la catena polinomiale di calcoli può essere utilizzata per
-	\textit{decidere} se $z$ appartiene o meno a $L$:
-	$$
-		z \in 2^* \overset{?}{=} L \in \mathbf{NP-completi}  \rightarrow  \text{riduci } (L \leadsto \Phi_z) \rightarrow \text{risolvi \textsc{MaxSat} su } \Phi_z \rightarrow t(\Phi_z)
-		\begin{cases}
-			> A    & z \in L    \\
-			\leq B & z \notin L \\
-		\end{cases}
-	$$
-	Assurdo se $\mathbf{P} \neq \mathbf{NP}$.
+
+	Poiché $A>B$, è possibile costruire un algoritmo che decida se $z\in L$ in tempo polinomiale come segue:
+	\begin{enumerate}
+		\item costruire in tempo polinomiale la formula $\Phi_z$ che simula il certificatore $V$;
+		\item eseguire l'algoritmo polinomiale che $1+\varepsilon$-approssima \MaxSat su $\Phi_z$, ottenendo una soluzione di valore $t$;
+		\item se $t\geq A$ allora $z\in L$; se $t\leq B$ allora $z\notin L$.
+		      Poiché $L$ è \NP-completo, ciò è impossibile se $\P\neq\NP$.
+	\end{enumerate}
 \end{proof}
 
-\begin{theorem}
-	$MaxE3Sat$ non è $(\frac{8}{7} - \epsilon)-$approssimabile per un qualche $\epsilon > 0$.
-\end{theorem}
-\begin{proof}
-	Omessa.
-\end{proof}
-\begin{corollario}
-	L'algoritmo randomizzato per $MaxE3Sat$ è ottimo.
-\end{corollario}
 
 \subsection{Problema dell'insieme indipendente}
 \popt {IndependentSet} {$G = (V,E)$} {Sottoinsieme $X \subseteq V$}

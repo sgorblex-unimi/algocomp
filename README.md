@@ -23,6 +23,7 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 	- MinVertexCover
 	- MaxEkSat
 	- PCP
+	- Inapprossimabilità MaxSat
 - cap. 4 Strutture succinte:
 	- Introduzione
 	- Rango e selezione: struttura di Jacobson

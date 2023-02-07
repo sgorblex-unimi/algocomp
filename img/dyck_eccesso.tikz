@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+	\draw[->] (-1, 0) -- (8.50, 0) node[right] {$x$};
+	\draw[->] (-1, 0) -- (-1, 4) node[above] {$y$};
+
+	\draw (0,0) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (1,1) node[circle,fill,inner sep=1pt]{};
+	\draw (1,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (2,1) node[circle,fill,inner sep=1pt]{};
+	\draw (2,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (3,1) node[circle,fill,inner sep=1pt]{};
+	\draw (3,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (4,2) node[circle,fill,inner sep=1pt]{};
+	\draw (4,2) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (5,2) node[circle,fill,inner sep=1pt]{};
+	\draw (5,2) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (6,1) node[circle,fill,inner sep=1pt]{};
+	\draw (6,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (7,0) node[circle,fill,inner sep=1pt, label=above:{)}]{};
+\end{tikzpicture}

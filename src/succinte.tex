@@ -417,7 +417,7 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 	Ogni albero con $n$ nodi interni ha in totale $2n+1$ nodi.
 \end{corollario}
 
-\begin{theorem}
+\begin{theorem}\label{thm:catalano}
 	Il numero di alberi binari con $n$ nodi interni è $C_n$, dove $C_n$ è l'$n$-esimo numero di Catalano:
 	\begin{equation*}
 		C_n := \frac{1}{n+1}\binom{2n}{n}
@@ -613,798 +613,247 @@ Quindi la struttura è implicita:
 
 
 
-\section{Struttura per parentesi ben formate}
-\subsection{Linguaggi di Dyck}
-Un linguaggio di Dyck $L$ è un linguaggio sull'alfabeto $D=\{(,)\}$ tale che $L \subseteq D^*$
-e una stringa $w \in D^*$ appartiene a $L$ se e solo se
-\begin{enumerate}
-	\item $|w|_{(} = |w|_{)}$; e
-	\item $\forall w_1, w_2 \text{ tali che } w = w_1w_2 \implies|w_1|_{(} \geq |w_2|_{)}$
-\end{enumerate}
-Un modo interessante per studiare una parola $w$ di Dyck è studiarne la
-\textit{funzione di eccesso}, definita
-$$
-	E_w(i) = |\{j | j \le i ~ w_j = ( ~\}| - |\{j | j \leq i ~ w_j = ) ~\}|
-$$
-\begin{figure}[h]
-	\centering
-	\begin{tikzpicture}
-		\draw[->] (-1, 0) -- (8.50, 0) node[right] {$x$};
-		\draw[->] (-1, 0) -- (-1, 4) node[above] {$y$};
+\section{Parentesi ben bilanciate}
+L'insieme $D_k$, con $k\in\N$, contiene le parole di Dyck di semilunghezza $k$, cioè composte da $2k$ parentesi ben bilanciate (di cui $k$ aperte e $k$ chiuse). Gli insiemi $D_k$ sono definiti induttivamente:
+\begin{itemize}
+	\item $\varepsilon\in D_0$
+	\item $x\in D_n,y\in D_m\Rightarrow xy\in D_{n+m}$
+	\item $x\in D_n\Rightarrow (x)\in D_{n+1}$
+\end{itemize}
+Equivalentemente
+\begin{itemize}
+	\item $\varepsilon\in D_0$
+	\item $x\in D_n,y\in D_m\Rightarrow (x)y\in D_{n+m+1}$
+\end{itemize}
 
-		\draw (0,0) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (1,1) node[circle,fill,inner sep=1pt]{};
-		\draw (1,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (2,1) node[circle,fill,inner sep=1pt]{};
-		\draw (2,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (3,1) node[circle,fill,inner sep=1pt]{};
-		\draw (3,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (4,2) node[circle,fill,inner sep=1pt]{};
-		\draw (4,2) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (5,2) node[circle,fill,inner sep=1pt]{};
-		\draw (5,2) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (6,1) node[circle,fill,inner sep=1pt]{};
-		\draw (6,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (7,0) node[circle,fill,inner sep=1pt, label=above:{)}]{};
-	\end{tikzpicture}
+Per ogni parola di Dyck viene definita la funzione di eccesso, che rappresenta la profondità, in numero di parentesi innestate, di ogni posizione. Per $i\in\set{0,\dots,\len w}$:
+\begin{equation*}
+	E_w(i) = \card{\set{j < i \mid w_j = (~ }} - \card{\set{j\leq i \mid w_j =~)~ }}
+\end{equation*}
+Si noti che la funzione di eccesso non può scendere sotto il valore che ha nella posizione di una parentesi aperta finché non raggiunge la rispettiva chiusa.
+
+\begin{figure}[ht]
+	\centering
+	\input{img/dyck_eccesso.tikz}
 	\caption{Funzione di eccesso per la parola $(()(()))$.}
 	\label{fig:func_excess}
 \end{figure}
 
-Questa funzione parte da $0$, può tornare a $0$ e, se la parola è effettivamente nel
-linguaggio, termina a $0$. Ci sono due tipi di stringhe di Dyck: quelle per cui
-la funzione non raggiunge nessuno $0$ tranne quello iniziale e quello finale,
-chiamate \textit{fortemente bilanciate}, e quelle per cui questa funzione raggiunge
-uno $0$ diverso da quello iniziale e quello finale, quindi $w = w_1w_2$ è
-\textit{debolmente bilanciata} e tale per cui almeno uno tra $w_1$ e $w_2$ è
-fortemente bilanciata.
+Le parole di Dyck si classificano sulla base della loro funzione di eccesso in due categorie:
+\begin{description}
+	\item[fortemente bilanciate] la funzione non ha zeri se non per il primo e l'ultimo simbolo;
+	\item[debolmente bilanciate] la funzione assume uno zero in una posizione $i\neq0$. Il prefisso di lunghezza $i+1$ della parola è fortemente bilanciato.
+\end{description}
 
-Ci sono molti motivi per cui le sequenze di parentesi sono interessanti. In particolare,
-le espressioni ben parentesizzate sono in biiezione sia con le foreste di alberi binari che con gli
-alberi non binari. In qualche modo, esattamente come abbiamo visto una rappresentazione
-per gli alberi binari in precedenza, ora stiamo analizzando una struttura per alberi
-generali. Le sequenze di parentesi aperte e chiuse le penseremo come stringhe di bit, cioè
-una stringa
-$$
-	(()(()())(()))
-$$
-è rappresentata come una stringa
-$$
-	11011010011000
-$$
-la cui funzione di eccesso è rappresentata in \cref{fig:func_excess_example}.
+L'ADT che vogliamo descrivere per le stringhe di parentesi ben bilanciate si compone delle seguenti primitive, che hanno come input una posizione $p$:
+\begin{description}
+	\renewcommand{\dyfindopen}{\mathbf{find\_open}}
+	\renewcommand{\dyfindclosed}{\mathbf{find\_closed}}
+	\renewcommand{\dyenclose}{\mathbf{enclose}}
+	\item[$\dyfindopen$] restituisce la posizione della parentesi aperta corrispondente alla chiusa in posizione $p$. Coincide con la prima posizione $q>p$ in cui la funzione di eccesso è uguale a quella di $p$;
+	\item[$\dyfindclosed$] restituisce la posizione della parentesi chiusa corrispondente all'aperta in posizione $p$. Coincide con l'ultima posizione $q<p$ in cui la funzione di eccesso è uguale a quella di $p$;
+	\item[$\dyenclose$] restituisce la posizione della parentesi aperta della coppia che racchiude la parentesi in posizione $p$.
+\end{description}
 
-\begin{figure}[h]
+
+\subsection{Una struttura compatta per parentesi ben bilanciate}
+Una struttura compatta a tempo logaritmico per le parentesi bilanciate prevede di dividere la parola $w$, di lunghezza $n$, in blocchi di lunghezza $l$, ottenendo $k=\ceil{n/l}$ blocchi (l'ultimo dei quali può avere lunghezza inferiore a $l$).
+
+Sia $p$ la posizione di una parentesi nel blocco $B_i$. La parentesi $w_p$ si dice:
+\begin{description}
+	\item[vicina] se la corrispettiva si trova in $B_i$;
+	\item[lontana] se la corrispettiva si trova in un blocco $B_k\neq B_i$. Una lontana può essere poi
+		\begin{description}
+			\item[pioniera] se non esiste un simbolo in posizione $n<p$ del blocco $B_i$ che si chiude in $B_k$;
+			\item[non pioniera] se non è pioniera.
+		\end{description}
+\end{description}
+Indichiamo con $\dypion(B_i)$ l'insieme delle pioniere nel blocco $B_i$ e con $\dypion(w)$ l'insieme delle pioniere complessive nella parola $w$.
+Ad esempio nella figura \ref{fig:paren_blocks} le parentesi gialle sono vicine, quelle rosse sono pioniere e quelle blu sono non-pioniere.
+
+\begin{figure}[ht]
 	\centering
-	\begin{tikzpicture}
-		\draw[->] (-1, 0) -- (14.5, 0) node[right] {$x$};
-		\draw[->] (-1, 0) -- (-1, 4) node[above] {$y$};
-
-		\draw (0,0) node[label=above:{(}]	{} -- 	(1,1) node[circle,fill,inner sep=1pt]{};
-		\draw (1,1) node[label=above:{(}] 	{} -- 	(2,1) node[circle,fill,inner sep=1pt]{};
-		\draw (2,1) node[label=above:{)}] 	{} -- 	(3,1) node[circle,fill,inner sep=1pt]{};
-		\draw (3,1) node[label=above:{(}] 	{} -- 	(4,2) node[circle,fill,inner sep=1pt]{};
-		\draw (4,2) node[label=above:{(}] 	{} -- 	(5,2) node[circle,fill,inner sep=1pt]{};
-		\draw (5,2) node[label=above:{)}] 	{} -- 	(6,2) node[circle,fill,inner sep=1pt]{};
-		\draw (6,2) node[label=above:{(}] 	{} -- 	(7,2) node[circle,fill,inner sep=1pt]{};
-		\draw (7,2) node[label=above:{)}] 	{} -- 	(8,1) node[circle,fill,inner sep=1pt]{};
-		\draw (8,1) node[label=above:{)}] 	{} -- 	(9,1) node[circle,fill,inner sep=1pt]{};
-		\draw (9,1) node[label=above:{(}] 	{} -- 	(10,2) node[circle,fill,inner sep=1pt]{};
-		\draw (10,2) node[label=above:{(}]  	{} -- 	(11,2) node[circle,fill,inner sep=1pt]{};
-		\draw (11,2) node[label=above:{)}]  	{} -- 	(12,1) node[circle,fill,inner sep=1pt]{};
-		\draw (12,1) node[label=above:{)}]  	{} -- 	(13,0) node[circle,fill,inner sep=1pt,label=above:{)}]{};
-	\end{tikzpicture}
-	\caption{Funzione di eccesso per la parola $(()(()())(()))$.}
-	\label{fig:func_excess_example}
-\end{figure}
-
-\subsection{L'ADT stringa bilanciata}
-L'ADT che vogliamo descrivere per le stringhe di parentesi ben bilanciate ha le primitive
-$$
-	\forall p \in \mathbb{N} ~~ \mathbf{find\_open}(p) = \text{parentesi aperta corrispondente alla chiusa in posizione } p
-$$
-$$
-	\forall p \in \mathbb{N} ~~ \mathbf{find\_close}(p) = \text{parentesi chiusa corrispondente all'aperta in posizione } p
-$$
-$$
-	\forall p \in \mathbb{N} ~~ \mathbf{enclose}(p) = \text{prima parentesi aperta che racchiude la parentesi in posizione } p
-$$
-
-Pensando ad una soluzione banale, una $\mathbf{find\_open}$ in una qualche posizione si può
-calcolare innanzitutto realizzando che la parentesi aperta corrispondente ad una
-parentesi chiusa è sicuramente prima della chiusa stessa; basta quindi cercare all'indietro fermandosi
-alla prima parentesi aperta che ha la stessa funzione di eccesso. Analogamente si fa per $\mathbf{find\_close}$.
-La cosa più semplice, quindi, sarebbe calcolare anticipatamente la funzione di eccesso e usarla
-facendo ricerche lineari, utilizzando uno spazio $n \log_2(n)$.
-Faremo meglio creando una struttura compatta con tempo di interrogazione logaritmico.
-
-\subsubsection{Rappresentazione}
-La prima operazione sulle parentesi da eseguire nella costruzione della struttura è dividere, nuovamente,
-la parola in blocchi di lunghezza $l$, creando $k = \lceil n/l \rceil$ blocchi. In ogni blocco
-ci sono parentesi chiuse e aperte e, in alcuni casi, le parentesi hanno la loro corrispondente
-dentro il blocco stesso: in questa situazione, definiamo la parentesi \textit{vicina}, mentre
-tutte le altri sono definite \textit{lontane}; in generale, tutte le parentesi aperte lontane
-si chiuderanno in un qualche blocco successivo.
-
-In ogni blocco ci sono alcune parentesi vicine e varie parentesi lontane. Può succedere
-che una o più parentesi lontane si chiudano nello stesso blocco: definiamo \textit{pioniera}
-la lontana aperta (benché si possa fare lo stesso ragionamento, a specchio, per le chiuse)
-che è la prima del blocco al quale appartiene a chiudersi in un qualsiasi altro blocco successivo.
-Un esempio di queste divisioni è in \cref{fig:paren_blocks}, dove le parentesi gialle sono le vicine,
-quelle blu sono lontane e quelle rosse sono pioniere.
-
-\begin{figure}[h]
-
-	\centering
-
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Shape: Rectangle [id:dp12028039856705786] 
-		\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (160,170) -- (170,170) -- (170,190) -- (160,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp6017350169887977] 
-		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (170,170) -- (180,170) -- (180,190) -- (170,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp1862637830525412] 
-		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (180,170) -- (190,170) -- (190,190) -- (180,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp7375538410378665] 
-		\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (190,170) -- (200,170) -- (200,190) -- (190,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp42832713437851455] 
-		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (200,170) -- (210,170) -- (210,190) -- (200,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp3771120606312378] 
-		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (210,170) -- (220,170) -- (220,190) -- (210,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp19892421904849122] 
-		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (220,170) -- (230,170) -- (230,190) -- (220,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp0006276055923941648] 
-		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (230,170) -- (240,170) -- (240,190) -- (230,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp16538357452442487] 
-		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (240,170) -- (250,170) -- (250,190) -- (240,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp06112380309966958] 
-		\draw  [fill={rgb, 255:red, 208; green, 2; blue, 27 }  ,fill opacity=1 ] (250,170) -- (260,170) -- (260,190) -- (250,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp06951356935410424] 
-		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (260,170) -- (270,170) -- (270,190) -- (260,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp885838800749071] 
-		\draw  [fill={rgb, 255:red, 247; green, 240; blue, 148 }  ,fill opacity=1 ] (270,170) -- (280,170) -- (280,190) -- (270,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp37752499309076915] 
-		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (280,170) -- (290,170) -- (290,190) -- (280,190) -- cycle ;
-
-		%Shape: Rectangle [id:dp7109616333523956] 
-		\draw  [fill={rgb, 255:red, 139; green, 181; blue, 229 }  ,fill opacity=1 ] (290,170) -- (300,170) -- (300,190) -- (290,190) -- cycle ;
-
-		%Straight Lines [id:da856450147041028] 
-		\draw    (210,160) -- (210,200) ;
-		%Straight Lines [id:da0823905364290688] 
-		\draw    (260,160) -- (260,200) ;
-		%Straight Lines [id:da8657156752341498] 
-		\draw    (205.14,190.29) -- (205.14,204.36) -- (216.43,204.36) -- (216.43,192.93) ;
-		\draw [shift={(216.43,189.93)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da4613663625082196] 
-		\draw    (195.57,189.79) -- (195.57,212.07) -- (244.57,212.07) -- (244.57,193.64) ;
-		\draw [shift={(244.57,190.64)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da9063548393327128] 
-		\draw    (165.43,190.21) -- (165.43,217.64) -- (284.43,217.64) -- (284.3,194.5) ;
-		\draw [shift={(284.29,191.5)}, rotate = 89.69] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-		%Straight Lines [id:da09579212789908009] 
-		\draw    (255.29,170.21) -- (255.29,152.07) -- (296.14,152.07) -- (296.14,166.21) ;
-		\draw [shift={(296.14,169.21)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-		% Text Node
-		\draw (161,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (171,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (181,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-		% Text Node
-		\draw (211,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-		% Text Node
-		\draw (201,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (191,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (271,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-		% Text Node
-		\draw (261,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (251,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (241,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-		% Text Node
-		\draw (231,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-		% Text Node
-		\draw (221,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {(};
-		% Text Node
-		\draw (291,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-		% Text Node
-		\draw (281,172) node [anchor=north west][inner sep=0.75pt]   [align=left] {)};
-	\end{tikzpicture}
-
-	\caption{Divisione in blocchi di una stringa parentesizzata.}
+	\input{img/dyck_classi_parentesi.tikz}
+	\caption{Divisione in blocchi di una parola di Dyck.}
 	\label{fig:paren_blocks}
 \end{figure}
 
-Assumiamo che $w$ sia la parola da rappresentare e assumiamo che $|w| = n$.
-Per rappresentare la parola memorizziamo, oltre a $w$ stessa, un vettore $\mathbf{p}$ di $n$ bit
-con $1$ nelle posizioni delle pioniere; il vettore $\mathbf{E}$, che per ogni blocco $i$
-da l'eccesso all'inizio del blocco e ha un elemento per ogni blocco; il vettore $\mathbf{M}$, che per ogni
-blocco $i$ mantiene la posizione della parentesi corrispondente all'$i$-esima pioniera e, infine, il vettore
-$\mathbf{O}$ che per ogni blocco $i$ mantiene la posizione della prima aperta a sinistra dell'inizio del blocco
-avente eccesso $x-1$, dove $x$ è il minimo eccesso del blocco. Per la rappresentazione, definiamo $l = \log_2(n)$.
-\begin{theorem}
-	Se ci sono $k$ blocchi, vi sono al massimo $2^k - 3$ coppie di pionieri.
-\end{theorem}
+\begin{lemma}[delle incrociate]\label{lem:dyckincro}
+	In una parola di Dyck $w$, sia $p$ la posizione di una parentesi aperta. Allora
+	\begin{equation*}
+		\nexists q\mid p<q<\dyfindclosed(p) \quad\land\quad \dyfindclosed(q)>\dyfindclosed(p)
+	\end{equation*}
+\end{lemma}
 \begin{proof}
-	Costruiamo un grafo $G = (V, E)$ dove $V$ sono i blocchi ed esiste un lato tra un blocco $x$ e $y$ se
-	e solo se $x$ contiene una pioniera cha ha in $y$ la sua corrispondente.
-	Dimostriamo per induzione su $k$: vi sono due casi.
-	\begin{itemize}
-		\item se l'insieme di blocchi è separabile, ossia esiste una posizione nella parola sulla quale
-		      ``non passano archi'', la parola è debolmente bilanciate ed è scomponibile in due diverse
-		      parole ben formate. Allora, per ipotesi induttiva, il numero di pioniere nella prima
-		      parte è al più $2p - 3$ e il numero di pioniere nella seconda parte è al più $2(k - p + 1) - 3$;
-		      allora il numero di pioniere è al più
-		      $$
-			      2p - 3 + 2 k - 2p + 2 - 3 = 2k - 4 \leq 2k - 3
-		      $$
-		\item se l'insieme di blocchi non è separabile, ossia la parola è fortemente
-		      bilanciate e non è scomponibile in due parole diverse, si prende la
-		      prima coppia di parentesi lontane che si trova in $w$ e si rimuove. La parola risultante,
-		      che chiamiamo $w'$, gode della proprietà che si vuole dimostrare. Il numero
-		      di pioniere in $w$ è quindi al più la somma delle pioniere in $w'$ e la pioniera rimossa
-		      $$
-			      2k - 4  + 1 = 2k - 3
-		      $$
+	Se $p<q<\dyfindclosed(p)$ allora $E_w(q)>E_w(p)$. Poiché la funzione di eccesso non può scendere sotto il valore $E_w(q)$ senza raggiungere $\dyfindclosed(q)$, è impossibile che valga $\dyfindclosed(q)>\dyfindclosed(p)$.
+\end{proof}
 
+\noindent La struttura si compone di diverse componenti:
+\begin{itemize}
+	\item la parola $w$ memorizzata come sequenza di bit (un valore booleano per le parentesi aperte e l'altro per le chiuse).
+	\item un vettore $E$ di $k$ elementi, contenente per ogni blocco il valore della funzione di eccesso nella sua prima posizione;
+	\item un vettore $M$ che contiene, per ogni pioniera o relativa chiusa, l'indice della sua corrispondente;
+	\item un vettore $O$ di $k$ elementi, contenente per ogni blocco l'ultima posizione prima di esso in cui la funzione di eccesso è minore del minimo in tale blocco;
+	\item un vettore $\bar p$ di bit che identifica a $1$ le pioniere, a cui è associata una struttura succinta di rango e selezione;
+\end{itemize}
+
+\subsubsection{Implementazione dell'interfaccia}
+\newcommand{\dyfindopenb}{\mathbf{find\_open}}
+\newcommand{\dyfindclosedb}{\mathbf{find\_closed}}
+\newcommand{\dyencloseb}{\mathbf{enclose}}
+Per semplicità ci riferiremo con abuso di notazione ai simboli e alle rispettive posizioni intercambiabilmente.
+
+\paragraph{$\dyfindclosedb$} È data la posizione $p$ di un'aperta. Sia $B=\floor{p/k}$ il blocco a cui $p$ appartiene.
+L'algoritmo si compone dei seguenti passi:
+\begin{enumerate}
+	\item \label{en:dyfc:1} a partire da $E[B]$, ricavare l'eccesso $E_w(p)$ calcolando e salvando quello di ogni simbolo del blocco fino a $p$;
+	\item calcolando gli eccessi delle posizioni successive a $p$ nel blocco, determinare se $p$ è vicina.
+	      È così se e solo se esiste una posizione $r\neq p$ tale che $E_w(r)=E_w(p)$. Se si trova un tale $r$, restituire $r$; altrimenti $p$ è lontana;
+	\item se $p$ è lontana allora si chiude in un blocco $B'\neq B$.
+	      Se $\bar p[p]=1$ allora $p$ è una pioniera, precisamente la $(\rank_{\bar p}(p)+1)$-esima, quindi la chiusa corrispondente si trova in $M[\rank_{\bar p}(p)+1]$ e va restituito tale valore;
+	\item se $\bar p_p=0$ allora $p$ non è una pioniera.
+	      La pioniera precedente a $p$, ovvero la $(\rank_{\bar p}(p))$-esima, è la pioniera di riferimento di $p$, ossia è la pioniera in posizione $q=\select_{\bar p}(\rank_{\bar p}(p)-1)$ che si chiude nel blocco $B'$.
+	      Se così non fosse si contraddirebbe il lemma \ref{lem:dyckincro} delle incrociate. Per lo stesso motivo la pioniera in posizione $q$ è aperta.
+	      A partire dalla corrispondente chiusa $q'$ di $q$, in posizione $M[q]$, cercare verso sinistra a partire dalla posizione $q'$ la prima che ha eccesso $E_w(p)$.
+	      L'eccesso di $q'$ è lo stesso di $q$, calcolato al passo \ref{en:dyfc:1}.
+\end{enumerate}
+
+\paragraph{$\dyfindopenb$} È data la posizione $p$ di una chiusa. Sia $B$ il blocco a cui $p$ appartiene.
+L'algoritmo si compone dei seguenti passi:
+\begin{enumerate}
+	\item a partire da $E[B]$, ricavare l'eccesso $E_w(p)$ calcolando e salvando quello di ogni simbolo del blocco fino a $p$;
+	\item se esistono posizioni tra quelle già analizzate con eccesso uguale a $E_w(p)$, restituire l'ultima: $p$ è vicina;
+	\item dato che $p$ è lontana, se $\bar p[p]=1$ allora la parentesi in $p$ è una pioniera, precisamente la $(\rank_{\bar p}(p)+1)$-esima, quindi la chiusa corrispondente si trova in $M[\rank_{\bar p}(p)+1]$ e va restituito tale valore;
+	\item se $\bar p_p=0$ allora $p$ non è una pioniera.
+	      La pioniera successiva a $p$, è la $(\rank_{\bar p}(p)+1)$-esima, in posizione $q=\select_{\bar p}(\rank_{\bar p}(p))$.
+	      Calcolare l'eccesso di $q$ procedendo verso destra a partire da $p$.
+	      A partire dalla corrispondente aperta $q'$ di $q$, in posizione $M[q]$ e che ha lo stesso eccesso di $q$, cercare verso destra a partire dalla posizione $q'$ la prima che ha eccesso $E_w(p)$ e restituire il valore.
+\end{enumerate}
+
+\paragraph{$\dyencloseb$} È data una posizione $x$ in input.
+Se $x$ è la posizione di un'aperta, sia $p:=x$ e $p':=\dyfindclosed_w(x)$, altrimenti sia $p=\dyfindopen_w(x)$ e $p'=x$.
+Sia $B$ il blocco a cui $p$ appartiene.
+L'algoritmo si compone dei seguenti passi:
+\begin{enumerate}
+	\item a partire da $E[B]$, ricavare l'eccesso $E_w(p)$, facendo in modo di mantenere in memoria l'ultima posizione $r$, se ne esiste una, per cui $E_w(r)=E_w(p)-1$;
+	\item se $r$ esiste, restituire $r$;
+	\item \label{en:dyen:3} sia $B'$ il blocco a cui appartiene $p'$ (si noti che non necessariamente $B'\neq B$).
+	      Se esiste in tale blocco una posizione $r>p'$ tale che $E_w(r)=E_w(p')-1=E_w(p)-1$, restituire $\dyfindopen(r)$;
+	\item si ha che $p$ ha il minimo eccesso in $B$.
+	      Infatti, nelle posizioni minori di $p$ non è stato trovato l'eccesso $E_w(p)-1$, mentre per le posizioni maggiori vale uno dei seguenti casi:
+	      \begin{itemize}
+		      \item se $B'\neq B$, allora l'eccesso delle posizioni tra $p$ e $p'$ è almeno $E_w(p)$ in quanto ogni parentesi è avvolta da $p$ e $p'$;
+		      \item se $B'=B$, allora per le posizioni successive a $p'$ si è visto al passo \ref{en:dyen:3} che non esiste posizione con eccesso uguale a $E_w(p)-1$.
+	      \end{itemize}
+	      restituire quindi $O[B]$.
+\end{enumerate}
+
+\begin{theorem}
+	In una parola di Dyck $w$ divisa in $k\geq 2$ blocchi $B_1,\dots,B_k$, esistono $\card{\dypion(w)}\leq 2k-3$ pioniere.
+\end{theorem}
+% TODO: spostare in appendice?
+\begin{proof}
+	Per induzione su $k$:
+	\begin{itemize}
+		\item se $k=2$, si verifica uno e uno solo dei seguenti casi:
+		      \begin{itemize}
+			      \item nel primo blocco ogni parentesi è vicina, quindi il numero di pioniere è $0$. Quindi $\card{\dypion(w)}=0\leq 2k-3=1$;
+			      \item esiste una sola pioniera in quanto ogni lontana in $B_1$ si chiude in $B_2$. Quindi $\card{\dypion(w)}=1\leq 2k-3=1$.
+		      \end{itemize}
+		\item per ipotesi induttiva, $\card{\dypion(w')}\leq 2k'-3~\forall k'<k,w'$. Si verifica uno e uno solo dei seguenti casi:
+		      \begin{enumerate}
+			      \item \label{en:dythm:1} se $w$ è debolmente bilanciata, esiste una posizione $p$ nel blocco $B_i$ entro cui tutte le pioniere aperte precedentemente si chiudono.
+			            In questo caso, si considerino le parole $w':=w_1\cdots w_p$ e $w'':=w_{p+1}\cdots w_l$, che ereditano i blocchi da $w$ ottenendo $k'$ e $k''$ blocchi ($B_i$ è diviso tra le due ma presente in entrambe, così che $k=k'+k''-1$).
+			            Poiché le pioniere di $w$ sono preservate, vale $\card{\dypion(w)}=\card{\dypion(w')}+\card{\dypion(w'')}$.
+			            Poiché $w'$, $k'$, $w''$ e $k''$ sono tali da poter applicare l'ipotesi induttiva, vale
+			            \begin{align*}
+				            \card{\dypion(w)} & = \card{\dypion(w')}+\card{\dypion(w'')} \\
+				                              & \leq (2k'-3)+(2k''-3)                    \\
+				                              & = 2(k'+k''-3)                            \\
+				                              & = 2(k-2) = 2k-4
+			            \end{align*}
+			      \item Se $w$ è fortemente bilanciata, allora esiste una pioniera che si apre nel primo blocco e si chiude nell'ultimo. Infatti, se così non fosse, sia $p$ la pioniera del primo blocco che si chiude nel blocco massimale (più lontano) $B_k$, con $k'<k$. Per il lemma \ref{lem:dyckincro} delle incrociate, le parentesi incluse tra $p$ e la sua chiusa $p'$ non possono chiudersi dopo $p'$. Inoltre la coppia $(p,p')$ non può essere racchiusa da un'altra coppia, altrimenti $p$ non sarebbe la pioniera che si chiude nel blocco massimale. Quindi l'eccesso in $p'$ è $0$, il che è assurdo.
+
+			            Sia $p$ la prima pioniera di $w$. Si possono rimuovere coppie di parentesi che precedono $p$ o seguono la sua chiusa in quanto sono vicine e non contribuiscono al numero di pioniere. Si può inoltre rimuovere la parentesi $p$ e la relativa chiusa ottenendo una parola risultante $w'$ ancora bilanciata. Per $w'$ vale uno e uno solo dei seguenti casi:
+			            \begin{itemize}
+				            \item se si rimuove un intero blocco, ossia $k'<k$, si ha rimosso una pioniera. Per ipotesi induttiva $\dypion(w)=\dypion(w')+1\leq 2k'-3+1\leq 2k-4\leq 2k-3$;
+				            \item se $w'$ è debolmente bilanciata, si ha rimosso una pioniera e si ricade nel caso \ref{en:dythm:1}. Quindi $\dypion(w)=\dypion(w')+1\leq 2k-4+1\leq 2k-3$;
+				            \item se $w'$ è ancora fortemente bilanciata, selezionare una nuova pioniera $p'$ e ripetere il procedimento di rimozione appena descritto. Il numero di pioniere non cambia tra $w$ e $w'$.
+			            \end{itemize}
+		      \end{enumerate}
 	\end{itemize}
 \end{proof}
 
-\begin{figure}[h]
-	\centering
-	\begin{subfigure}{0.45\textwidth}
-		\centering
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Rectangle [id:dp5751448069992374] 
-			\draw   (100,130) -- (170,130) -- (170,150) -- (100,150) -- cycle ;
-			%Shape: Rectangle [id:dp8956649728081978] 
-			\draw   (190,130) -- (230,130) -- (230,150) -- (190,150) -- cycle ;
-			%Shape: Rectangle [id:dp8836798951210239] 
-			\draw   (250,130) -- (290,130) -- (290,150) -- (250,150) -- cycle ;
-			%Shape: Rectangle [id:dp07169651712981018] 
-			\draw   (300,130) -- (380,130) -- (380,150) -- (300,150) -- cycle ;
-			%Straight Lines [id:da8396678932783305] 
-			\draw    (110,130) -- (110,100) -- (260,100) -- (260,128) ;
-			\draw [shift={(260,130)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da8376287767119306] 
-			\draw    (120,130) -- (120,110) -- (220,110) -- (220,128) ;
-			\draw [shift={(220,130)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da7343053938900628] 
-			\draw    (200,150) -- (200,170) -- (260,170) -- (260,152) ;
-			\draw [shift={(260,150)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da02843704523195245] 
-			\draw    (280,130) -- (280,110) -- (330,110) -- (330,128) ;
-			\draw [shift={(330,130)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da4532725638041315] 
-			\draw  [dash pattern={on 3.75pt off 3pt on 7.5pt off 1.5pt}]  (270,90) -- (270,180) ;
-			%Straight Lines [id:da17944476616348748] 
-			\draw    (100,180) -- (100,190) -- (290,190) -- (290,180) ;
-			%Straight Lines [id:da1753890360224526] 
-			\draw    (250,200) -- (250,210) -- (380,210) -- (380,200) ;
-
-			% Text Node
-			\draw (181,192.4) node [anchor=north west][inner sep=0.75pt]    {$p$};
-			% Text Node
-			\draw (281,212.4) node [anchor=north west][inner sep=0.75pt]    {$k\ -\ p\ +\ 1$};
-		\end{tikzpicture}
-		\subcaption{Caso $1$.}
-	\end{subfigure}
-	\hfill
-	\begin{subfigure}{0.45\textwidth}
-
-		\tikzset{
-			pattern size/.store in=\mcSize,
-			pattern size = 5pt,
-			pattern thickness/.store in=\mcThickness,
-			pattern thickness = 0.3pt,
-			pattern radius/.store in=\mcRadius,
-			pattern radius = 1pt}
-		\makeatletter
-		\pgfutil@ifundefined{pgf@pattern@name@_y43ms7xnt}{
-			\pgfdeclarepatternformonly[\mcThickness,\mcSize]{_y43ms7xnt}
-			{\pgfqpoint{0pt}{-\mcThickness}}
-			{\pgfpoint{\mcSize}{\mcSize}}
-			{\pgfpoint{\mcSize}{\mcSize}}
-			{
-				\pgfsetcolor{\tikz@pattern@color}
-				\pgfsetlinewidth{\mcThickness}
-				\pgfpathmoveto{\pgfqpoint{0pt}{\mcSize}}
-				\pgfpathlineto{\pgfpoint{\mcSize+\mcThickness}{-\mcThickness}}
-				\pgfusepath{stroke}
-			}}
-		\makeatother
-
-		% Pattern Info
-
-		\tikzset{
-			pattern size/.store in=\mcSize,
-			pattern size = 5pt,
-			pattern thickness/.store in=\mcThickness,
-			pattern thickness = 0.3pt,
-			pattern radius/.store in=\mcRadius,
-			pattern radius = 1pt}
-		\makeatletter
-		\pgfutil@ifundefined{pgf@pattern@name@_mifsyi5bu}{
-			\pgfdeclarepatternformonly[\mcThickness,\mcSize]{_mifsyi5bu}
-			{\pgfqpoint{0pt}{0pt}}
-			{\pgfpoint{\mcSize+\mcThickness}{\mcSize+\mcThickness}}
-			{\pgfpoint{\mcSize}{\mcSize}}
-			{
-				\pgfsetcolor{\tikz@pattern@color}
-				\pgfsetlinewidth{\mcThickness}
-				\pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
-				\pgfpathlineto{\pgfpoint{\mcSize+\mcThickness}{\mcSize+\mcThickness}}
-				\pgfusepath{stroke}
-			}}
-		\makeatother
-		\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-		\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-			%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-			%Shape: Rectangle [id:dp5339690558371227] 
-			\draw   (120,150) -- (190,150) -- (190,170) -- (120,170) -- cycle ;
-			%Straight Lines [id:da850734740747954] 
-			\draw    (140,150) -- (140,120) -- (280,120) -- (280,148) ;
-			\draw [shift={(280,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da9735874841202442] 
-			\draw    (150,150) -- (150,130) -- (240,130) -- (240,148) ;
-			\draw [shift={(240,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da863983070784418] 
-			\draw    (220,170) -- (220,190) -- (280,190) -- (280,172) ;
-			\draw [shift={(280,170)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da6442133803721162] 
-			\draw    (300,150) -- (300,130) -- (350,130) -- (350,148) ;
-			\draw [shift={(350,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Shape: Rectangle [id:dp881091443202814] 
-			\draw   (190,150) -- (260,150) -- (260,170) -- (190,170) -- cycle ;
-			%Shape: Rectangle [id:dp2693088037465775] 
-			\draw   (260,150) -- (330,150) -- (330,170) -- (260,170) -- cycle ;
-			%Shape: Rectangle [id:dp6243374270107382] 
-			\draw   (330,150) -- (400,150) -- (400,170) -- (330,170) -- cycle ;
-			%Straight Lines [id:da11664171795224454] 
-			\draw    (150,170) -- (150,190) -- (210,190) -- (210,172) ;
-			\draw [shift={(210,170)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Straight Lines [id:da43843554948583285] 
-			\draw    (130,150) -- (130,140.71) -- (130,110) -- (390,110) -- (390,148) ;
-			\draw [shift={(390,150)}, rotate = 270] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]    (10.93,-3.29) .. controls (6.95,-1.4) and (3.31,-0.3) .. (0,0) .. controls (3.31,0.3) and (6.95,1.4) .. (10.93,3.29)   ;
-			%Shape: Rectangle [id:dp45540530016238834] 
-			\draw  [pattern=_y43ms7xnt,pattern size=2.0999999999999996pt,pattern thickness=0.75pt,pattern radius=0pt, pattern color={rgb, 255:red, 0; green, 0; blue, 0}][dash pattern={on 0.84pt off 2.51pt}] (130,150) -- (120,150) -- (120,170) -- (130,170) -- cycle ;
-			%Shape: Rectangle [id:dp21031590903119124] 
-			\draw  [pattern=_mifsyi5bu,pattern size=2.0999999999999996pt,pattern thickness=0.75pt,pattern radius=0pt, pattern color={rgb, 255:red, 0; green, 0; blue, 0}][dash pattern={on 0.84pt off 2.51pt}] (400,150) -- (390,150) -- (390,170) -- (400,170) -- cycle ;
-		\end{tikzpicture}
-
-		\subcaption{Caso $2$.}
-	\end{subfigure}
-	\caption{Dimostrazione induttiva del numero di pioniere in una parola ben parentesizzata.}
-	\label{fig:proof_pioneers}
-\end{figure}
-
-Quindi, lo spazio occupato da queste strutture è:
-$$
+Lo spazio occupato in bit da queste strutture è:
+\begin{equation*}
 	\begin{aligned}
-		 & w          &  & n                                                                                          \\
-		 & p          &  & n + o(n) \text{ (sarà necessario introdurre la struttura di rango)}                        \\
-		 & \mathbf{E} &  & k  \log_2(n)                                                                               \\
-		 & \mathbf{O} &  & k  \log_2(n)                                                                               \\
-		 & \mathbf{M} &  & \text{pioniere} \cdot \log_2(n) < 2(2k - 3) \log_2(n) = (4k - 6) \log_2(n) \le 4k\log_2(n)
+		 & E & k  \log_2(n)         \\
+		 & M & \leq 2(2k-3)\log_2 n \\
+		 & p & n + o(n)             \\
+		 & O & k  \log_2(n)         \\
+		 & w & n
 	\end{aligned}
-$$
-Sommando, lo spazio occupato è $D_n = 2n + o(n) + 6k \log_2(n) = 2n + 6n + o(n) = 8n + o(n)$ bit.
+\end{equation*}
+Se si sceglie $l=\log_2 n$, si fa uso di un totale di al più $D_n=(6k-6)\log_2 n+2n+o(n)=8n+o(n)$ bit. Per confrontare questa grandezza con l'information theoretical lower bound consideriamo due insiemi isomorfi alle parentesi ben bilanciate: le foreste ordinate e gli alberi binari.
 
-\subsubsection{Implementazione}
-Per implementare la funzione $\mathbf{find\_close}$ che, trovata una parentesi aperta in posizione $p$, restituisce
-la posizione in cui si chiude, si deve:
-\begin{enumerate}
-	\item calcolare gli eccessi di tutte le posizioni del blocco al quale appartiene $p$ con $E$ (tempo logaritmico);
-	\item se $p$ è vicina, ossia esiste un'altra posizione nel blocco con lo stesso eccesso,
-	      la funzione è completa. Altrimenti, $p$ è la posizione di una parentesi lontana e
-	      $j = \mathbf{rank_p}(p)$ è l'indice della pioniera che precede $p$; si può usare $M[j] = p'$ per
-	      calcolare la posizione in cui si chiude la pioniera che precede $p$, che diciamo essere in un
-	      blocco $b$. Scorrendo indietro, per trovare la chiusa corrispondente, basta trovare la
-	      posizione con eccesso uguale all'eccesso di $p$.
-\end{enumerate}
 
-Tutto questo richiede tempo $\log_2(n)$ e analogamente per l'implementazione di $\mathbf{find\_open}$.
-Per l'implementazione di $\mathbf{enclosed}$, che cerca la prima parentesi aperta che racchiude la parentesi
-in posizione $p$, ipotizziamo di aver già trovato la corrispondente $\bar{p}$ con una find e ammettiamo che
-l'eccesso di entrambe sia $e$. Inizialmente, si cerca alla sinistra della posizione della parentesi aperta
-se c'è una posizione con eccesso $e-1$, che segna l'aperta precedente. Se, nel blocco al quale appartiene
-l'aperta, tutte le posizioni hanno eccesso $\ge e-1$, si cerca per una chiusa di eccesso $e-1$ nella parte
-a destra del blocco in cui giace la chiusa. Se anche in questo caso non si trova, significa che la parentesi
-che si cerca è di eccesso $e-1$ che giace nel blocco a sinistra a quello della parentesi aperta, che ha
-come valore di eccesso minore di tale blocco. In tal caso, basta usare il vettore $\mathbf{O}$ per trovare
-la posizione della parentesi cercata.
+\subsection{Information theoretical lower bound}
 
-\subsection{Lower bound per parentesi ben bilanciate}
-\subsubsection{Foreste ordinate}
-Una foresta ordinata è una sequenza ordinata (per numero di nodi) di alberi ordinati (corrispondenti
-ad alberi radicati).
-\begin{figure}[h]
+\subsubsection{Parole di Dyck e foreste ordinate}
+$F_n$, con $n\in\N$, è l'insieme delle foreste ordinate con $n$ nodi.
+% TODO: essere più formali?
+\begin{defin}
+	Induttivamente:
+	\begin{itemize}
+		\item la foresta vuota $\seq{}$ appartiene a $F_0$;
+		\item siano $f\in F_n$ e $g\in F_m$. Sia $\tree(f)$ l'albero ottenuto unendo sotto un'unica radice gli alberi di $f$. Allora $\seq{\tree(f),g}\in F_{n+m+1}$.
+	\end{itemize}
+\end{defin}
+
+\begin{figure}[ht]
 	\centering
-	\begin{tikzpicture}
-		\draw (0,1)	node[fill,circle, inner sep=1pt] {} -- (0,0) node[fill,circle,inner sep=1pt] {};
-
-		\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (2,0) node[fill,circle,inner sep=1pt] {};
-		\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (1,0) node[fill,circle,inner sep=1pt] {};
-		\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (3,0) node[fill,circle,inner sep=1pt] {};
-
-		\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (4,0) node[fill,circle,inner sep=1pt] {};
-		\draw (4,0)	node[fill,circle, inner sep=1pt] {} -- (4,-1) node[fill,circle,inner sep=1pt] {};
-		\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (5,0) node[fill,circle,inner sep=1pt] {};
-		\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (6,0) node[fill,circle,inner sep=1pt] {};
-		\draw (6,0)	node[fill,circle, inner sep=1pt] {} -- (6,-1) node[fill,circle,inner sep=1pt] {};
-	\end{tikzpicture}
-	\caption{Foresta ordinata di alberi.}
+	\input{img/dyck_foresta.tikz}
+	\caption{Foresta ordinata.}
 	\label{fig:ordered_forest}
 \end{figure}
-Formalmente, definiamo induttivamente una foresta ordinata:
+
+Si consideri la funzione $\varphi:D_n\to F_n$, definita induttivamente come segue:
 \begin{itemize}
-	\item $\langle \rangle$ indica la lista vuota di alberi ed è una foresta ordinata;
-	\item se $\langle T_1, \cdots, T_k\rangle$ sono alberi, allora $\langle T_1, \cdots, T_k\rangle$ è una
-	      foresta ordinata
-	\item se $F$ è una foresta ordinata, $tree(F)$ è un albero radicato in un
-	      nuovo nodo che ha come figli tutti gli alberi di $F$.
+	\item $\varphi(\emptyword)=\seq{}$;
+	      % TODO: questa notazione è tecnicamente sbagliata in quanto ogni foresta sarebbe una coppia albero-foresta. Pensare a una notazione migliore
+	\item $\varphi(~(w_1)w_2~)=\seq{\tree(\varphi(w_1)),\varphi(w_2)}$.
 \end{itemize}
 
-\subsubsection{Isomorfismo tra foreste ordinate e alberi binari}
-Definiamo una funzione $\phi$ che associa ad ogni foresta ordinata un preciso albero binario.
-Induttivamente,
-$$
-	\phi(\langle \rangle) = \cdot
-$$
-ossia $\phi$ di una foresta vuota è un albero costituito da una singola radice.
-$$
-	\phi(\langle tree(F), T_1, \cdots, T_k>\rangle) = (\phi(F), \phi(\langle T_1, \cdots, T_k\rangle))
-$$
+Come si può facilmente verificare la funzione descritta è biiettiva, in quanto una foresta ordinata appartiene a una e una sola delle forme delle immagini di $\varphi$.
 
-\begin{figure}[h]
+
+\subsubsection{Foreste ordinate e alberi binari}
+Si consideri la funzione $B:F_n\to B_n$ (dove $B_n$ è l'insieme degli alberi binari con $n$ nodi interni), definita induttivamente come segue:
+% TODO: anche qui si potrebbe essere più formali. Per rivedere queste definizioni andrebbero riviste quelle di albero binario al relativo paragrafo
+\begin{itemize}
+	\item $B(\seq{})$ è l'albero costituito dalla sola radice;
+	\item $B(\seq{\tree(f)},g)$ è l'albero binario costituito da una radice che ha per figlio sinistro $B(f)$ e destro $B(g)$.
+\end{itemize}
+
+\begin{figure}[ht]
 	\centering
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Straight Lines [id:da1467409507063523] 
-		\draw    (144.93,41.07) -- (144.93,71.07) ;
-		\draw [shift={(144.93,71.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(144.93,41.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Shape: Circle [id:dp48951213847038366] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (154.57,54.79) .. controls (154.57,52.93) and (156.07,51.43) .. (157.93,51.43) .. controls (159.78,51.43) and (161.29,52.93) .. (161.29,54.79) .. controls (161.29,56.64) and (159.78,58.14) .. (157.93,58.14) .. controls (156.07,58.14) and (154.57,56.64) .. (154.57,54.79) -- cycle ;
-
-		%Straight Lines [id:da5368285010745462] 
-		\draw    (226.43,55) -- (208.31,76.91) -- (201.86,84.71) ;
-		\draw [shift={(226.43,55)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Shape: Triangle [id:dp5019688866391238] 
-		\draw   (201.86,84.71) -- (236.86,124.71) -- (166.86,124.71) -- cycle ;
-		%Shape: Triangle [id:dp12657672899601724] 
-		\draw   (273.64,93.29) -- (318.57,145) -- (228.71,145) -- cycle ;
-		%Straight Lines [id:da934069022901869] 
-		\draw    (226.43,55) -- (273.64,93.29) ;
-		%Straight Lines [id:da2898443038516424] 
-		\draw    (277.71,123) -- (277.86,139.14) ;
-		\draw [shift={(277.86,139.14)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(277.71,123)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da8113066852584067] 
-		\draw    (354.98,55.5) -- (336.86,77.41) -- (330.4,85.21) ;
-		\draw [shift={(354.98,55.5)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da7241289121021388] 
-		\draw    (354.98,55.5) -- (402.19,93.79) ;
-		%Shape: Circle [id:dp6494084453696087] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (325.1,87.83) .. controls (325.1,86.18) and (326.44,84.83) .. (328.1,84.83) .. controls (329.76,84.83) and (331.1,86.18) .. (331.1,87.83) .. controls (331.1,89.49) and (329.76,90.83) .. (328.1,90.83) .. controls (326.44,90.83) and (325.1,89.49) .. (325.1,87.83) -- cycle ;
-		%Straight Lines [id:da4037066529287967] 
-		\draw    (403.26,95.5) -- (385.15,117.41) -- (377.98,125.79) ;
-		\draw [shift={(403.26,95.5)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Shape: Triangle [id:dp04881880314765141] 
-		\draw   (445.69,115.21) -- (480.69,155.21) -- (410.69,155.21) -- cycle ;
-
-		%Shape: Triangle [id:dp12559883893437063] 
-		\draw   (377.98,125.79) -- (422.9,177.5) -- (333.05,177.5) -- cycle ;
-		%Straight Lines [id:da48087885685526743] 
-		\draw    (379.19,155.5) -- (379.33,171.64) ;
-		\draw [shift={(379.33,171.64)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(379.19,155.5)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da02388870469608051] 
-		\draw    (403.26,95.5) -- (445.69,115.21) ;
-		%Straight Lines [id:da6273665141516217] 
-		\draw    (536.48,54.83) -- (518.36,76.74) -- (511.9,84.55) ;
-		\draw [shift={(536.48,54.83)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da5905284436508569] 
-		\draw    (536.48,54.83) -- (583.69,93.12) ;
-		%Straight Lines [id:da2030740854922638] 
-		\draw    (584.76,94.83) -- (566.65,116.74) -- (559.48,125.12) ;
-		\draw [shift={(584.76,94.83)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da49066689108397754] 
-		\draw    (584.76,94.83) -- (627.19,114.55) ;
-		%Straight Lines [id:da38720603069737713] 
-		\draw    (557.87,127.72) -- (539.76,149.63) -- (532.59,158.01) ;
-		\draw [shift={(557.87,127.72)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da1048947282900694] 
-		\draw    (560.76,129.5) -- (603.19,149.21) ;
-		%Shape: Circle [id:dp32417892244375524] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (533.82,160.09) .. controls (533.82,158.2) and (532.3,156.67) .. (530.41,156.67) .. controls (528.53,156.67) and (527,158.2) .. (527,160.09) .. controls (527,161.97) and (528.53,163.5) .. (530.41,163.5) .. controls (532.3,163.5) and (533.82,161.97) .. (533.82,160.09) -- cycle ;
-		%Shape: Circle [id:dp9675952466326133] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (513.6,86.53) .. controls (513.6,84.65) and (512.07,83.12) .. (510.19,83.12) .. controls (508.3,83.12) and (506.78,84.65) .. (506.78,86.53) .. controls (506.78,88.42) and (508.3,89.94) .. (510.19,89.94) .. controls (512.07,89.94) and (513.6,88.42) .. (513.6,86.53) -- cycle ;
-
-		%Shape: Circle [id:dp5658104800173653] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (609.38,151.2) .. controls (609.38,149.31) and (607.85,147.79) .. (605.97,147.79) .. controls (604.08,147.79) and (602.55,149.31) .. (602.55,151.2) .. controls (602.55,153.08) and (604.08,154.61) .. (605.97,154.61) .. controls (607.85,154.61) and (609.38,153.08) .. (609.38,151.2) -- cycle ;
-		%Shape: Circle [id:dp12193907009892957] 
-		\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (634.27,115.64) .. controls (634.27,113.76) and (632.74,112.23) .. (630.86,112.23) .. controls (628.97,112.23) and (627.44,113.76) .. (627.44,115.64) .. controls (627.44,117.53) and (628.97,119.06) .. (630.86,119.06) .. controls (632.74,119.06) and (634.27,117.53) .. (634.27,115.64) -- cycle ;
-
-
-		% Text Node
-		\draw (125.12,44.91) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ \ \ \ \ \ ) \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ $};
-		% Text Node
-		\draw (427.26,134.33) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \langle \rangle )$};
-		% Text Node
-		\draw (183.43,103.83) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \langle \rangle )$};
-		% Text Node
-		\draw (257.75,120.69) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ )$};
-		% Text Node
-		\draw (360.33,153.19) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ )$};
-
-
-	\end{tikzpicture}
+	% TODO: bruttissima, migliorare
+	\input{img/dyck_isoforeste.tikz}
 	\caption{Esempio di calcolo isomorfismo tra foreste e alberi binari.}
 	\label{fig:iso_forest_bintree_example}
 \end{figure}
 
+Dal momento che i tre insiemi sono isomorfi, le loro cardinalità sono uguali. Come visto al \cref{thm:catalano}:
+\begin{equation*}
+	\card{D_n}=\card{F_n}=\card{B_n}=C_n \text,
+\end{equation*}
+da cui
+\begin{equation*}
+	Z_n=\log_2(C_n)=O(n) \text{ bit}.
+\end{equation*}
+Ergo, la struttura vista per l'ADT delle parentesi ben bilanciate che ha un costo in spazio di $8n+o(n)$ bit è compatta.
 
 
-\begin{figure}[h]
-	\centering
-
-
-
-	\tikzset{every picture/.style={line width=0.75pt}} %set default line width to 0.75pt        
-
-	\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-		%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
-
-		%Straight Lines [id:da7390170116429094] 
-		\draw    (220,90) -- (330,120) ;
-		\draw [shift={(330,120)}, rotate = 15.26] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(220,90)}, rotate = 15.26] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da039244879101243746] 
-		\draw    (220,90) -- (280,120) ;
-		\draw [shift={(280,120)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(220,90)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da9807403722275164] 
-		\draw    (220,90) -- (240,120) ;
-		\draw [shift={(240,120)}, rotate = 56.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(220,90)}, rotate = 56.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da03267007977703551] 
-		\draw    (220,90) -- (210,120) ;
-		\draw [shift={(210,120)}, rotate = 108.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(220,90)}, rotate = 108.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da3117293837981189] 
-		\draw    (220,90) -- (140,120) ;
-		\draw [shift={(140,120)}, rotate = 159.44] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(220,90)}, rotate = 159.44] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da5543598400532516] 
-		\draw    (220,90) -- (180,120) ;
-		\draw [shift={(180,120)}, rotate = 143.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(220,90)}, rotate = 143.13] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da6616928412892461] 
-		\draw    (140,120) -- (130,140) ;
-		\draw [shift={(130,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(140,120)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da5001878304038733] 
-		\draw    (140,120) -- (110,140) ;
-		\draw [shift={(110,140)}, rotate = 146.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(140,120)}, rotate = 146.31] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da35297443192918876] 
-		\draw    (140,120) -- (150,140) ;
-		\draw [shift={(150,140)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(140,120)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da30077845664351066] 
-		\draw    (110,140) -- (100,160) ;
-		\draw [shift={(100,160)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(110,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da5436015840206943] 
-		\draw    (110,140) -- (120,160) ;
-		\draw [shift={(120,160)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(110,140)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da3418649793206039] 
-		\draw    (240,120) -- (230,140) ;
-		\draw [shift={(230,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(240,120)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da5537357380053466] 
-		\draw    (240,120) -- (250,140) ;
-		\draw [shift={(250,140)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(240,120)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da596511628614987] 
-		\draw    (330,120) -- (330,140) ;
-		\draw [shift={(330,140)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(330,120)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da9692313360351018] 
-		\draw    (250,140) -- (250,160) ;
-		\draw [shift={(250,160)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(250,140)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da3464424144057545] 
-		\draw    (230,140) -- (230,160) ;
-		\draw [shift={(230,160)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(230,140)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da9449001958581409] 
-		\draw    (460,80) -- (510,100) ;
-		\draw [shift={(510,100)}, rotate = 21.8] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(460,80)}, rotate = 21.8] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da5101057369964663] 
-		\draw    (460,80) -- (440,100) ;
-		\draw [shift={(440,100)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(460,80)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da7168760346038819] 
-		\draw    (440,100) -- (480,120) ;
-		\draw [shift={(480,120)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(440,100)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da7536172846092781] 
-		\draw    (480,120) -- (520,140) ;
-		\draw [shift={(520,140)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(480,120)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da06546573584424464] 
-		\draw    (520,140) -- (560,160) ;
-		\draw [shift={(560,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(520,140)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da31121333233660786] 
-		\draw    (560,160) -- (600,180) ;
-		\draw [shift={(600,180)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(560,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da9734645903114482] 
-		\draw    (600,180) -- (640,200) ;
-		\draw [shift={(640,200)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(600,180)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da3400373607542443] 
-		\draw    (480,120) -- (470,140) ;
-		\draw [shift={(470,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(480,120)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da8071946852447195] 
-		\draw    (520,140) -- (510,160) ;
-		\draw [shift={(510,160)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(520,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da9920119862914486] 
-		\draw    (600,180) -- (590,200) ;
-		\draw [shift={(590,200)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(600,180)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da6764843933308277] 
-		\draw    (560,160) -- (550,180) ;
-		\draw [shift={(550,180)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(560,160)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da9822121216527463] 
-		\draw    (550,180) -- (530,200) ;
-		\draw [shift={(530,200)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(550,180)}, rotate = 135] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da3765788262191845] 
-		\draw    (550,180) -- (560,200) ;
-		\draw [shift={(560,200)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(550,180)}, rotate = 63.43] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da057732075656578896] 
-		\draw    (420,140) -- (460,160) ;
-		\draw [shift={(460,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(420,140)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da6702517354459413] 
-		\draw    (460,160) -- (500,180) ;
-		\draw [shift={(500,180)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(460,160)}, rotate = 26.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		%Straight Lines [id:da6027456046960759] 
-		\draw    (440,100) -- (420,140) ;
-		\draw [shift={(420,140)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-		\draw [shift={(440,100)}, rotate = 116.57] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35]   ;
-
-		% Text Node
-		\draw (70,80) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ) \ =\ $};
-		% Text Node
-		\draw (215,67) node [anchor=north west][inner sep=0.75pt]   [align=left] {a};
-		% Text Node
-		\draw (133,95) node [anchor=north west][inner sep=0.75pt]   [align=left] {b};
-		% Text Node
-		\draw (163,116) node [anchor=north west][inner sep=0.75pt]   [align=left] {c};
-		% Text Node
-		\draw (196,117) node [anchor=north west][inner sep=0.75pt]   [align=left] {d};
-		% Text Node
-		\draw (223,107) node [anchor=north west][inner sep=0.75pt]   [align=left] {e};
-		% Text Node
-		\draw (264,116) node [anchor=north west][inner sep=0.75pt]   [align=left] {f};
-		% Text Node
-		\draw (334,101) node [anchor=north west][inner sep=0.75pt]   [align=left] {g};
-		% Text Node
-		\draw (91,122) node [anchor=north west][inner sep=0.75pt]   [align=left] {h};
-		% Text Node
-		\draw (131,141) node [anchor=north west][inner sep=0.75pt]   [align=left] {i};
-		% Text Node
-		\draw (158,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {j};
-		% Text Node
-		\draw (214,130) node [anchor=north west][inner sep=0.75pt]   [align=left] {k};
-		% Text Node
-		\draw (258,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {l};
-		% Text Node
-		\draw (311,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {m};
-		% Text Node
-		\draw (81,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {n};
-		% Text Node
-		\draw (118,161) node [anchor=north west][inner sep=0.75pt]   [align=left] {o};
-		% Text Node
-		\draw (211,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {p};
-		% Text Node
-		\draw (258,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {q};
-		% Text Node
-		\draw (458,52) node [anchor=north west][inner sep=0.75pt]   [align=left] {a};
-		% Text Node
-		\draw (428,82) node [anchor=north west][inner sep=0.75pt]   [align=left] {b};
-		% Text Node
-		\draw (481,102) node [anchor=north west][inner sep=0.75pt]   [align=left] {c};
-		% Text Node
-		\draw (521,122) node [anchor=north west][inner sep=0.75pt]   [align=left] {d};
-		% Text Node
-		\draw (561,141) node [anchor=north west][inner sep=0.75pt]   [align=left] {e};
-		% Text Node
-		\draw (601,161) node [anchor=north west][inner sep=0.75pt]   [align=left] {f};
-		% Text Node
-		\draw (641,181) node [anchor=north west][inner sep=0.75pt]   [align=left] {g};
-		% Text Node
-		\draw (538,162) node [anchor=north west][inner sep=0.75pt]   [align=left] {k};
-		% Text Node
-		\draw (521,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {p};
-		% Text Node
-		\draw (564,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {l};
-		% Text Node
-		\draw (398,132) node [anchor=north west][inner sep=0.75pt]   [align=left] {h};
-		% Text Node
-		\draw (438,152) node [anchor=north west][inner sep=0.75pt]   [align=left] {i};
-		% Text Node
-		\draw (478,171) node [anchor=north west][inner sep=0.75pt]   [align=left] {j};
-		% Text Node
-		\draw (411,182) node [anchor=north west][inner sep=0.75pt]   [align=left] {...};
-	\end{tikzpicture}
-	\caption{Funzionamento, in generale, dell'isomorfismo tra foreste ordinate e alberi binari con
-		la tecnica `first-child next-sibling`.}
-	\label{fig:iso_forest_bintree}
-\end{figure}
-
-Ciò che abbiamo dimostrato è che le foreste ordinate sono tante quante gli alberi binari:
-$\phi$ `manda' una foresta ordinata con $n$ nodi interni in un albero binario con altrettanti nodi.
-
-\subsubsection{Isomorfismo tra foreste ordinate e parole di Dyck.}
-Definiamo $\psi: D_{2n} \rightarrow F_n$ un isomorfismo tra parole ben parentesizzate di lunghezza $2n$ e
-foreste ordinate con $n$ nodi induttivamente:
-$$
-	\psi(\epsilon) = \langle \rangle
-$$
-$$
-	\psi(w_1 \cdots w_k) =  \langle\psi(w_1), \cdots, \psi(w_k)\rangle
-$$
-e
-$$
-	\psi((w)) = \langle \text{ albero radicato con figli tutti e soli gli alberi della foresta} \phi(w)  \rangle
-$$
-
-\noindent
-Sappiamo che $D_{2n} \approxeq F_n \approxeq B_n$ e sappiamo quanti sono i possibili alberi binari
-con $n$ nodi grazie al numero di Catalano, sono $|B_n| = C_n  \approx 2n + o (\log_2(n))$; di conseguenza,
-le parole di Dyck di lunghezza $2n$ hanno come information-theoretical lower bound
-$$
-	Z_n = n + o(\log_2(n)) \text{ bit}
-$$
-Quindi
-$$
-	D_n - Z_n =  8n + o(n) - n - o(\log_2(n)) = 7n - o(n) - o(\log_2(n))  = O(n) \implies D_n \approx Z_n + O(Z_n)
-$$
-pertanto la struttura descritta è compatta.
 
 \section{Struttura per hash minimali perfetti}
 \subsection{Funzioni di hash}

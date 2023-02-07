@@ -1,0 +1,83 @@
+\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
+	%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
+
+	%Straight Lines [id:da1467409507063523]
+	\draw    (144.93,41.07) -- (144.93,71.07);
+	\draw [shift={(144.93,71.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	\draw [shift={(144.93,41.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Shape: Circle [id:dp48951213847038366]
+	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (154.57,54.79) .. controls (154.57,52.93) and (156.07,51.43) .. (157.93,51.43) .. controls (159.78,51.43) and (161.29,52.93) .. (161.29,54.79) .. controls (161.29,56.64) and (159.78,58.14) .. (157.93,58.14) .. controls (156.07,58.14) and (154.57,56.64) .. (154.57,54.79) -- cycle;
+
+	%Straight Lines [id:da5368285010745462]
+	\draw    (226.43,55) -- (208.31,76.91) -- (201.86,84.71);
+	\draw [shift={(226.43,55)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Shape: Triangle [id:dp5019688866391238]
+	\draw   (201.86,84.71) -- (236.86,124.71) -- (166.86,124.71) -- cycle;
+	%Shape: Triangle [id:dp12657672899601724]
+	\draw   (273.64,93.29) -- (318.57,145) -- (228.71,145) -- cycle;
+	%Straight Lines [id:da934069022901869]
+	\draw    (226.43,55) -- (273.64,93.29);
+	%Straight Lines [id:da2898443038516424]
+	\draw    (277.71,123) -- (277.86,139.14);
+	\draw [shift={(277.86,139.14)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	\draw [shift={(277.71,123)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da8113066852584067]
+	\draw    (354.98,55.5) -- (336.86,77.41) -- (330.4,85.21);
+	\draw [shift={(354.98,55.5)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da7241289121021388]
+	\draw    (354.98,55.5) -- (402.19,93.79);
+	%Shape: Circle [id:dp6494084453696087]
+	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (325.1,87.83) .. controls (325.1,86.18) and (326.44,84.83) .. (328.1,84.83) .. controls (329.76,84.83) and (331.1,86.18) .. (331.1,87.83) .. controls (331.1,89.49) and (329.76,90.83) .. (328.1,90.83) .. controls (326.44,90.83) and (325.1,89.49) .. (325.1,87.83) -- cycle;
+	%Straight Lines [id:da4037066529287967]
+	\draw    (403.26,95.5) -- (385.15,117.41) -- (377.98,125.79);
+	\draw [shift={(403.26,95.5)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Shape: Triangle [id:dp04881880314765141]
+	\draw   (445.69,115.21) -- (480.69,155.21) -- (410.69,155.21) -- cycle;
+
+	%Shape: Triangle [id:dp12559883893437063]
+	\draw   (377.98,125.79) -- (422.9,177.5) -- (333.05,177.5) -- cycle;
+	%Straight Lines [id:da48087885685526743]
+	\draw    (379.19,155.5) -- (379.33,171.64);
+	\draw [shift={(379.33,171.64)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	\draw [shift={(379.19,155.5)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da02388870469608051]
+	\draw    (403.26,95.5) -- (445.69,115.21);
+	%Straight Lines [id:da6273665141516217]
+	\draw    (536.48,54.83) -- (518.36,76.74) -- (511.9,84.55);
+	\draw [shift={(536.48,54.83)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da5905284436508569]
+	\draw    (536.48,54.83) -- (583.69,93.12);
+	%Straight Lines [id:da2030740854922638]
+	\draw    (584.76,94.83) -- (566.65,116.74) -- (559.48,125.12);
+	\draw [shift={(584.76,94.83)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da49066689108397754]
+	\draw    (584.76,94.83) -- (627.19,114.55);
+	%Straight Lines [id:da38720603069737713]
+	\draw    (557.87,127.72) -- (539.76,149.63) -- (532.59,158.01);
+	\draw [shift={(557.87,127.72)}, rotate = 129.59] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da1048947282900694]
+	\draw    (560.76,129.5) -- (603.19,149.21);
+	%Shape: Circle [id:dp32417892244375524]
+	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (533.82,160.09) .. controls (533.82,158.2) and (532.3,156.67) .. (530.41,156.67) .. controls (528.53,156.67) and (527,158.2) .. (527,160.09) .. controls (527,161.97) and (528.53,163.5) .. (530.41,163.5) .. controls (532.3,163.5) and (533.82,161.97) .. (533.82,160.09) -- cycle;
+	%Shape: Circle [id:dp9675952466326133]
+	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (513.6,86.53) .. controls (513.6,84.65) and (512.07,83.12) .. (510.19,83.12) .. controls (508.3,83.12) and (506.78,84.65) .. (506.78,86.53) .. controls (506.78,88.42) and (508.3,89.94) .. (510.19,89.94) .. controls (512.07,89.94) and (513.6,88.42) .. (513.6,86.53) -- cycle;
+
+	%Shape: Circle [id:dp5658104800173653]
+	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (609.38,151.2) .. controls (609.38,149.31) and (607.85,147.79) .. (605.97,147.79) .. controls (604.08,147.79) and (602.55,149.31) .. (602.55,151.2) .. controls (602.55,153.08) and (604.08,154.61) .. (605.97,154.61) .. controls (607.85,154.61) and (609.38,153.08) .. (609.38,151.2) -- cycle;
+	%Shape: Circle [id:dp12193907009892957]
+	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (634.27,115.64) .. controls (634.27,113.76) and (632.74,112.23) .. (630.86,112.23) .. controls (628.97,112.23) and (627.44,113.76) .. (627.44,115.64) .. controls (627.44,117.53) and (628.97,119.06) .. (630.86,119.06) .. controls (632.74,119.06) and (634.27,117.53) .. (634.27,115.64) -- cycle;
+
+
+	% Text Node
+	\draw (125.12,44.91) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ \ \ \ \ \ ) \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ =\ $};
+	% Text Node
+	\draw (427.26,134.33) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \langle \rangle )$};
+	% Text Node
+	\draw (183.43,103.83) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \langle \rangle )$};
+	% Text Node
+	\draw (257.75,120.69) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ )$};
+	% Text Node
+	\draw (360.33,153.19) node [anchor=north west][inner sep=0.75pt]    {$\phi ( \ \ )$};
+
+
+\end{tikzpicture}

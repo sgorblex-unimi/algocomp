@@ -18,12 +18,8 @@ Sono stati revisionati i seguenti capitoli/paragrafi:
 - sec. 0 Notazione
 - cap. 1 Problemi e complessità
 - cap. 2 Algoritmi deterministici
-- cap. 3 Algoritmi probabilistici
-- cap. 4 Strutture succinte:
-	- Introduzione
-	- Rango e selezione: struttura di Jacobson
-	- Alberi binari
-	- Sequenze monotone (Elias-Fano)
+- cap. 3 Algoritmi probabilistici (mancante parte di MaxEkSat)
+- cap. 4 Strutture succinte: (mancante Clarke)
 
 Le parti non elencate sono ancora al loro stato originale, cioè prima della mia revisione, o a una sua vicina approssimazione. Anche le parti elencate possono naturalmente subire modifiche correttive, ma sono già state adattate al mio linguaggio.
 

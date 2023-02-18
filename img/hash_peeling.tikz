@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+	\node [circle,fill,label=above:{A},inner sep=1pt](A) at (0,0) {};
+	\node [circle,fill,label=above:{B},inner sep=1pt](B) at (1,-1) {};
+	\node [circle,fill,label=above:{C},inner sep=1pt](C) at (2,0) {};
+	\node [circle,fill,label=above:{D},inner sep=1pt](D) at (4,0) {};
+	\node [circle,fill,label=above:{E},inner sep=1pt](E) at (6,0) {};
+
+	\draw (A) -- (C) node [midway,above] {a};
+	\draw (B) -- (C) node [midway,above] {b};
+	\draw (C) -- (D) node [midway,above] {c};
+	\draw (D) -- (E) node [midway,above] {d};
+\end{tikzpicture}

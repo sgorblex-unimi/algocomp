@@ -26,7 +26,7 @@ Per poter caratterizzare le implementazioni degli ADT in base allo spazio che oc
 Il teorema della codifica di sorgente \cite{Shannon:48:theorycommu} (anche noto come primo teorema di Shannon), dà un'informazione fondamentale sullo spazio medio che occupa una struttura dati che può memorizzare $v$ valori:
 \begin{theorem}
 	\label{thm:shannon}
-	Per codificare $v$ valori servono in media $\log_2(v)$ bit.
+	Per codificare $v$ valori servono in media $\log_2 v$ bit.
 \end{theorem}
 
 Il teorema è ovvio nel caso di rappresentazioni a dimensione fissa.
@@ -39,27 +39,27 @@ Il teorema, però, vale anche per rappresentazioni di dimensione variabile
 Ad esempio, si supponga di avere un algoritmo in grado di comprimere tre immagini come le precedenti, ognuna in $100$ bit.
 La conseguenza di questo teorema è che esistono altre immagini la cui codifica utilizza più di $10000$ bit, mantenendo la media a $10000$.
 
-Il teorema di Shannon afferma anche che esiste una codifica per rappresentare $v$ valori utilizzando un numero di bit medio in $[\log_2(v),1+\log_2(v))$, assumendo che tutti i $v$ valori siano equiprobabili.
+Il teorema di Shannon afferma anche che esiste una codifica per rappresentare $v$ valori utilizzando un numero di bit medio in $[\log_2 v,1+\log_2 v)$, assumendo che tutti i $v$ valori siano equiprobabili.
 
 Ci confronteremo spesso con il valore $Z_n:=\log_2 v$, chiamato \emph{information-theoretical lower bound}.
 Sulla base di tale valore classifichiamo in base allo spazio le implementazioni di un ADT:
 \begin{description}
-	\item[struttura implicita] occupa un numero di bit di $D_n=Z_n+O(1)$;
-	\item[struttura succinta] occupa un numero di bit di $D_n=Z_n+o(1)$;
-	\item[struttura compatta] occupa un numero di bit di $D_n=O(Z_n)$.
+	\item[struttura implicita] il numero medio di bit occupati è $D_n=Z_n+O(1)$;
+	\item[struttura succinta] il numero medio di bit occupati è $D_n=Z_n+o(Z_n)$;
+	\item[struttura compatta] il numero medio di bit occupati è $D_n=O(Z_n)$.
 \end{description}
 
-C'è da tenere in considerazione, comunque, che spesso sussiste un tradeoff tra lo spazio occupato da una codifica compressa e la velocità in cui è possibile effettuare operazioni su di essa.
+È da tenere in considerazione, comunque, che spesso sussiste un tradeoff tra lo spazio occupato da una codifica compressa e la velocità in cui è possibile effettuare operazioni su di essa.
 Ad esempio, difficilmente è possibile effettuare operazioni su un file compresso con un algoritmo di compressione general-purpose come \textit{tz2}.
 
 
 
 \section{Strutture di rango e selezione}
 Le strutture di rango e selezione sono ADT che consistono in un vettore $b$ di lunghezza $n$ su cui è possibile effettuare le primitive $\rank$ e $\select$:
-\begin{gather*}
-	\forall p\leq n\quad \rank_b(p) := \card{\set{i\mid i<p\land b_i=1}} = \sum_{i=0}^n b_i \\
-	\forall k\leq n\quad \select_b(k) := \max\set{p\mid \rank_b(p)\leq k}
-\end{gather*}
+\begin{align*}
+	 & \bullet\quad \forall p\leq n\quad \rank_b(p) := \card{\set{i\mid i<p\land b_i=1}} = \sum_{i=0}^n b_i \\
+	 & \bullet\quad \forall k\leq \rank_b(n)\quad \select_b(k) := \max\set{p\mid \rank_b(p)\leq k}
+\end{align*}
 
 Per esempio, se $b = [0 1 1 0 1 0 1]$ le tabelle di rank e select di $b$ sono descritte in \cref{table:rank_sel}.
 \begin{table}[ht]
@@ -87,10 +87,7 @@ Per esempio, se $b = [0 1 1 0 1 0 1]$ le tabelle di rank e select di $b$ sono de
 			1   & 2              \\
 			2   & 4              \\
 			3   & 6              \\
-			4   & 7              \\
-			5   & 7              \\
-			6   & 7              \\
-			7   & 7              \\
+			4   & 7
 		\end{tabular}
 		\caption{$\select_b(p)$}
 	\end{subtable}
@@ -107,12 +104,13 @@ Valgono due proprietà fondamentali per le operazioni di rango e selezione:
 Grazie a queste proprietà è possibile ricostruire i valori di $b$ dalle sole query delle operazioni di rango e selezione su di esso.
 
 
-
+% TODO: bisognerebbe indagare cosa succede quando la divisione in blocchi e superblocchi non è precisa (e nel caso aggiungere ceiling/floor opportuni)
 \subsection{La struttura di Jacobson per il rango}
-Jacobson costruisce un'implementazione dell'operazione rango usando il cosiddetto "trucco dei quattro russi" (\textit{four-russians trick}).
+La struttura di Jacobson fornisce un'implementazione efficiente dell'operazione rango pur consistendo in una rappresentazione succinta dell'array di bit.
+La struttura fa uso del cosiddetto "trucco dei quattro russi" \cite{Arlazarov:70:fourrussians}.
 
 Il vettore $b$ di $n$ bit viene diviso in parti uguali, chiamate \emph{superblocchi}, di lunghezza $\log_2^2 n$.
-Ogni superblocco viene diviso a sua volta in parti più piccole, dette blocchi, di lunghezza $\frac{1}{2}\log_2(n)$, come rappresentato in \cref{fig:jrank}.
+Ogni superblocco viene diviso a sua volta in parti più piccole, dette blocchi, di lunghezza $\frac{1}{2}\log_2 n$, come rappresentato in \cref{fig:jrank}.
 
 % TODO: rifare figura
 \begin{figure}[ht]
@@ -399,7 +397,7 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 \begin{theorem}\label{thm:btree_leaves}
 	In un albero binario, il numero di foglie è uguale al numero di nodi interni più uno:
 	\begin{equation*}
-		\card{I}=\card{E}+1
+		\card E = \card I + 1
 	\end{equation*}
 \end{theorem}
 \begin{proof}
@@ -424,9 +422,7 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 	\end{equation*}
 \end{theorem}
 \begin{corollario}
-	\begin{equation*}
-		\forall n \quad\log_2(C_n)=2n+O(\log_2(n))
-	\end{equation*}
+	$\forall n \quad\log_2(C_n)=2n+O(\log n)$.
 \end{corollario}
 \begin{proof}
 	Ricordando l'approssimazione di Stirling per il fattoriale:
@@ -444,13 +440,13 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 	Da cui
 	% TODO: spiegare
 	\begin{equation*}
-		\log_2 C_n = 2n-O(\log n) \text.
+		\log_2(C_n) = 2n-O(\log n) \text.
 	\end{equation*}
 \end{proof}
 \begin{corollario}\label{corol:bitree:itlb}
 	L'information theoretical lower bound in bit per gli alberi binari è
 	\begin{equation*}
-		Z_n = 2n-O(\log_2(n)) \text.
+		Z_n = 2n-O(\log_2 n) \text.
 	\end{equation*}
 \end{corollario}
 
@@ -458,7 +454,7 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 \subsection{Una struttura succinta per alberi binari}
 Per costruire una struttura succinta per gli alberi binari, definiamo tre operazioni fondamentali in cui possono consistere le query alla struttura dati: le operazioni $\trleft$ e $\trright$, che restituiscono rispettivamente il figlio sinistro e destro di un dato nodo, e l'operazione $\trparent$, che restituisce il genitore di un dato nodo.
 
-Per rappresentare un albero binario con $n$ nodi interni, numeriamo i nodi da $0$ a $2n$ seguendo una visita in ampiezza, come rappresentato in \cref{fig:btree_rappr_num}.
+Per rappresentare un albero binario con $n$ nodi interni $I$, numeriamo i nodi da $0$ a $2n$ seguendo una visita in ampiezza, come rappresentato in \cref{fig:btree_rappr_num}.
 Costruiamo quindi un vettore $v$ (\cref{fig:btree_rappr_vec}), di lunghezza $2n+1$ e tale che
 \begin{equation*}
 	\forall i\in\set{0,\dots,2n},\qquad v_i = \begin{cases}
@@ -473,7 +469,11 @@ Costruiamo quindi un vettore $v$ (\cref{fig:btree_rappr_vec}), di lunghezza $2n+
 	\caption{Un albero binario e il suo vettore associato.}
 \end{figure}
 
-Studiamo ora come produrre i risultati delle query di $\trleft$, $\trright$, e $\trparent$ a partire dal vettore $v$. Si consideri, all'interno di un albero $T$, una terna di nodi $p,q,q+1$, dove $p$ è il genitore e $q$ e $q+1$ i figli. Sia $T'$ il sottoalbero radicato nella stessa radice di $T$ contenente tutti i nodi di numero minore di $q$, come rappresentato in \cref{fig:btree_rappr_step}. Si tenga presente che alcuni nodi interni nell'albero $T$, in particolare quelli che seguono $p$, diventano foglie in $T'$.
+Studiamo ora come produrre i risultati delle query di $\trleft$, $\trright$, e $\trparent$ a partire dal vettore $v$.
+Si consideri, all'interno di un albero $T$, una terna di nodi $p,q,q+1$, dove $p$ è il genitore e $q$ e $q+1$ i figli.
+Sia $T'$ il sottoalbero radicato nella stessa radice di $T$ contenente tutti i nodi di indice minore di $q$, come rappresentato in figura \ref{fig:btree_rappr_step}.
+Si tenga presente che alcuni nodi interni nell'albero $T$, in particolare quelli che seguono $p$, diventano foglie in $T'$.
+Non esistono quindi in $T'$ nodi interni (ossia bit a $1$ nella rappresentazione binaria) successivi a $p$.
 
 Il numero di nodi interni minori di $p$, ossia il numero di nodi interni in $T'$, è uguale al rango di $p$ in $v$. Applicando il \cref{thm:btree_leaves}, calcoliamo che il numero complessivo di nodi minori di $q$, cioè il numero di nodi dell'albero $T'$, è
 \begin{equation}\label{eq:btree:left_child}
@@ -481,7 +481,7 @@ Il numero di nodi interni minori di $p$, ossia il numero di nodi interni in $T'$
 \end{equation}
 Mentre per il figlio destro vale, ovviamente
 \begin{equation}\label{eq:btree:right_child}
-	\trright(p) = q+1 = 2\cdot\rank(p)+1 \text.
+	\trright(p) = q+1 = 2\cdot\rank(p)+2 \text.
 \end{equation}
 
 \begin{figure}
@@ -491,7 +491,7 @@ Mentre per il figlio destro vale, ovviamente
 	\label{fig:btree_rappr_step}
 \end{figure}
 
-Per implementare l'operazione $\trparent$, si osservi che in virtù delle equazioni \ref{eq:btree:left_child} e \ref{eq:btree:right_child} vale
+Per implementare l'operazione $\trparent$, si osservi che in virtù delle equazioni (\ref{eq:btree:left_child}) e (\ref{eq:btree:right_child}) vale
 \begin{equation*}
 	\begin{cases}
 		\rank(p)=\dfrac{q}{2}-\dfrac12 & \quad\text{per $q$ dispari} \\[2ex]
@@ -545,8 +545,8 @@ Il vettore $L$ ha costo, ovviamente, $l\cdot n$ bit.
 Il numero di bit richiesti a memorizzare ciascun $u_i$ è uguale a $u_i+1$ ($u_i$ zeri e un $1$). In tutto
 \begin{align*}
 	\sum_{i=0}^{n-1}(u_i+1) & = \sum_{i=0}^{n-1}\left(\floor{\frac{x_i}{2^l}}-\floor{\frac{x_{i-1}}{2^l}}+1\right) \\
-	                        & \leq n + \floor{\frac{x_{n-1}}{2^l}} \leq n + \frac{u}{2^l}                          \\[1ex]
-	                        & \leq n+\frac{u}{2^{\floor{\log_2\frac{u}{n}}}}
+	                        & = n + \floor{\frac{x_{n-1}}{2^l}} \leq n + \frac{u}{2^l}                             \\[1ex]
+	                        & = n + \frac{u}{2^{\floor{\log_2\frac{u}{n}}}}
 \end{align*}
 Se $u/n$ è una potenza di $2$, questo numero è uguale a $2n$, altrimenti è limitato da $3n$:
 \begin{align*}
@@ -583,12 +583,12 @@ Contando strutture succinte di rango e selezione rendere più efficiente il calc
 \subsection{Information theoretical lower bound}
 Le possibili sequenze monotone di $n$ interi limitati da $u$ corrispondono ai possibili multisottoinsiemi dell'insieme $\set{0,\dots,u-1}$ di cardinalità $n$, nonché alle soluzioni dell'equazione
 \begin{equation}\label{eq:seqmon}
-	c_0+c_1+\dots+c_{u-1}
+	c_0+c_1+\dots+c_{u-1} = n
 \end{equation}
 dove $c_i$ è il numero di occorrenze dell'intero $i$ nella sequenza.
 
 Per contare le possibili soluzioni si può utilizzare la tecnica \textit{stars and bars}, in
-cui si utilizza una stringa costruita utilizzando $n$ stelline e $u-1$ barrette per rappresentare una soluzione all'equazione \ref{eq:seqmon}. Ad esempio:
+cui si utilizza una stringa costruita utilizzando $n$ stelline e $u-1$ barrette per rappresentare una soluzione all'equazione (\ref{eq:seqmon}). Ad esempio:
 \begin{equation*}
 	| \starsymb || \starsymb \starsymb || \starsymb | \starsymb
 \end{equation*}
@@ -597,6 +597,7 @@ Il valore complessivo della sequenza è $n$ e va distribuito in $u$ spazi, delin
 L'interpretazione della stringa appena mostrata è $ c_0 = 0, c_1 = 1, c_2 = 0, c_3 = 2, c_4 = 0, c_5 = 1, c_6 = 1 $.
 Il numero di soluzioni possibili è uguale al numero di stringhe costruite in questo modo, che equivale al numero di modi di scegliere $u-1$ posizioni in cui inserire barre in una stringa di $n+u-1$ simboli, ossia $\binom{n+u-1}{u - 1}$.
 
+% TODO: spiegare calcoli e approssimazioni
 Facendo uso dell'approssimazione di Stirling per il coefficiente binomiale\footnote{$\log\binom AB \approx B\log\frac AB+(A-B)\log\frac{A}{A-B}$. In questo caso $A:=u+n-1$ e $B:=n$, quindi per $n\ll u$ il secondo addendo si annulla.}:
 \begin{align*}
 	Z_n & = \log_2\binom{n+u-1}{u - 1} = \log_2\binom{n+u-1}{n}              \\
@@ -606,7 +607,7 @@ Facendo uso dell'approssimazione di Stirling per il coefficiente binomiale\footn
 	    & \sim n\log_2\frac un + \frac{n^2}{u} \approx n\log_2\frac un
 \end{align*}
 
-Quindi la struttura è implicita:
+Quindi la struttura è compatta:
 \begin{equation*}
 	D_n = 2n+n\ceil{\log_2\frac un}+o(n) = O(Z_n)
 \end{equation*}
@@ -787,14 +788,15 @@ L'algoritmo si compone dei seguenti passi:
 Lo spazio occupato in bit da queste strutture è:
 \begin{equation*}
 	\begin{aligned}
-		 & E & k  \log_2(n)         \\
-		 & M & \leq 2(2k-3)\log_2 n \\
-		 & p & n + o(n)             \\
-		 & O & k  \log_2(n)         \\
-		 & w & n
+		 & w & n                 \\
+		 & E & k  \log_2 n       \\
+		 & M & \leq (2k-3)\log n \\
+		 & O & k  \log_2 n       \\
+		 & p & n + o(n)
 	\end{aligned}
 \end{equation*}
-Se si sceglie $l=\log_2 n$, si fa uso di un totale di al più $D_n=(6k-6)\log_2 n+2n+o(n)=8n+o(n)$ bit. Per confrontare questa grandezza con l'information theoretical lower bound consideriamo due insiemi isomorfi alle parentesi ben bilanciate: le foreste ordinate e gli alberi binari.
+Se si sceglie $l=\log_2 n$, si fa uso di un totale di al più $D_n=(6k-6)\log_2 n+2n+o(n)=8n+o(n)$ bit.
+Per confrontare questa grandezza con l'information theoretical lower bound consideriamo due insiemi isomorfi alle parentesi ben bilanciate: le foreste ordinate e gli alberi binari.
 
 
 \subsection{Information theoretical lower bound}

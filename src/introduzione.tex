@@ -7,6 +7,7 @@ Indicheremo la cardinalità di un insieme $A$ con $\card{A}$.
 Indichiamo con $\N$ l'insieme dei numeri naturali, con $\Z$ i numeri interi (relativi), con $\Q$ i razionali e con $\R$ i reali.
 Indichiamo con $S^+$, dove $S$ è uno degli insiemi sopracitati, il sottoinsieme dei numeri positivi di $S$.
 Se $A$ è un insieme e $d$ un naturale, allora $\binom{A}{d}$ è l'insieme dei sottoinsiemi di $A$ di cardinalità $d$.
+Indichiamo con $\angle{x_i}_{i\in S}$ l'insieme degli elementi nella forma $x_i$, dove gli indici $i$ spaziano sugli elementi di $S$.
 
 
 \subsection*{Parole e linguaggi}
@@ -21,19 +22,19 @@ Dati due insiemi $A$ e $B$ si definisce
 \end{equation*}
 l'insieme di tutte le funzioni che hanno dominio $A$ e codominio $B$.\footnote{La notazione deriva dal fatto che se $A$ e $B$ sono insiemi finiti, la cardinalità di $B^A$ è $\card{B}^{\card{A}}$.}
 La notazione di Von Neumann definisce un numero naturale $k$ come l'insieme di cardinalità $k$ dei naturali da $0$ a $k-1$:
-$$
+\begin{equation*}
 	k := \{0,1,\cdots,k-1\}
-$$
+\end{equation*}
 ad esempio, $0 = \emptyset$, $1 = \{0\}$ e così via. Quindi $2^*$ è l'insieme delle stringhe binarie.
 Dato un insieme $A$, l'insieme dei sottoinsiemi di $A$ può essere definito con
-$$
+\begin{equation*}
 	2^A := \{f | f: A \to \{0,1\}\}
-$$
-in quanto le immagini di una funzione $f_B\in2^A$ rappresentano booleani che descrivono l'appartenenza al sottoinsieme $B$ determinato da $f_B$. $f_B$ si dice funzione caratteristica di $B$
+\end{equation*}
+in quanto le immagini di una funzione $f_B\in2^A$ rappresentano booleani che descrivono l'appartenenza al sottoinsieme $B$ determinato da $f_B$. $f_B$ si dice funzione caratteristica di $B$.
 Seguendo la definizione, si ha inoltre
-$$
+\begin{equation*}
 	A^2 = \{f| f: \{0,1\} \to A\}\text.
-$$
+\end{equation*}
 Ogni funzione in $A^2$ associa a $0$ un elemento di $A$ e a $1$ un elemento di $A$, quindi, a meno di un isomorfismo, l'insieme delle immagini delle funzioni in $A^2$ è $A \times A$.
 Come ultimo esempio, si ha che $2^{2^*}$ è l'insieme di tutti i linguaggi binari.
 
@@ -48,7 +49,11 @@ In un grafo qualsiasi, un cammino da $a$ a $b$ è una sequenza di archi $(a,x_1)
 le classi di equivalenza si dicono componenti connesse. Un circuito è un cammino da un vertice $a$ ad $a$ (cioè chiuso) di lunghezza maggiore o uguale a $3$.
 
 \subsubsection*{Visite di grafi}
-Una visita di un grafo consiste nello svolgere una qualche operazione su tutti vertici di un grafo o su tutti quelli connessi a un seme iniziale $s$. Per fare ciò si usa una struttura dati $D$ chiamata dispenser. La scelta di una struttura dati per il dispenser ha come conseguenza il tipo di visita. I nodi sconosciuti si considerano bianchi, quelli visti ma non visitati grigi e quelli visitati neri. L'algoritmo \ref{alg:VisitaGrafo} rappresenta una visita generica di un grafo $G=(V,E)$.
+Una visita di un grafo consiste nello svolgere una qualche operazione su tutti vertici di un grafo o su tutti quelli connessi a un seme sorgente $s$.
+Per fare ciò si usa una struttura dati $D$ chiamata dispenser.
+La scelta di una struttura dati per il dispenser ha come conseguenza il tipo di visita.
+I nodi sconosciuti si considerano bianchi, quelli visti ma non visitati grigi e quelli visitati neri.
+L'algoritmo \ref{alg:VisitaGrafo} rappresenta una visita generica di un grafo $G=(V,E)$.
 
 \begin{algorithm}
 	\input{alg/VisitaGrafo.tex}

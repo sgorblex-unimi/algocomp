@@ -77,8 +77,8 @@ La complessità strutturale definisce la complessità di un problema, più che d
 
 
 \subsection{Classi di complessità}
-\begin{defin}[P]
-	La classe \P è la classe dei problemi di decisione risolvibili da un algoritmo in tempo polinomiale nella dimensione dell'input:
+\begin{defin}[\P]
+	La classe \P è la classe dei problemi di decisione risolvibili da un algoritmo deterministico in tempo polinomiale nella dimensione dell'input:
 	\begin{gather*}
 		\P :=\{\Pi\mid \Pi\text{ è un problema di decisione per cui esistono}\\
 		\text{un algoritmo $A$ e un polinomio $P$ tali che }t_A(n)\leq P(n)~\forall n\in\N\}
@@ -86,7 +86,7 @@ La complessità strutturale definisce la complessità di un problema, più che d
 \end{defin}
 
 % TODO: andrebbero definiti gli algoritmi nondeterministici, ma siccome la definizione che ha dato per ora è molto vaga inserirò quella basata su certificato quando il professore la spiegherà
-\begin{defin}[NP]
+\begin{defin}[\NP]
 	La classe \NP è la classe dei problemi di decisione risolvibili da un algoritmo nondeterministico in tempo polinomiale nella dimensione dell'input:
 	\begin{gather*}
 		\NP :=\{\Pi\mid \Pi\text{ è un problema di decisione per cui esistono un algoritmo}\\
@@ -143,7 +143,7 @@ Dalla definizione segue
 \begin{defin}[problema di ottimizzazione]
 	Un problema di ottimizzazione è una tupla $\Pi=\tuple{I,\amm,c,T}$, con:
 	\begin{itemize}
-		\item $I_\Pi\in\set{0,1}\star$ è l'insieme degli input;
+		\item $I_\Pi\subseteq\set{0,1}\star$ è l'insieme degli input;
 		\item $\amm_\Pi: I_\Pi\to2^{2\star}\setminus\set{\emptyset}$ è l'insieme delle soluzioni ammissibili;
 		\item $c_\Pi:I_\Pi\times 2\star\to\Q^+$ è la funzione obiettivo (o di costo), che associa un valore a un output per un dato input;
 		\item $T_\Pi \in\set{\MIN,\MAX}$ è il tipo di ottimizzazione: l'obiettivo è minimizzare la funzione obiettivo se $T_\Pi=\MIN$ e massimizzarla se $T_\Pi=\MAX$.
@@ -212,7 +212,7 @@ Per i problemi di ottimizzazione, si estendono i concetti che definiscono le cla
 		\item esiste un polinomio $Q$ tale che
 		      \begin{itemize}
 			      \item $\forall x\in I_\Pi \forall y\in\amm_\Pi(x): \len y\leq Q(\len x)$, ossia le soluzioni ammissibili non superano in lunghezza un polinomio nella lunghezza di $x$;
-			      \item $\forall x\in I_\Pi \forall y\in 2\star:$ se $\len y\leq Q(\len x)$ si può decidere se $y\in\amm_pi(x)$ in tempo polinomiale in $\len x$.
+			      \item $\forall x\in I_\Pi \forall y\in 2\star:$ se $\len y\leq Q(\len x)$ si può decidere se $y\in\amm_\Pi(x)$ in tempo polinomiale in $\len x$.
 		      \end{itemize}
 		\item $c_\Pi$ è calcolabile in tempo polinomiale.
 	\end{itemize}
@@ -291,11 +291,11 @@ Il problema di decisione risponde quindi alla domanda: "nel problema di ottimizz
 \end{defin}
 
 % TODO: definizioni da rivedere
-\begin{defin}
+\begin{defin}[\PTAS]
 	\PTAS (Polynomial Time Approximation Scheme) è la classe di problemi di ottimizzazione $\Pi$ tali che esiste un algoritmo che dato $x\in I_\Pi$ e $\varepsilon>1$, trova in tempo polinomiale in $\len x$ un $y\in\amm_\Pi(x)$ con $R_\Pi(x,y)\leq\varepsilon$.
 \end{defin}
 \noindent Si noti che il tempo è polinomiale in $\len x$ ma non necessariemente in $\varepsilon$.
-\begin{defin}
+\begin{defin}[\FPTAS]
 	\FPTAS è la classe dei problemi di \PTAS tali che l'algoritmo caratteristico ha tempo polinomiale sia in $\len x$ sia in $1/\varepsilon$.
 \end{defin}
 

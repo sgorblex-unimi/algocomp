@@ -46,6 +46,5 @@ _minted*
 *.pyg
 
 # meta
-TODO.md
 Session.vim
 local.vimrc

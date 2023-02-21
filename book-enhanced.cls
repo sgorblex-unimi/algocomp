@@ -8,6 +8,8 @@
 
 \LoadClass{book}
 
+\RequirePackage{emptypage}
+
 \RequirePackage[base]{babel}
 \RequirePackage{graphics}
 
@@ -34,6 +36,7 @@
 \newcommand{\logo}[1]{\newcommand{\@logo}{#1}}
 \newcommand{\university}[1]{\newcommand{\@university}{#1}}
 \newcommand{\dept}[1]{\newcommand{\@dept}{#1}}
+\newcommand{\subver}[1]{\newcommand{\@subver}{#1}}
 
 \date{}
 \renewcommand{\maketitle}{
@@ -61,7 +64,11 @@
 		\fi
 
 		\ifx\@date\empty
-			{v. \the\year.\the\month.\the\day}
+			{v. \the\year.\the\month.\the\day
+				\ifdefined \@subver
+					\@subver
+				\fi
+			}
 		\else
 			\@date
 		\fi

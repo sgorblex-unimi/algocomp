@@ -174,6 +174,7 @@ Mentre quello occupato dal vettore $B$ è
 Un'implementazione della struttura succinta di Jacobson per il rango impiega un tempo costante per calcolare il rango di una posizione $p$, dovendo effettuare un accesso ai vettori $S$ e $B$ e uno alla tabella dei tipi di blocco. In effetti l'identificazione del tipo di blocco, stando al criterio di costo della macchina di Turing, è logaritmica in $n$, dovendo scansionare linearmente il blocco che contiene la posizione interessata. Tuttavia, adottando un criterio di costo simile alle macchine reali, questa scansione avviene in tempo costante, poiché un blocco è solitamente contenuto in una o due parole di memoria, recuperate in tempo costante.
 
 
+% TODO: manca del tutto la revisione di questa subsection
 \subsection{Struttura di Clarke per la selezione}
 La struttura di Clarke per la selezione è succinta teoricamente, ma in pratica
 è raramente utilizzata come descritta perché la sua implementazione è molto

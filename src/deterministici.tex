@@ -1006,7 +1006,6 @@ Al fine di dimostrare ciò ricordiamo che decidere se un grafo contiene un cammi
 
 
 
-% TODO: spostare insieme a LB? (se sì, sistemare l'introduzione)
 \section{\texorpdfstring{$2$}{2}-\LoadBalancing}
 $2$-\LoadBalancing è una specializzazione di \LoadBalancing in cui il numero di macchine $m$ è uguale a $2$.
 Questo problema è anche chiamato \MinimumPartition in quanto è equivalente al bilanciare una partizione insiemistica di due elementi.
@@ -1147,7 +1146,6 @@ Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\sta
 		\sum_{i\in I} v_i \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
 	\end{equation}
 
-	% TODO: e se l'input contiene oggetti di peso maggiore alla capacità massima?
 	\noindent Si consideri la soluzione ammissibile composta da un solo peso di valore massimo. Applicando (\ref{eq:knap:1}):
 	\begin{gather}
 		v_{\max} \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \leq \frac{v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \nonumber \\

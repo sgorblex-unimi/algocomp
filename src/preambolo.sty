@@ -20,12 +20,6 @@
 
 
 % CODE
-
-\usepackage{listings}
-
-\usepackage[cache=false]{minted}
-\setminted[python]{mathescape,linenos,numbersep=5pt,frame=lines,framesep=2mm}
-
 \usepackage[italiano,linesnumbered,ruled,vlined]{algorithm2e}
 \DontPrintSemicolon
 \SetKwInput{KwInput}{Input}
@@ -53,36 +47,7 @@
 \usepackage{tikz}
 \usetikzlibrary{external}
 \tikzexternalize[prefix=tikz_cache/]
-\usetikzlibrary{angles,arrows,arrows.meta,calc,chains,decorations.pathreplacing,fit,matrix,patterns,positioning,quotes,shapes.geometric,shapes.misc}
-
-\usepackage{tkz-euclide}
-\tikzset{pics/sema/.style args={#1/#2/#3}{code={
-					\ifstrequal{#2}{0}{
-						\node[circle,minimum width=2mm,draw,fill=#1] {};
-					}{
-						\tkzDefPoint(0,0){O}
-						\tkzDrawSector[R,fill=#1](O,2mm)(90,90-#2)
-						\tkzDrawSector[R,fill=#3](O,2mm)(90-#2,90-360)
-					}
-				}},
-}
-
-\usepackage{pgfplots}
-\usepgfplotslibrary{fillbetween}
-\pgfplotsset{compat=1.17}
-\newcommand{\pgfenv}{
-	\pgfplotsset{
-		standard/.style={% Axis format
-				axis x line=middle,
-				axis y line=middle,
-				enlarge x limits=0.15,
-				enlarge y limits=0.15,
-				every axis x label/.style={at={(current axis.right of origin)},anchor=north west},
-				every axis y label/.style={at={(current axis.above origin)},anchor=north east},
-				every axis plot post/.style={mark options={fill=white}}
-			}
-	}
-}
+\usetikzlibrary{positioning,shapes.geometric}
 
 
 % REFS
@@ -119,7 +84,6 @@
 \newcommand{\Z}{\mathbb Z}
 \newcommand{\Q}{\mathbb Q}
 \newcommand{\R}{\mathbb R}
-% \newcommand{\card}[1]{\# #1}
 \newcommand{\card}[1]{| #1 |}
 \newcommand{\compl}{^\complement}
 
@@ -144,6 +108,10 @@
 \newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
 \newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
 \newcommand{\tuple}[1]{\langle #1 \rangle}
+\newcommand{\trans}{^T}
+\newcommand{\ev}[1]{E\left[#1\right]}
+\newcommand{\asn}{\leftarrow}
+\newcommand{\seq}[1]{\langle #1 \rangle}
 
 % scheda problema
 \newcommand{\pdec}[3]{
@@ -168,30 +136,28 @@
 }
 
 
-% PROBLEMS, CLASSES AND ALGORITHMS
+% DEFINIZIONI DI PROBLEMI, CLASSI, ALGORITMI
+
+% classi
 \let\P\undefined
 \newproblemclassq{P}
 \newproblemclassq{NP}
-\newproblem{Sat}
-\newproblem{MaxSat}
 \newproblemclassq{PO}
 \newproblemclassq{NPO}
+\newcommand{\gAPX}[1]{#1\text-\APX}
 \newproblemclassq{APX}
 \newproblemclassq{PTAS}
 \newproblemclassq{FPTAS}
+\newproblemclassq{PCP}
+
+% problemi
+\newproblem{Sat}
+\newproblem{MaxSat}
 \newproblem{MaxMatching}
 \newproblem{BiMaxMatching}
 \newproblem{PerfectMatching}
 \newproblem{DominatingSet}
-\newcommand{\gAPX}[1]{#1\text-\APX}
 \newproblem{LoadBalancing}
-\newcommand{\asn}{\leftarrow}
-\newalgo{GreedyLoadBalancing}
-\newalgo{SortedGreedyBalance}
-\newalgo{CenterSelectionPlus}
-\newalgo{GreedyCenterSelection}
-\newalgo{GreedySetCover}
-\newalgo{PricedVertexCover}
 \newproblem{CenterSelection}
 \newproblem{MinSetCover}
 \newproblem{MinCut}
@@ -200,33 +166,42 @@
 \newproblem{LinearProgramming}
 \newproblem{IntegerLinearProgramming}
 \newproblem{DisjointPaths}
-\newalgo{PricedDisjointPaths}
 \newproblem{TravelingSalesman}
 \newproblem{MinimumSpanningTree}
 \newproblem{MinimumWeightPerfectMatching}
 \newproblem{MinimumPartition}
 \newproblem{Knapsack}
-\newalgo{DynamicKnapsack}
-\newalgo{WeightDynamicKnapsack}
 \newproblem{MaxEkSat}
-\newproblemclassq{PCP}
 \newproblem{IndependentSet}
 
+% algoritmi
+\newalgo{GreedyLoadBalancing}
+\newalgo{SortedGreedyBalance}
+\newalgo{CenterSelectionPlus}
+\newalgo{GreedyCenterSelection}
+\newalgo{GreedySetCover}
+\newalgo{PricedVertexCover}
+\newalgo{PricedDisjointPaths}
+\newalgo{DynamicKnapsack}
+\newalgo{WeightDynamicKnapsack}
+
+
+% ALTRE MACRO
+
+% primitive per ADT
 \newcommand{\rank}{\mathrm{rank}}
 \newcommand{\select}{\mathrm{select}}
-
 \newcommand{\trext}{\mathrm{ext}}
 \newcommand{\trint}{\mathrm{int}}
 \newcommand{\trleft}{\mathrm{left\_child}}
 \newcommand{\trright}{\mathrm{right\_child}}
 \newcommand{\trparent}{\mathrm{parent}}
-\newcommand{\trans}{^T}
-\newcommand{\ev}[1]{E\left[#1\right]}
-\renewcommand{\phi}{\varphi}
 \newcommand{\dyfindopen}{\mathrm{find\_open}}
 \newcommand{\dyfindclosed}{\mathrm{find\_closed}}
 \newcommand{\dyenclose}{\mathrm{enclose}}
 \newcommand{\dypion}{\mathrm{pion}}
 \newcommand{\tree}{\mathrm{tree}}
-\newcommand{\seq}[1]{\langle #1 \rangle}
+
+% abbreviazioni
 \newcommand{\eve}{\mathcal E}
+\renewcommand{\phi}{\varphi}

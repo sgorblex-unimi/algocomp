@@ -1,25 +1,15 @@
 \documentclass[a4paper]{book-enhanced}
+% \documentclass[compact]{book-enhanced}
 
 \usepackage{src/preambolo}
 
-% TODO GENERALI
-% rifare in modo pulito tutte le figure pesantemente basate su coordinate
-% rimuovere label inutili
-% valutare se passare al semplice ref piuttosto che cref
-% decidere se usare tuple (e nel caso farlo) per grafi e altri
-% nella scheda del problema bisogna essere coerenti: si dice prima cos'è una copertura/dominatingset/etc. e poi nella scheda si dice di trovarne uno di costo minimo. Evitare di dare una spiegazione (oltretutto vaga) dell'oggetto da minimizzare nella scheda invece che citare semplicemente il nome tecnico spiegato altrove. Bilanciare citazione/spiegazione, tenere in considerazione il rapporto tra tempo "Semantica" e campo "Ammissibili". In effetti, valutare se tutte le sezioni della scheda sono necessarie
-% aggiungere \text. e analoghi quando serve
-% pulire e riordinare preambolo
-% rimuovere ambiente oss? rinominare corollario e altri
-% \qedhere
-% nei problemi sui grafi, studiare e specificare quali siano su grafi orientati, quali non, quali su ipergrafi, quali su multigrafi, etc.
-
 \title{Algoritmi e Complessità}
-\subtitle{Appunti delle lezioni tenute dal Prof. Paolo Boldi}
+\subtitle{Dispense non ufficiali}
 \author{Alessandro Clerici, Marco Cutecchia, Edoardo Marangoni}
 \university{Università degli Studi di Milano}
 \dept{Dipartimento di Informatica}
 \logo{img/logo.tikz}
+% \subver{a}
 
 \begin{document}
 
@@ -28,18 +18,17 @@
 \maketitle
 \tableofcontents
 
+\frontmatter
+
+\include{src/prefazione}
+\include{src/introduzione}
+
 \mainmatter
 
-\include{src/introduzione}
 \include{src/problemi}
 \include{src/deterministici}
 \include{src/probabilistici}
 \include{src/succinte}
-\cleardoublepage
-
-\appendix
-\include{labs/lab1}
-\include{labs/lab2}
 
 \backmatter
 

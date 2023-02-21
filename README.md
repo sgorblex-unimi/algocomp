@@ -1,32 +1,27 @@
-# README
-Questo è il mio fork degli appunti dell'insegnamento di Algoritmi e Complessità tenuto dal professor Boldi presso Unimi, [originariamente](https://git.sr.ht/~ecmm/aec-notes) messi insieme da Cutecchia e Marangoni.
+# Algoritmi e Complessità
+Queste dispense nascono come appunti delle lezioni tenute dal professor Boldi nell'anno accademico 2021/22, ad opera di [Marco Cutecchia ed Edoardo Marangoni](https://git.sr.ht/~ecmm/aec-notes).
+Questa prima versione, molto ricca ma a mio parere imprecisa e verbosa, è stata il punto di partenza della mia versione (*fork*), che ho chiamato *dispense non ufficiali*.
+Questa versione nasce con una filosofia diversa, cioè quella di fornire un materiale che contenga i contenuti dell'insegnamento in modo (ragionevolmente) formale e preciso, che possa in teoria sostituire le altre risorse bibliografiche e i cui approfondimenti risiedono in appendici.
 
-Al momento sto effettuando una revisione completa dei vari capitoli, di fatto riscrivendoli di modo da adattarli al mio ideale di quello che dovrebbe essere un documento del genere. Al termine della revisione l'intenzione è quella di mantenere gli appunti implementando correzioni ed eventualmente espandendoli.
-
-
-
-## Motivation
-Il fork è stato creato con una serie di obiettivi:
+In particolare, il fork è stato creato con una serie di obiettivi:
 - liberare da parti inutili ("bloat") sia il sorgente sia il contenuto
 - correggere errori, sia negli appunti sia nella spiegazione
 - migliorare il contenuto, fornendo informazioni integrative e facendo uso di un linguaggio preciso e formale
 
-
-
-## Stato della mia revisione
-Sono stati revisionati i seguenti capitoli/paragrafi:
-- sec. 0 Notazione
-- cap. 1 Problemi e complessità
-- cap. 2 Algoritmi deterministici
-- cap. 3 Algoritmi probabilistici (mancante parte di MaxEkSat)
-- cap. 4 Strutture succinte: (mancante Clarke)
-
-Le parti non elencate sono ancora al loro stato originale, cioè prima della mia revisione, o a una sua vicina approssimazione. Anche le parti elencate possono naturalmente subire modifiche correttive, ma sono già state adattate al mio linguaggio.
+Comunque, la revisione dell'opera originale non è perfetta, come si può vedere (ad esempio) dai numerosi [TODO](TODO.md).
 
 
 
 ## Contribuire
-Il piano finale per questo fork è quello di accettare e incoraggiare le collaborazioni tramite issue e pull request. Al momento, vista l'attuale revisione, è opportuno che tali operazioni riguardino le parti già revisionate, poiché le correzioni su quelle da revisionare hanno poco valore temporale. Grazie per la collaborazione!
+Accetto contributi tramite issue e pull request su GitHub. Un ottimo punto da cui partire è [TODO.md](TODO.md). Grazie per la collaborazione!
+
+
+
+## Compilare
+Installare una distribuzione con LuaLaTeX, quindi eseguire:
+```sh
+latexmk
+```
 
 
 

@@ -2,18 +2,17 @@
 
 
 
-% TODO: Estendere a MaxMatching?
 \section{\BiMaxMatching}\label{sec:BiMaxMatching}
-Sia $G=(V,E)$ un grafo non orientato. Un \emph{matching} (matrimonio) in $G$ è una selezione di lati in $E$ tale che su nessun vertice in $V$ incide più di un lato.
+Sia $G=(V,E)$ un grafo non orientato. Un \emph{matching} (matrimonio) in $G$ è una selezione $X$ di lati in $E$ tale che su nessun vertice in $V$ incide più di un lato di $X$.
 \MaxMatching è il problema di trovare il matching di cardinalità massima in un dato grafo.
 
-\BiMaxMatching è una versione di \MaxMatching su grafi bipartiti, cioè in cui i vertici sono divisi in due classi e ogni lato incide su un vertice per classe: $G=(V_1,V_2,E)$ dove $V_1\cup V_2=\emptyset$ e $E\subseteq V_1\times V_2$. $\BiMaxMatching\in\PO$.
+\BiMaxMatching è una versione di \MaxMatching su grafi bipartiti, cioè in cui i vertici sono divisi in due classi e ogni lato incide su un vertice per classe: $G=(V_1,V_2,E)$ dove $V_1\cap V_2=\emptyset$ e $E\subseteq V_1\times V_2$. $\BiMaxMatching\in\PO$.
 
 \popt{\BiMaxMatching}
 {Grafo bipartito $G=(V_1,V_2,E)$}
 {$X\subseteq E$}
 {Determinare il matching di cardinalità massima in $G$}
-{$X\subseteq E$}
+{$X\subseteq E:\forall e_1,e_2\in X,~ e_1\cap e_2\neq\emptyset\impl e_1=e_2$}
 {$\MAX$}
 {$\card X$}
 
@@ -54,7 +53,7 @@ Vale il seguente teorema relativo ai cammini aumentanti per matching su grafi:
 \begin{proof}~
 	\begin{description}
 		\item[$\Rightarrow$)] Applicando un flip al cammino aumentante si aumenta il matching di $1$.
-		\item[$\Leftarrow$)] Se $M$ non è massimo, sia $M'$ il matching massimo per $G$ e sia $X:=(M\setminus M')\cup(M'\setminus M)$ (la differenza simmetrica di $M$ e $M'$).
+		\item[$\Leftarrow$)] Se $M$ non è massimo, sia $M'$ un matching massimo per $G$ e sia $X:=(M\setminus M')\cup(M'\setminus M)$ (la differenza simmetrica di $M$ e $M'$).
 			Su ogni vertice di $G$ possono incidere al più $2$ lati di $X$ (uno per ciascuno dei due matching).
 			Nel grafo indotto da $X$, in ogni circuito l'appartenenza dei lati a $M$ e $M'$ è alternata e quindi il circuito è composto dallo stesso numero di lati di $M$ e di $M'$.
 			Siccome però $M'$ ha più lati di $M$, esiste almeno un cammino semplice nel grafo indotto da $X$ che ha più lati in $M'$.
@@ -62,7 +61,7 @@ Vale il seguente teorema relativo ai cammini aumentanti per matching su grafi:
 	\end{description}
 \end{proof}
 
-% TODO: è necessario discutere di come viene effettuata la visita per FindAugmenting e quale sia la sua complessità. Tenere conto di ciò nel paragone con MaxMatching: è possibile usare lo stesso algoritmo su grafi non bipartiti?
+% TODO: è necessario discutere di come viene effettuata la visita per FindAugmenting e quale sia la sua complessità.
 \SetKwFunction{FindAugmenting}{FindAugmenting}
 \SetKwFunction{Flip}{Flip}
 L'algoritmo \ref{alg:BiMaxMatching} risolve \BiMaxMatching trovando l'ottimo in tempo polinomiale.
@@ -85,10 +84,16 @@ La procedura \Flip esegue un flip del matching dato.
 	$\PerfectMatching\in\P$.
 \end{corollario}
 
+% TODO: in relazione al todo precedente, spiegare perché l'algoritmo precedente non sia polinomiale su grafi generici e dire che in quel caso servono tecniche più avanzate per trovare cammini aumentanti.
+Vale inoltre il seguente risultato, che non dimostriamo:
+\begin{theorem}
+	$\MaxMatching\in\PO$.
+\end{theorem}
+
 
 
 \section{\LoadBalancing}
-Il problema \LoadBalancing (bilanciamento del carico) consiste nel dividere un insieme di task, ciascuno con la sua durata, tra le macchine di un insieme, in modo da minimizzare la durata complessiva (carico) impiegata dalla macchina più lenta. Questo problema è \NPO-completo.
+Il problema \LoadBalancing (bilanciamento del carico) consiste nel dividere un insieme di task, ciascuno con la sua durata, tra le macchine di un insieme, in modo da minimizzare la durata complessiva (carico) impiegata dalla macchina più carica. Questo problema è \NPO-completo.
 
 \popt
 {\LoadBalancing}
@@ -143,11 +148,11 @@ Si dimostra che questo risultato sull'analisi di \GreedyLoadBalancing è tight:
 \begin{theorem}
 	Per ogni $\varepsilon>0$ esiste un input di \LoadBalancing su cui \GreedyLoadBalancing produce una soluzione $L$ tale che
 	\begin{equation*}
-		2-\varepsilon\leq\frac L{L\star}\leq2
+		2-\varepsilon\leq\frac L{L\star}
 	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Scegliamo un numero di macchine $m>\frac1\varepsilon$ e un numero di task $n=m(m-1)+1$. Questi task consistono, nell'ordine, in $n-1$ task da $1$ e un task da $m$. Naturalmente la soluzione ottima assegna unicamente il task da $m$ a una macchina, che risulta la più carica, quindi $L\star=m$.
+	Scegliamo un numero di macchine $m\geq\frac1\varepsilon$ e un numero di task $n=m(m-1)+1$. Questi task consistono, nell'ordine, in $n-1$ task di durata $1$ e un task da $m$. Naturalmente la soluzione ottima assegna unicamente il task da $m$ a una macchina, che risulta la più carica, quindi $L\star=m$.
 
 	Per assegnare i task, l'algoritmo assegna un task da $1$ per ogni macchina ciclicamente finché arriva il task da $m$, che viene assegnato a una macchina di carico $m-1$ producendo un costo finale di $2m-1$. In questo caso si ha
 	\begin{equation*}
@@ -163,23 +168,26 @@ Un algoritmo \SortedGreedyBalance può ordinare i task in ordine decrescente pri
 	\SortedGreedyBalance è un algoritmo $\frac32$-approssimante per \LoadBalancing.
 \end{theorem}
 \begin{proof}
-	Se $n\leq m$ la soluzione è ottima e la tesi è ovvia.
+	Se $n\leq m$, a ciascuna macchina viene assegnato un solo task, quindi $L=L\star=\max_i t_i$. La tesi, pertanto, è ovvia.
 
-	Se $n>m$, esiste una macchina che riceve due task. Il primo task assegnato a una macchina già carica è $t_m$, e vale:
+	Se $n>m$, esiste una macchina che riceve due task.
+	Il primo task assegnato a una macchina già carica è $m$.
+	Poiché esistono $m$ task di durata superiore a $t_m$, anche nella soluzione ottima due di essi devono essere assegnati alla stessa macchina (principio della piccionaia), quindi vale:
 	\begin{equation*}
-		L\star\geq 2t_m
+		L\star\geq 2t_m \text.
 	\end{equation*}
 
-	Sia $\bar j$ la macchina con carico massimo al termine dell'esecuzione e $\bar i$ l'ultimo carico assegnato. Si ha $\bar i \geq m$, da cui $t_{\bar i}\leq t_m$ e quindi $t_{\bar i}\leq t_m\leq \frac12 L\star$.
+	Sia $\bar j$ una macchina con carico massimo al termine dell'esecuzione e $\bar i$ l'ultimo task assegnatovi.
+	Se $\bar i$ è l'unico task di $\bar j$, allora la soluzione è ottima e la tesi è ovvia.
+	In ogni altro caso si ha $\bar i \geq m$, da cui $t_{\bar i}\leq t_m$ e quindi $t_{\bar i}\leq t_m\leq \frac12 L\star$.
 	\begin{gather*}
-		L=\underbrace{L_{\bar j}-t_{\bar i}}_{\leq L\star}+\underbrace{t_{\bar i} }_{\leq \frac12 L\star}\leq L\star+\frac12 L\star=\frac32L\star
+		L=\underbrace{L_{\bar j}-t_{\bar i}}_{\leq L\star}+\underbrace{t_{\bar i}}_{\leq \frac12 L\star}\leq L\star+\frac12 L\star=\frac32L\star
 	\end{gather*}
 \end{proof}
 
 Valgono inoltre i seguenti teoremi riguardanti \LoadBalancing, che non dimostriamo.
 \begin{theorem}~
 	\begin{itemize}
-		% TODO: add bib
 		\item \SortedGreedyBalance è un algoritmo $\frac43$-approssimante per \LoadBalancing \cite{Graham:69:sortedgreedybalance};
 		\item $\LoadBalancing\in\PTAS$;
 		\item $\P\neq\NP\impl\LoadBalancing\notin\FPTAS$.
@@ -189,32 +197,31 @@ Valgono inoltre i seguenti teoremi riguardanti \LoadBalancing, che non dimostria
 
 
 \section{\CenterSelection}
-Nel problema \CenterSelection è dato uno spazio metrico $\tuple{S,d}$ di punti.
-Si vuole minimizzare la distanza massima $\rho(C)$ tra un nodo e il suo nodo di riferimento, detta raggio di copertura.
+Nel problema \CenterSelection è dato uno spazio metrico $\tuple{S,d}$.
+Tra i punti si $S$ si selezionano centri $C\subseteq S$: ogni punto ha un centro di riferimento che consiste nel più vicino.
+La massima distanza tra un punto di $S$ e il suo centro di riferimento è detta raggio di copertura ed è il valore che si vuole minimizzare.
 \CenterSelection è un problema \NPO-completo.
 
 \popt{\CenterSelection}
-{Insieme $S$ di punti, metrica $d$, numero massimo di centri $k\in\N^+$}
-{Centri $C\subseteq S$}
-{Quali centri selezionare in modo da minimizzare il raggio di copertura}
+{Spazio metrico $S$ con distanza $d$, numero massimo di centri $k\in\N^+$}
+{$C\subseteq S$}
+{Selezionare al più $k$ centri che minimizzino il raggio di copertura}
 {$C\subseteq S\mid \card C\leq k$}
 {$\MIN$}
 {$\rho(C) = \max_{x \in S} d(x, C)$}
 
 Uno spazio metrico è un insieme $\Omega$ di punti su cui vale una funzione distanza $d:\Omega\times\Omega\to\R^{\geq0}$ tale che:
 \begin{itemize}
-	\item $d(x,y)=0\iff x=y$
-	\item $d(x,y)=d(y,x)\forall x,y\in\Omega$
-	\item $d(x,y)=d(x,z)+d(z,y)$ (disuguaglianza triangolare)
+	\item $\forall x\in S\quad d(x,x)=0$
+	\item $\forall x,y\in S\quad d(x,y)=d(y,x)$
+	\item $\forall x,y,z\in S\quad d(x,y)\leq d(x,z)+d(z,y)$ (disuguaglianza triangolare)
 \end{itemize}
+Sia $C\subseteq\Omega$ e $s\in\Omega$. Con abuso di notazione si indica con $d(s,C)$ la distanza minima tra il punto $s$ e i punti appartenenti a $C$, ossia $d(s,C):=\min_{c\in C} d(s,c)$.
 
-\begin{defin}[tassellificazione di Voronoi]
-	Dato uno spazio metrico $\tuple{\Omega,d}$, sia $S\subseteq\Omega$ finito e $C\subseteq S$ l'insieme dei centri. Per ogni $c\in C$ la cella di Voronoi rispetto al centro $c$ è l'insieme dei punti $s\in S$ tali che
-	\begin{equation*}
-		c=\arg\min_{c'\in C} d(s,c')
-	\end{equation*}
-	% TODO: brutta, esprimere meglio
-	Dato un punto $s\in S$ definiamo l'assegnamento di $s$ alla cella di centro $c\in C$ $\text{VC}_C(s)=\arg\min_{c'\in C} d(s,c')$.
+\begin{defin}[tassellatura di Voronoi]
+	Dato uno spazio metrico $\tuple{\Omega,d}$, sia $S\subseteq\Omega$ finito e $C\subseteq S$ un insieme di centri.
+	Dato un punto $s\in S$ il centro di riferimento di $s$ è $\text{VC}_C(s):=\arg\min_{c\in C} d(s,c)$.
+	Per ogni $c\in C$, la cella di Voronoi di centro $c$ è l'insieme $\text{VC}_C^{-1}(c)$ degli elementi di $S$ mappati in $c$ tramite $\text{VC}_C$.
 \end{defin}
 
 \begin{equation*}
@@ -227,7 +234,7 @@ Uno spazio metrico è un insieme $\Omega$ di punti su cui vale una funzione dist
 \end{equation*}
 
 \subsection{\CenterSelectionPlus}
-L'algoritmo \ref{alg:CenterSelectionPlus} non risolve \CenterSelection in quanto richiede un input $r$ aggiuntivo rispetto a quelli previsti dal problema, che consiste in una stima del raggio di copertura ottimo $r\star$.
+L'algoritmo \ref{alg:CenterSelectionPlus} non risolve \CenterSelection in quanto richiede un input $r$ aggiuntivo rispetto a quelli previsti dal problema, che consiste in una stima del raggio di copertura ottimo $\rho\star$.
 
 \begin{algorithm}[ht]
 	\caption{\CenterSelectionPlus}
@@ -235,29 +242,31 @@ L'algoritmo \ref{alg:CenterSelectionPlus} non risolve \CenterSelection in quanto
 	\input{alg/CenterSelectionPlus.tex}
 \end{algorithm}
 
-Si noti che un algoritmo \CenterSelectionPlus' che, invece di eliminare punti di $S$, non prenda in considerazione nella selezione di nuovi centri punti $s$ tali che $d(s,C)>2r$, è del tutto equivalente a \CenterSelectionPlus.
 \begin{theorem}
 	Valgono le seguenti proprietà per \CenterSelectionPlus:
 	\begin{enumerate}[(a)]
 		\item \label{itm:centerselection:plus1} se l'algoritmo emette un output $C$, allora $C$ è una soluzione ammissibile con $\rho(C)\leq 2r$;
 		\item \label{itm:centerselection:plus2} se $r\geq\rho\star$ allora l'algoritmo emette un output.
+		\item \label{itm:centerselection:plus3} se $r<\frac{\rho\star}{2}$ allora l'algoritmo non produce un output.
 	\end{enumerate}
 \end{theorem}
 \begin{proof}
-	\ref{itm:centerselection:plus1} L'output $C$ è ammissibile in quanto composto da elementi di $S$ e $\card C\leq k$. Poiché l'algoritmo termina quando sono stati eliminati tutti i punti di $S$, e ogni punto $\bar s\in S$ viene eliminato quando per un centro $\bar s$ selezionato vale $d(s,\bar s\leq 2r$, il raggio massimo da un punto al centro più vicino è minore o uguale a $2r$;
+	\ref{itm:centerselection:plus1} L'output $C$ è ammissibile in quanto composto da elementi di $S$ e $\card C\leq k$.
+	Poiché l'algoritmo termina quando sono stati eliminati tutti i punti di $S$, e ogni punto $s\in S$ viene eliminato quando per un centro $\bar s$ selezionato vale $d(s,\bar s)\leq 2r$, il raggio massimo da un punto al centro più vicino è minore o uguale a $2r$;
 
 	\ref{itm:centerselection:plus2} Sia $C\star$ una soluzione ottima. Si consideri $\bar s\in S$ e sia $\bar c:=\text{VC}_{C\star}(\bar s)$ e $X_{\bar c}:=\text{VC}_{C\star}^{-1}(\bar c)$.
 	Per qualunque punto $s\in X_{\bar c}$ vale, per disuguaglianza triangolare:
-	\begin{align*}
-		d(s,\bar s) & \leq d(s,c\star(s))+d(c\star(s),\bar s)                \\
-		            & = d(s,c\star(s))+d(c\star(\bar s),\bar s)              \\
-		            & \leq \rho\star + \rho\star = 2\rho\star \leq 2r \text.
-	\end{align*}
-	Quindi dopo l'inserimento di $\bar s$ non rimane in $S$ alcun elemento di $X_{\bar c)}$. Poiché la soluzione ottima contiene al più $k$ centri, dopo al più $k$ iterazioni tutti i punti di $S$ sono stati rimossi, e $\card C\leq k$.
+	\begin{equation*}
+		d(s,\bar s) \leq d(s,\bar c)+d(\bar c,\bar s) \leq \rho\star + \rho\star = 2\rho\star \leq 2r \text.
+	\end{equation*}
+	Quindi dopo l'inserimento di $\bar s$ non rimane in $S$ alcun elemento di $X_{\bar c}$.
+	Poiché la soluzione ottima contiene al più $k$ centri, dopo al più $k$ iterazioni tutti i punti di $S$ sono stati rimossi, e $\card C\leq k$.
+
+	\ref{itm:centerselection:plus3} Se l'algoritmo emettesse un output $C$ per $r<\frac{\rho\star}{2}$, allora per il punto \ref{itm:centerselection:plus1} si avrebbe $\rho(C)\leq 2r<\rho\star$, il che è assurdo se $\rho\star$ è l'ottimo.
 \end{proof}
 
 
-Come rappresentato in figura \ref{fig:csplus_r_beh}, l'algoritmo ricevendo $r\geq\rho\star$ produce una soluzione ammissibile con approssimazione $\frac{2r}{\rho\star}$; se $r\leq\frac{\rho\star}{2}$ l'algoritmo non produce output; nei casi rimanenti il comportamento dell'algoritmo non è consistente.
+Come rappresentato in figura \ref{fig:csplus_r_beh}, l'algoritmo ricevendo $r\geq\rho\star$ produce una soluzione ammissibile con approssimazione $\frac{2r}{\rho\star}$; se $r<\frac{\rho\star}{2}$ l'algoritmo non produce output; nei casi rimanenti il comportamento dell'algoritmo non è consistente.
 Un algoritmo del genere può essere utilizzato sfruttando un'opportuna applicazione della ricerca dicotomica per la determinazione del valore ottimo di $r$.
 
 \begin{figure}[ht]
@@ -281,19 +290,27 @@ L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterS
 	\GreedyCenterSelection è un algoritmo $2$-approssimante per \CenterSelection.
 \end{theorem}
 \begin{proof}
-	Per assurdo, supponiamo che $C$ sia tale che $\rho(C)>2\rho\star$, ossi  esiste $\hat s\in S$ tale che $d(\hat s,C)> 2\rho\star$.
-	Consideriamo l'$i$-esima iterazione dell'algoritmo: sia $C_i$ l'insieme dei centri all'inizio dell'$i$-esima iterazione e $\bar s_i$ il centro da inserire. Vale:
+	Si consideri una variante di \CenterSelectionPlus che, invece di eliminare punti di $S$, prenda in considerazione nella selezione di nuovi centri solo punti $s$ tali che $d(s,C)>2r$.
+	Questo algoritmo \CenterSelectionPlus' è del tutto equivalente a \CenterSelectionPlus in quanto, selezionato un centro, i punti entro una distanza $2r$ da esso vengono ignorati per il resto della computazione.
+
+	Per assurdo, supponiamo che l'output $C$ sia tale che $\rho(C)>2\rho\star$, ossia esiste $\hat s\in S$ tale che $d(\hat s,C)> 2\rho\star$.
+	Consideriamo l'$i$-esima iterazione dell'algoritmo: sia $C_i$ l'insieme dei centri all'inizio dell'$i$-esima iterazione e $\bar s_i$ il centro da inserire.
+	Per il funzionamento dell'algoritmo e poiché $C_i\subseteq C$, vale:
 	\begin{equation*}
 		d(\bar s_i,C_i)\geq d(\hat s,C_i)\geq d(\hat s, C)>2\rho\star
 	\end{equation*}
-	Questa condizione è esattamente quella che esclude punti dalla selezione di \CenterSelectionPlus', pertanto i due algoritmi sono equivalenti se $r=\rho\star$. Ma per $r=\rho\star$ \CenterSelectionPlus' emette una $\frac{2\rho\star}{\rho\star}=2$-approssimazione, il che contraddice l'ipotesi di assurdo.
+	Quindi, il centro viene scelto tra quelli distanti almeno $2\rho\star$ dai centri attuali.
+	L'algoritmo equivale quindi a un'esecuzione di \CenterSelectionPlus' con $r=\rho\star$.
+	Ma per $r=\rho\star$ \CenterSelectionPlus' emette una $\frac{2\rho\star}{\rho\star}=2$-approssimazione, il che contraddice l'ipotesi di assurdo.
 \end{proof}
 
+
+\subsection{Inapprossimabilità di \CenterSelection}
 \begin{theorem}
 	Se $\P\neq\NP$, non esiste $\alpha<2$ tale che $\CenterSelection\in\gAPX\alpha$.
 \end{theorem}
 \begin{proof}
-	Si consideri il problema di decisione \NP-completo \DominatingSet. Dato un grafo non orientato $G=(V,E)$, un dominating set per $G$ è un insieme di vertici $D\subseteq V$ se e solo se ogni vertice non appartenente a $D$ ha un adiacente in $D$: $\forall x\in(V\setminus D),\exists y\in D\mid \set{x,y}\in D$.
+	Si consideri il problema di decisione \NP-completo \DominatingSet. Dato un grafo non orientato $G=(V,E)$, un dominating set per $G$ è un insieme di vertici $D\subseteq V$ se e solo se ogni vertice non appartenente a $D$ ha un adiacente in $D$: $\forall x\in(V\setminus D),\exists y\in D\mid \set{x,y}\in E$.
 
 	\pdec{\DominatingSet}
 	{Grafo non orientato $G=(V,E)$, $k\in\N^+$}
@@ -308,8 +325,11 @@ L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterS
 			2 \quad & \text{altrimenti}
 		\end{cases}
 	\end{equation*}
+	Si noti che $d$ soddisfa la definizione di metrica.
 
-	In una istanza di \CenterSelection derivata in questo modo, $\rho\star=2$ oppure $\rho\star=1$. Nel secondo caso l'insieme di centri scelti è un dominating set nell'istanza originale del problema, infatti:
+	In una istanza di \CenterSelection derivata in questo modo, $\rho\star=2$ oppure $\rho\star=1$.
+	Nel secondo caso l'insieme di centri scelti è un dominating set nell'istanza originale del problema.
+	Infatti, sia $D\subseteq S$ la soluzione ottima per tale istanza. Vale:
 	\begin{align*}
 		\rho\star=1 & \coimpl\forall x\in(V\setminus D)\quad d(x,D)=1                             \\
 		            & \coimpl\forall x \in (V \setminus D)\quad \exists y\in D\mid d(x,y)=1       \\
@@ -317,7 +337,8 @@ L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterS
 		            & \coimpl D\text{ è un dominating set}
 	\end{align*}
 
-	Per assurdo, supponiamo che esista un algoritmo $\alpha$-approssimante per \CenterSelection, con $\alpha < 2$. Eseguendo tale algoritmo su un'istanza così costruita si ottiene un output $D$ tale che:
+	Per assurdo, supponiamo che esista un algoritmo polinomiale $\alpha$-approssimante per \CenterSelection, con $\alpha < 2$.
+	Eseguendo tale algoritmo su un'istanza così costruita si ottiene un output $D$ tale che:
 	\begin{gather*}
 		1\leq\frac{\rho(D)}{\rho\star}\leq\alpha<2 \\
 		\rho\star\leq\rho(D)\leq\alpha\cdot\rho\star<2\rho\star
@@ -334,6 +355,7 @@ L'algoritmo \ref{algo:GreedyCenterSelection} è un algoritmo greedy per \CenterS
 
 	Poiché l'algoritmo agisce in tempo polinomiale, allora $\DominatingSet\in\P$, il che è assurdo se $\P\neq\NP$.
 \end{proof}
+Questa tecnica dimostrativa, consistente nel ridurre un problema \NP-completo e poterlo decidere in tempo polinomiale in ipotesi di assurdo discriminando di che intervallo fa parte la soluzione, è detta tecnica di riduzione con produzione di gap (\flang{gap-producing reduction}).
 
 
 
@@ -346,21 +368,23 @@ Si definisce funzione armonica la funzione $H:\N^+\to\R$ tale che
 % TODO: dimostrare in un'appendice (vedi vecchi appunti)
 Vale la seguente proprietà per la funzione armonica:
 \begin{theorem}
-	\begin{equation*}
-		\ln(n+1)\leq H(n)\leq 1+\ln(n)
-	\end{equation*}
+	$\ln(n+1)\leq H(n)\leq 1+\ln n$.
 \end{theorem}
 
+Nel problema \MinSetCover sono dati insiemi, ciascuno con il suo peso, la cui unione è un insieme universo.
+Il problema consiste nel trovare una selezione degli insiemi la cui unione copra l'intero insieme universo e il cui costo complessivo sia minimo.
+\MinSetCover è un problema \NPO-completo.
+
 \popt{\MinSetCover}
-{$S_1,S_2,\dots,S_m\subseteq U$ tali che $\cup_{i=1}^m S_i=U$ e pesi $w_1,\dots,w_m$ con $w_i \in\R^{>0}~\forall i$}
+{$S_1,S_2,\dots,S_m\subseteq U$ tali che $\cup_{i=1}^m S_i=U$ e pesi $w_1,\dots,w_m$ con $w_i \in\Q^+~\forall i$}
 {$C\subseteq\set{S_1,\dots,S_n}$}
-{Quali sono gli insiemi da scegliere per coprire tutti gli elementi di $U$ col costo minore possibile?}
+{Determinare una selezione di insiemi che minimizzi il costo complessivo}
 {$C$ tale che $\cup_{i\in C}S_i=U$}
 {$\MIN$}
 {$w:=\sum_{i:S_i\in C} w_i$}
 
 
-\subsection{Algoritmo greedy set cover}
+\subsection{\GreedySetCover}
 \begin{algorithm}[ht]
 	\caption{\GreedySetCover}
 	\label{algo:greedysetcover}
@@ -389,21 +413,21 @@ il costo della copertura del singolo elemento di $U$, avvenuta tramite l'aggiunt
 \end{proof}
 \begin{lemma}\label{lem:gsetcov_cu_leq_harmoskwk}
 	\begin{equation*}
-		\forall k\in\set{1,\dots,m} \quad\sum_{s\in S_k} c_u\leq H(\card{S_k}) \cdot w_k
+		\forall k\in\set{1,\dots,m} \quad\sum_{s\in S_k} c_s\leq H(\card{S_k}) \cdot w_k
 	\end{equation*}
 \end{lemma}
 \begin{proof}
-	Sia $S_k=\set{u_1,u_2,\dots,u_d}$, dove gli elementi sono elencati in ordine di copertura.
+	Sia $S_k=\set{s_1,s_2,\dots,s_d}$, dove gli elementi sono elencati in ordine di copertura.
 
-	Quando un elemento $s_j$ viene coperto dall'inserimento di un insieme $S_{k'}$, gli elementi di $S_k$ ancora da inserire spaziano almeno da $s_j$ a $s_d$, quindi:
+	Prima che un elemento $s_i$ venga coperto dall'inserimento di un insieme $S_{k'}$, gli elementi di $S_k$ ancora da inserire spaziano almeno da $s_i$ a $s_d$, quindi:
 	\begin{equation*}
-		\card{S_k\cap R}\geq d-j+1 \text.
+		\card{S_k\cap R_j}\geq d-i+1 \text.
 	\end{equation*}
 	Quindi
 	\begin{equation*}
-		c_{s_j}=\frac{w_{k'}}{\card{S_{k'}\cap R_j}}
+		c_{s_i}=\frac{w_{k'}}{\card{S_{k'}\cap R_j}}
 		\leq\frac{w_k}{\card{S_k\cap R_j}}
-		\leq\frac{w_k}{d-j+1} \text.
+		\leq\frac{w_k}{d-i+1} \text.
 	\end{equation*}
 	E, di conseguenza
 	\begin{align*}
@@ -420,7 +444,7 @@ il costo della copertura del singolo elemento di $U$, avvenuta tramite l'aggiunt
 \end{theorem}
 \begin{proof}
 	Sia $w\star:=\sum_{i:S_i\in C\star} w_i$.
-	Applicato l'algoritmo, in virtù del lemma \ref{lem:gsetcov_cu_leq_harmoskwk} vale, per qualunque $i$:
+	Eseguito l'algoritmo, in virtù del lemma \ref{lem:gsetcov_cu_leq_harmoskwk} vale, per qualunque $i$:
 	\begin{equation*}
 		w_i\geq\frac{\sum_{s\in S_i} c_s}{H(\card{S_i})}\geq\frac{\sum_{s\in S_i} c_s}{H(M)}
 	\end{equation*}
@@ -437,19 +461,19 @@ il costo della copertura del singolo elemento di $U$, avvenuta tramite l'aggiunt
 
 Inoltre vale:
 \begin{equation*}
-	H(M)\leq H(\card U) = O(\ln(\card U))
+	H(M)\leq H(\card U) = O(\log \card U)
 \end{equation*}
 Ergo:
 \begin{corollario}
-	\GreedySetCover è un algoritmo $O(\ln(n))$-approssimante per \MinSetCover, dove $n$ è la cardinalità dell'insieme universo.
+	\GreedySetCover è un algoritmo $O(\log n)$-approssimante per \MinSetCover, dove $n$ è la cardinalità dell'insieme universo.
 \end{corollario}
 
 Per quanto riguarda l'ottimalità di questo bound:
 \begin{theorem}
-	Per ogni $\varepsilon>0$, \GreedySetCover non è $(O(\ln(n))-\varepsilon)$-approssimante per \MinSetCover.
+	Per ogni $\varepsilon>0$, \GreedySetCover non è $(O(\log n)-\varepsilon)$-approssimante per \MinSetCover.
 \end{theorem}
 \begin{proof}
-	% TODO: adattare a n non potenza di 2?
+	% TODO: è necessario essere più precisi in questa costruzione: si può fare con qualunque n? È necessaria una potenza di 2? Gli insiemi S finali possono contenere un solo elemento o sempre almeno 2? Etc.
 	Fissati $\varepsilon$ e $n$ (sia per semplicità $n=2^k$ per qualche $k\in\N^+,k>2$), si consideri l'input per \MinSetCover mostrato in figura \ref{fig:setcover_tightness}.
 	L'input è costituito da due insiemi disgiunti $A$ e $B$ di costo $1+\varepsilon$ e cardinalità $n/2$; e $\log_2 n$ insiemi disgiunti $S_1,S_2,\dots,S_{\log_2 n}$, di cardinalità rispettive $n/2,n/4,\dots$ e costo $1$. In ciascun insieme $S_i$, metà degli elementi è contenuta in $A$ e l'altra metà in $B$.
 
@@ -469,6 +493,7 @@ Per quanto riguarda l'ottimalità di questo bound:
 \section{\VertexCover}
 Una copertura per un grafo non orientato $G=(V,E)$ è un insieme di vertici $X\subseteq V$ tale che ogni lato di $E$ incide su un vertice in $X$.
 Il problema \VertexCover associa a ogni vertice un peso e cerca la copertura di costo complessivo minimo.
+\VertexCover è \NPO-completo.
 
 \popt{\VertexCover}
 {Grafo non orientato $G=(V,E)$ e pesi $w_1,\dots,w_n$, con $n=\card V$ e $w_i\in\Q^+~\forall i$}
@@ -499,7 +524,7 @@ Un assegnamento $\angle{P_e}_{e\in E}$ si dice \emph{equo} se e solo se
 \end{equation*}
 Un assegnamento si dice \emph{stretto} su un vertice $i$ se e solo se
 \begin{equation*}
-	\sum_{e\ni i} P_e = w_i \text.
+	\forall i\in V\quad\sum_{e\ni i} P_e = w_i \text.
 \end{equation*}
 
 \begin{lemma}\label{lem:vcov_pricing_eq_sum_p_e_w_opt}
@@ -512,11 +537,11 @@ Un assegnamento si dice \emph{stretto} su un vertice $i$ se e solo se
 \begin{proof}
 	Sia $X\star\subseteq V$ una soluzione ottima. Poiché $\angle{P_e}_{e\in E}$ è equo:
 	\begin{equation*}
-		\sum_{i\in X\star} \sum_{e\ni i} P_e \leq \sum_{i\in X\star} w_i = w\star
+		\sum_{i\in X\star} \sum_{e\ni i} P_e \leq \sum_{i\in X\star} w_i = w\star \text.
 	\end{equation*}
 	Ogni lato del grafo incide su un vertice di $X\star$, quindi
 	\begin{equation*}
-		\sum_{e\in E} P_e \leq \sum_{i\in X\star} \sum_{e\ni i} P_e \leq w\star
+		\sum_{e\in E} P_e \leq \sum_{i\in X\star} \sum_{e\ni i} P_e \leq w\star \text.
 	\end{equation*}
 \end{proof}
 
@@ -528,9 +553,9 @@ L'algoritmo \ref{algo:PricedVertexCover} usa una tecnica di pricing per costruir
 \end{algorithm}
 
 \begin{lemma}\label{lem:pvcov_w_le_w_sum_P_e}
-	Al termine dell'esecuzione dell'algoritmo \ref{algo:PricedVertexCover} vale
+	L'algoritmo \ref{algo:PricedVertexCover} produce una soluzione $S$ ammissibile per \VertexCover. Inoltre al termine dell'esecuzione vale:
 	\begin{equation*}
-		w \leq 2 \sum_{e \in E} P_e
+		w \leq 2 \sum_{e \in E} P_e \text.
 	\end{equation*}
 \end{lemma}
 \begin{proof}
@@ -547,11 +572,11 @@ L'algoritmo \ref{algo:PricedVertexCover} usa una tecnica di pricing per costruir
 	\end{equation*}
 	Ergo
 	\begin{equation*}
-		w = \sum_{i\in S} \sum_{e\ni i} P_e
+		w = \sum_{i\in S} \sum_{e\ni i} P_e \text.
 	\end{equation*}
 	Poiché un lato compare nella somma al più $2$ volte:
 	\begin{equation*}
-		w \leq 2 \sum_{e\in E} P_e
+		w \leq 2 \sum_{e\in E} P_e \text.
 	\end{equation*}
 \end{proof}
 
@@ -562,7 +587,7 @@ L'algoritmo \ref{algo:PricedVertexCover} usa una tecnica di pricing per costruir
 	\begin{equation*}
 		\frac{w}{w\star} \underset{\text{lemma \ref{lem:pvcov_w_le_w_sum_P_e}}}{\leq}
 		\frac{2\sum_{e\in E} P_e}{w\star} \underset{\text{lemma \ref{lem:vcov_pricing_eq_sum_p_e_w_opt}}}{\leq}
-		\frac{2\sum_{e\in E} P_e}{\sum_{e\in E} P_e} = 2
+		\frac{2\sum_{e\in E} P_e}{\sum_{e\in E} P_e} = 2 \text.
 	\end{equation*}
 \end{proof}
 
@@ -589,8 +614,7 @@ Si consideri il problema di programmazione lineare e la sua versione vincolata a
 Per lo stesso input, una soluzione ottima di \IntegerLinearProgramming è ammissibile, ma non necessariamente ottima, per \LinearProgramming.
 Viceversa una soluzione ottima per \LinearProgramming può non essere ammissibile per un'istanza di \IntegerLinearProgramming dallo stesso input.
 
-% TODO: cite karmakar, 1981
-\LinearProgramming è un problema appartenente a \PO (l'ottimo può essere trovato polinomialmente ad esempio con l'algoritmo di Karmakar), mentre \IntegerLinearProgramming è \NPO-completo.
+\LinearProgramming è un problema appartenente a \PO (l'ottimo può essere trovato polinomialmente ad esempio con l'algoritmo di Karmarkar \cite{Karmarkar:84:LP}), mentre \IntegerLinearProgramming è \NPO-completo.
 
 Data un'istanza di \VertexCover $\tuple{G=(V,E),\angle{w_i}_{i\in V}}$, con $n:=\card V$ e $m:=\card E$, si consideri l'istanza di \IntegerLinearProgramming in cui il sistema di input è così costruito:
 \begin{equation*}
@@ -652,7 +676,9 @@ Si consideri il vettore $r$, ottenuto dall'arrotondamento di $x$, ossia, per cia
 
 
 \section{\DisjointPaths}
-Dato un grafo orientato su cui sono selezionati un numero di vertici \flang{source} e un numero di rispettivi vertici \flang{target}, il problema \DisjointPaths si pone l'obiettivo di massimizzare il numero di coppie source-target connettibili da un cammino usando ogni arco un numero massimo di $c$ volte, dove $c$ è un dato parametro. Il problema prende il nome dalla sua variante con $c=1$, in cui i cammini non hanno archi in comune.
+Dato un grafo orientato su cui sono selezionati un numero di vertici \flang{source} e un numero di rispettivi vertici \flang{target} (potenzialmente con molteplicità), il problema \DisjointPaths si pone l'obiettivo di massimizzare il numero di coppie source-target connettibili da un cammino usando ogni arco un numero massimo di $c$ volte, dove $c$ è un dato parametro detto di congestione.
+Il problema prende il nome dalla sua variante con $c=1$, in cui i cammini non hanno archi in comune.
+\DisjointPaths è \NPO-completo.
 
 \popt{\DisjointPaths}
 {Grafo orientato $G=(V,E)$, vertici $\angle{s_i}_{i\in k}$ e $\angle{t_i}_{i\in k}$ e un parametro $c\in\N^+$}
@@ -681,12 +707,12 @@ A una data iterazione dell'algoritmo, un cammino $\pi$ si dice \emph{corto} se e
 Un cammino $\pi$ si dice \emph{utile} se e solo se collega una coppia $i\notin I$.
 
 Finché esistono cammini corti e utili, l'algoritmo seleziona uno di essi a ogni iterazione.
-Quando nessun cammino corto è utile, l'esecuzione si ferma oppure iniziano a venire selezionati cammini lunghi.
+Quando nessun cammino è corto e utile, l'esecuzione si ferma oppure iniziano a venire selezionati cammini lunghi (i.e. non corti).
 Si consideri la prima iterazione $\bar t$ in cui non esistono cammini corti e utili, o il termine dell'esecuzione se tale iterazione non esiste.
 Sia $\bar l$ la funzione di costo in tale iterazione e $\bar I$ l'insieme degli indici dei vertici collegati da cammini.
 
 \begin{lemma}\label{lem:priceddpaths_non_included_non_short}
-	Se all'iterazione $\bar t$ la coppia $\tuple{s_i,t_i}$ non è stata collegata dalla soluzione corrente, allora il costo del relativo cammino ottimo è maggiore o uguale a $\beta^c$:
+	Se all'iterazione $\bar t$ la coppia $\tuple{s_i,t_i}$ non è stata collegata dalla soluzione corrente, allora il costo del relativo cammino ottimo $\pi\star_i$ è maggiore o uguale a $\beta^c$:
 	\begin{equation*}
 		\bar l(\pi\star_i)\geq\beta^c\qquad\forall i\notin I
 	\end{equation*}
@@ -750,7 +776,7 @@ Sia $\bar l$ la funzione di costo in tale iterazione e $\bar I$ l'insieme degli 
 \end{proof}
 
 \begin{theorem}\label{thm:priceddpaths_approx}
-	\PricedDisjointPaths è un algoritmo $1+c(\beta+\beta^{-c}m)$-approssimante per \DisjointPaths.
+	\PricedDisjointPaths è un algoritmo $(1+c(\beta+\beta^{-c}m))$-approssimante per \DisjointPaths.
 	Se $\beta=m^{\frac{1}{c+1}}$, \PricedDisjointPaths fornisce una $(1+2cm^{\frac{1}{c+1}})$-approssimazione.
 \end{theorem}
 \begin{proof}
@@ -778,9 +804,8 @@ Sia $\bar l$ la funzione di costo in tale iterazione e $\bar I$ l'insieme degli 
 		                           & = 1+c\left(m^{\frac{1}{c+1}}+m^{\frac{-c+c+1}{c+1}}\right) \\
 		                           & = 1+2cm^{\frac{1}{c+1}}
 	\end{align*}
+	L'analisi dimostra che le sole prime $\bar t$ iterazioni producono una $(1+2cm^{\frac{1}{c+1}})$-approssimazione. Dal momento che, come mostrato, $\bar I\subseteq I$, l'algoritmo al termine dell'esecuzione produce una soluzione quantomeno non peggiore.
 \end{proof}
-
-In effetti, l'analisi dimostra che le sole prime $\bar t$ iterazioni producono una $(1+2cm^{\frac{1}{c+1}})$-approssimazione. Dal momento che, come mostrato nella dimostrazione, $\bar I\subseteq I$, l'algoritmo al termine dell'esecuzione produce una soluzione quantomeno non peggiore.
 
 
 
@@ -788,6 +813,7 @@ In effetti, l'analisi dimostra che le sole prime $\bar t$ iterazioni producono u
 Il problema del commesso viaggiatore, o \TravelingSalesman (problem, abbreviato in TSP), è uno dei problemi più famosi della teoria dei grafi.
 Il problema consiste nel trovare un circuito hamiltoniano di costo minimo in un grafo pesato sugli archi.
 Dato un grafo non orientato, un \emph{circuito hamiltoniano} è un circuito che passa per ogni vertice del grafo una e una sola volta.
+\TravelingSalesman è \NPO-completo.
 
 \popt{\TravelingSalesman}
 {Grafo non orientato $G=(V,E)$, pesi $\angle{\delta_e}_{e\in E}$}
@@ -833,18 +859,18 @@ Un risultato fondamentale inerente alla parità del grado dei vertici è il lemm
 Trovando la soluzione ottima di \TravelingSalesman su questa istanza, è facile determinare se il circuito hamiltoniano trovato è una soluzione per il grafo originale.
 Poiché ogni arco viene percorso al più una volta (altrimenti i vertici verrebbero ripetuti nel circuito), se il costo totale è al più $\sum_{e\in E} \delta_e$ allora nessun arco assente nel grafo originale è stato usato, e la soluzione è ottima anche per l'istanza originale.
 Viceversa, se il costo totale è almeno $1+\sum_{e\in E} \delta_e$ allora non è stato possibile trovare un circuito euleriano che non usasse un arco assente nell'istanza originale, e quindi questa non ha soluzione.
-Si può semplificare la risoluzione di \TravelingSalesman limitandosi a risolvere il problema nel caso di cricche.
+Si può quindi semplificare la risoluzione di \TravelingSalesman senza perdita di generalità limitandosi a risolvere il problema nel caso di cricche.
 
 \paragraph{Il TSP metrico} Semplifichiamo ora il problema, imponendo una caratteristica "metrica" alla funzione dei pesi, cioè la disuguaglianza triangolare:
 \begin{equation*}
-	\delta_{\set{i,j}} \leq \delta_{\set{i,k}} + \delta_{\set{k,j}}
+	\forall i,j,k\in V \quad \delta_{\set{i,j}} \leq \delta_{\set{i,k}} + \delta_{\set{k,j}} \text.
 \end{equation*}
 Come vedremo, solo grazie a questa assunzione è possibile costruire algoritmi approssimanti per \TravelingSalesman.
 
 \subsubsection{L'albero ricoprente minimo}
 Dato un grafo non orientato connesso, un albero ricoprente è un sottografo che sia un albero e mantenga tutti i vertici.
-Se il grafo è pesato sui lati, un albero ricoprente minimo è quello che minimizza la somma dei costi dei lati che mantiene.
-\MinimumSpanningTree (MST) è il problema di ottimizzazione che cerca l'albero ricoprente minimo.
+Se il grafo è pesato sui lati, un albero ricoprente minimo minimizza la somma dei costi dei lati che mantiene.
+\MinimumSpanningTree (MST) è il problema di ottimizzazione che cerca un albero ricoprente minimo in un grafo.
 Il problema è risolvibile esattamente in tempo polinomiale, ad esempio dall'algoritmo di Kruskal in tempo $O(m\log n)$.
 
 \popt{\MinimumSpanningTree}
@@ -865,7 +891,7 @@ In un grafo pesato sugli archi, \MinimumWeightPerfectMatching è il problema di 
 {Matching $M\subseteq E$}
 {Determinare un matching perfetto di costo minimo}
 {$M$ è un matching perfetto su $G$}
-{$Min$}
+{$\MIN$}
 {$\sum_{e\in M} \delta_e$}
 
 
@@ -882,7 +908,7 @@ L'algoritmo di Christofides per TSP metrico su cricca applica i concetti precede
 
 L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione rispetto al TSP metrico su cricca.
 \begin{lemma}\label{lem:chri_spanning}
-	In una cricca $G$ pesata metricamente sui lati, il costo $\delta(T)$ dell'albero ricoprente minimo $T$ non è peggiore del costo minimo $\delta\star$ di un cammino hamiltoniano su $G$:
+	In una cricca $G$ pesata metricamente sui lati, il costo $\delta(T)$ di un albero ricoprente minimo $T$ non è peggiore del costo minimo $\delta\star$ di un cammino hamiltoniano su $G$:
 	\begin{equation*}
 		\delta(T) \leq \delta\star
 	\end{equation*}
@@ -900,6 +926,12 @@ L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione r
 		\delta(M) \leq \frac 1 2 \delta\star
 	\end{equation*}
 \end{lemma}
+\begin{proof}
+	Si consideri un circuito hamiltoniano ottimo $\pi\star$. Poiché è hamiltoniano, questo comprende i vertici di $D$. Cortocircuitando $\pi\star$ sui soli vertici di $D$, si ottiene un circuito di peso complessivo minore o uguale a quello di $\pi\star$ (per la disuguaglianza triangolare) e che ha un numero di lati pari (poiché i vertici di $D$ sono pari). Alternando i lati di questo circuito, si formano due matching $M_1$ e $M_2$ perfetti su $D$. Ma poiché $M$ è il matching perfetto di costo minimo per $D$, vale:
+	\begin{equation*}
+		\delta(\pi\star)\geq\delta(M_1)+\delta(M_2)\geq 2\delta(M) \text. \qedhere
+	\end{equation*}
+\end{proof}
 
 \begin{theorem}
 	L'algoritmo di Christofides è $\frac 3 2$-approssimante per il TSP metrico su cricca.
@@ -920,7 +952,7 @@ L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione r
 	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Dato $n$ pari e $\epsilon\in(0,1)$, si consideri il grafo in figura \ref{fig:christotight}, in cui gli archi sono etichettati con i loro pesi. Si estenda il grafo a una cricca $G$, in cui ogni lato $\set{u,v}$ non rappresentato ha come peso il peso del cammino minimo tra $u$ e $v$ sul grafo originale.
+	Dato $n$ pari e $\varepsilon\in(0,1)$, si consideri il grafo in figura \ref{fig:christotight}, in cui gli archi sono etichettati con i loro pesi. Si estenda il grafo a una cricca $G$, in cui ogni lato $\set{u,v}$ non rappresentato ha come peso il peso del cammino minimo tra $u$ e $v$ sul grafo originale.
 
 	\begin{figure}[ht]
 		\centering
@@ -943,12 +975,10 @@ L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione r
 	\end{equation*}
 	Quindi
 	\begin{equation*}
-		\frac{\delta}{\delta\star} = \frac{\frac32n+\varepsilon\left(\frac n2-1\right)-1}{n+\varepsilon(n-2)} \geq \frac 3 2-\varepsilon \text.
+		\frac{\delta}{\delta\star} = \frac{\frac32n+\varepsilon\left(\frac n2-1\right)-1}{n+\varepsilon(n-2)}
 	\end{equation*}
-	Inoltre, per $n\to\infty$ e $\varepsilon\to0$:
-	\begin{equation*}
-		\frac{\delta}{\delta\star} \to \frac 3 2 \text.
-	\end{equation*}
+	Che è definitivamente\footnote{Precisamente, la disequazione è vera per $n\geq 2+\frac{1-2\varepsilon}{\varepsilon^2}$.} maggiore o uguale a $\frac 3 2-\varepsilon$.
+
 \end{proof}
 
 
@@ -964,13 +994,12 @@ Al fine di dimostrare ciò ricordiamo che decidere se un grafo contiene un cammi
 	Sia $G'$ la sua estensione a cricca, ottenuta con il metodo citato nel paragrafo \ref{subsub:tsp:criccametrica}, ossia in cui la funzione peso $\delta$ è così definita:
 	\begin{equation*}
 		\delta(x,y) = \begin{cases}
-			1                 & \quad \set{x,y}\in E    \\
-			% TODO: è davvero necessario il ceil, avendo già il +1?
-			\ceil{\alpha n}+1 & \quad \set{x,y}\notin E
+			1          & \quad \set{x,y}\in E    \\
+			\alpha n+1 & \quad \set{x,y}\notin E
 		\end{cases}
 	\end{equation*}
 	Se $G$ ammette un circuito hamiltoniano, allora tale circuito è ammesso anche in $G'$ e ha costo $n<\alpha n$.
-	Viceversa, se $G$ non ammette un circuito hamiltoniano allora ogni circuito hamiltoniano in $G'$ ha costo di almeno $\ceil{\alpha n}+1$.
+	Viceversa, se $G$ non ammette un circuito hamiltoniano allora ogni circuito hamiltoniano in $G'$ ha costo di almeno $\alpha n+1$.
 
 	Se esiste un algoritmo $\alpha$-approssimante per \TravelingSalesman, questo trova in tempo polinomiale un circuito hamiltoniano in $G'$ di costo al più $\alpha n$. Ma un tale circuito esiste se e solo se esiste un cammino hamiltoniano in $G$. L'algoritmo decide quindi in tempo polinomiale se un grafo $G$ ammette un cammino hamiltoniano, il che è impossibile se $\P\neq\NP$.
 \end{proof}
@@ -981,6 +1010,7 @@ Al fine di dimostrare ciò ricordiamo che decidere se un grafo contiene un cammi
 \section{\texorpdfstring{$2$}{2}-\LoadBalancing}
 $2$-\LoadBalancing è una specializzazione di \LoadBalancing in cui il numero di macchine $m$ è uguale a $2$.
 Questo problema è anche chiamato \MinimumPartition in quanto è equivalente al bilanciare una partizione insiemistica di due elementi.
+Il problema è \NPO-completo.
 
 L'algoritmo \ref{algo:partitionbalance} è un algoritmo \PTAS-caratterizzante per $2$-\LoadBalancing.
 L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed esponenziale rispetto a $\varepsilon$.
@@ -992,11 +1022,11 @@ L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed es
 \end{algorithm}
 
 \begin{theorem}
-	Dato $\varepsilon>0$, l'algoritmo \ref{algo:partitionbalance} produce in tempo polinomiale in $n$ una $1+\varepsilon$-approssimazione per $2$-\LoadBalancing.
+	Dato $\varepsilon>0$, l'algoritmo \ref{algo:partitionbalance} produce in tempo polinomiale in $n$ una $(1+\varepsilon)$-approssimazione per $2$-\LoadBalancing.
 \end{theorem}
 \begin{proof}
 	Sia $L:=\frac12\sum_{i=1}^n t_i$.
-	Il costo ottimo è almeno $L$, perciò se $\varepsilon\geq1$, assegnando tutti i task alla stessa macchina si ottiene un costo di $\sum_{i=1}^n t_i=2L\leq(1+\varepsilon)L\star$.
+	Il costo ottimo è almeno $L$, perciò se $\varepsilon\geq1$, assegnando tutti i task alla stessa macchina si ottiene un costo di $\sum_{i=1}^n t_i=2L\leq(1+\varepsilon)L\star$. Qualunque altro assegnamento produrrebbe una soluzione migliore, e quindi altrettanto buona, per questo caso.
 
 	Se $\varepsilon<1$, si consideri lo stato delle macchine al termine dell'esecuzione e sia $L_1\geq L_2$ senza perdita di generalità.
 	Sia $t_h$ l'ultimo task assegnato alla macchina $1$.
@@ -1004,19 +1034,19 @@ L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed es
 		% TODO: inserire considerazioni della dispensa aggiuntiva del prof
 		\item Se $h\leq k$, $t_h$ è stato assegnato nella fase esaustiva e pertanto la soluzione costruita è ottima.
 		\item Se $h>k$, allora $t_h$ è assegnato nella fase greedy, quindi, se $L_2'$ è il carico della macchina $2$ all'assegnamento di $t_h$, vale:
-		      \begin{equation}\label{eq:2lb:1}
+		      \begin{equation*}
 			      L_1-t_h\leq L_2'\leq L_2
-		      \end{equation}
+		      \end{equation*}
 		      Quindi, ricordando che $L_1+L_2=2L$:
 		      \begin{align}
 			      L_1-t_h  & \leq L_2 \nonumber                    \\
 			      2L_1-t_h & \leq L \nonumber                      \\
-			      L_1      & \leq L+\frac{t_h}{2} \label{eq:2lb:2}
+			      L_1      & \leq L+\frac{t_h}{2} \label{eq:2lb:1}
 		      \end{align}
 		      Inoltre vale
-		      \begin{equation*}
+		      \begin{equation}\label{eq:2lb:2}
 			      2L = \underbrace{t_0+t_1+\dots+t_k}_{\geq t_hk}+\underbrace{\dots+t_h+\dots+t_{n-1}}_{\geq t_h} \geq t_h(k+1)
-		      \end{equation*}
+		      \end{equation}
 		      Ergo:
 		      \begin{align*}
 			      \frac{L_1}{L\star} & \leq \frac{L+\frac{t_h}{2}}{L\star}        &  & \text{per la \ref{eq:2lb:1}} \\
@@ -1028,12 +1058,17 @@ L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed es
 			                         & = \varepsilon+1 \text.
 		      \end{align*}
 	\end{itemize}
-	Considerate le complessità delle operazioni di ordinamento, della ricerca esaustiva delle $2^k$ combinazioni per la parte ottima, e della coda per la parte greedy, l'algoritmo ha tempo d'esecuzione $O(n\log n+2^{\frac{1}{\epsilon}}n)$.
+	Considerate le complessità delle operazioni di ordinamento, della ricerca esaustiva delle $2^k$ combinazioni per la parte ottima, e della coda per la parte greedy, l'algoritmo ha tempo d'esecuzione $O(n\log n+2^{\frac{1}{\varepsilon}}n)$.
 \end{proof}
 
 
 
 \section{\Knapsack}
+\Knapsack, il problema dello zaino, è un celebre problema di ottimizzazione.
+Dati uno zaino di capacità $W$ e degli oggetti, ciascuno con un valore e un volume (o peso), il problema consiste nel selezionare un gruppo di oggetti in modo che il loro volume non ecceda la capacità dello zaino ma il loro valore complessivo sia massimo.
+\Knapsack è un problema \NPO-completo.
+
+% TODO: bisogna pensare a un modo furbo di indicizzare gli oggetti di modo che la colonna i gestisca l'oggetto di indice i. Occhio però alla notazione angle, che non supporta facilmente gli indici da 1
 \popt{\Knapsack}
 {$n$ oggetti con valori $\angle{v_i}_{i\in n}\in\N^+$ e pesi $\angle{w_i}_{i\in n}\in\N^+$, capacità $W\in N$}
 {$I\subseteq n$}
@@ -1063,7 +1098,7 @@ L'algoritmo opera in tempo pseudopolinomiale, in quanto opera su una matrice di 
 
 
 \subsection{\WeightDynamicKnapsack}
-Una variante dell'algoritmo \DynamicKnapsack costruisce una matrice $B\in{\N^+}^{(\sum_{i\in n} v_i)\times (n+1)}$ in cui l'elemento $B[i,v]$ rappresenta il minimo peso necessario per raggiungere un valore di $v$ usando i primi $i$ oggetti.
+Una variante dell'algoritmo \DynamicKnapsack costruisce una matrice $B\in{\N^+}^{(n+1)\times (\sum_{i\in n} v_i)}$ in cui l'elemento $B[i,v]$ rappresenta il minimo peso necessario per raggiungere un valore di $v$ usando i primi $i$ oggetti.
 
 L'elemento $B[0,0]$ è posto uguale a $0$. Gli elementi $B[0,v]$, per ogni $v\in\sum_{i\in n} v_i$, sono vincolati al valore $+\infty$ dal momento che il valore $v$ è irraggiungibile. I restanti valori sono così calcolati:
 \begin{equation*}
@@ -1076,7 +1111,8 @@ Un algoritmo che usa questa matrice può trovare la soluzione ottima cercando su
 L'algoritmo può essere migliorato, a costo di perdere l'esattezza, introducendo una normalizzazione che ridimensiona i valori in base al valore massimo $v_{\max}$.
 L'algoritmo risultante approssima a piacere in tempo polinomiale.
 
-Dati un'istanza $\pi=\tuple{\angle{v_i}_{i\in n},\angle{w_i}_{i\in n},W}$ di \Knapsack e dato un valore $\varepsilon\in(0,1]$, si definisce il valore di scala $\theta$ come
+Sia $\pi=\tuple{\angle{v_i}_{i\in n},\angle{w_i}_{i\in n},W}$ un'istanza di \Knapsack. Si rimuovano eventuali pesi $i$ tali che $w_i>W$, che non contribuiscono ad alcuna soluzione ammissibile.
+Dato un valore $\varepsilon\in(0,1]$, si definisce il valore di scala $\theta$ come
 \begin{equation*}
 	\theta:=\frac{\varepsilon v_{\max}}{2n} \text.
 \end{equation*}
@@ -1084,7 +1120,7 @@ Si considerino le istanze $\bar\pi:=\tuple{\angle{\bar v_i=\ceil{\frac{v_i}{\the
 Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\star$ e $\hat v\star$ i loro valori.
 
 \begin{lemma}\label{lem:knap_barhat}
-	$\bar S\star = \hat S\star \land \bar v\star = \theta\hat v\star$
+	$\bar I\star = \hat I\star \land \bar v\star = \theta\hat v\star$.
 \end{lemma}
 \begin{proof}
 	La funzione obiettivo del problema $\bar\pi$ non è altro che una dilatazione di fattore $\theta$ di quella del problema $\hat\pi$, pertanto le soluzioni ottime sono le stesse e i valori ottimi subiscono una dilatazione.
@@ -1098,20 +1134,27 @@ Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\sta
 \end{lemma}
 \begin{proof}
 	\begin{align*}
-		\sum_{i\in I} v_i & \leq \sum_{i\in I} \bar v_i                                   &  & \quad \text{arrotondamento per eccesso}      \\
-		                  & \leq \sum_{ i\in\bar I\star} \bar v_i                                                                           \\
-		                  & = \sum_{ i\in\hat I\star} \bar v_i                            &  & \quad \text{per lemma \ref{lem:knap_barhat}} \\
-		                  & \leq \sum_{i\in\hat I\star} (v_i+\theta)                      &  & \quad \text{in quanto
-		$\bar v_i=\ceil{\frac{v_i}{\theta}}\theta\leq\left(\frac{v_i}{\theta}+1\right)\theta=v_i+\theta$}                                   \\
-		                  & = n\theta+\sum_{i\in\hat I\star} v_i                                                                            \\
-		                  & = \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
+		\sum_{i\in I} v_i & \leq \sum_{i\in I} \bar v_i                                          &  & \quad \text{arrotondamento per eccesso}      \\
+		                  & \leq \sum_{ i\in\bar I\star} \bar v_i                                                                                  \\
+		                  & = \sum_{ i\in\hat I\star} \bar v_i                                   &  & \quad \text{per lemma \ref{lem:knap_barhat}} \\
+		                  & \leq \sum_{i\in\hat I\star} (v_i+\theta)                             &  & \quad \text{in quanto
+		$\bar v_i=\ceil{\frac{v_i}{\theta}}\theta\leq\left(\frac{v_i}{\theta}+1\right)\theta=v_i+\theta$}                                          \\
+		                  & \leq n\theta+\sum_{i\in\hat I\star} v_i                                                                                \\
+		                  & = \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \text.
 	\end{align*}
+	Quindi
+	\begin{equation}\label{eq:knap:1}
+		\sum_{i\in I} v_i \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
+	\end{equation}
 
 	% TODO: e se l'input contiene oggetti di peso maggiore alla capacità massima?
-	Si consideri la soluzione ammissibile $I$ composta dal solo peso massimo. Applicando quanto appena dimostrato:
+	\noindent Si consideri la soluzione ammissibile composta da un solo peso di valore massimo. Applicando (\ref{eq:knap:1}):
+	\begin{gather}
+		v_{\max} \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \leq \frac{v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \nonumber \\
+		\sum_{i\in\hat I\star} v_i \geq \frac{v_{\max}}{2} \label{eq:knap:2}
+	\end{gather}
+	Tornando alla generica soluzione ammissibile $I$ e applicando (\ref{eq:knap:1}) e (\ref{eq:knap:2}):
 	\begin{gather*}
-		v_{\max} \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \leq \frac{v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \\
-		\sum_{i\in\hat I\star} v_i \geq \frac{v_{\max}}{2} \\
 		\sum_{i\in I} v_i \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
 		\leq \varepsilon\sum_{i\in\hat I\star} v_i + \sum_{i\in\hat I\star} v_i = (1+\varepsilon)\sum_{i\in\hat I\star} v_i
 	\end{gather*}
@@ -1134,7 +1177,7 @@ Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\sta
 	\end{equation*}
 	quindi la dimensione complessiva della matrice è
 	\begin{equation*}
-		n\cdot n\hat v_{\max}\leq n^2\left(\frac{2n}{\varepsilon}+1\right)=\frac{2n^3}{\varepsilon}+1
+		n\cdot n\hat v_{\max}\leq n^2\left(\frac{2n}{\varepsilon}+1\right)=\frac{2n^3}{\varepsilon}+n^2
 	\end{equation*}
 \end{proof}
 

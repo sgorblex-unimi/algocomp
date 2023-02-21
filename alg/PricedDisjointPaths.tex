@@ -1,9 +1,9 @@
-\KwInput{$G=(V,E), \angle{s_i}_{i\in k}, \angle{t_i}_{i\in k}, c\in\N^+$}
+\KwInput{$G=(V,E), \angle{s_i}_{i\in k}, \angle{t_i}_{i\in k}, c\in\N^+, b\in\Q^+$}
 
 $I \asn \emptyset$\;
 $P \asn \emptyset$\;
 \For{$e\in E$}{
-	$l(a) \asn 1$\;
+	$l(e) \asn 1$\;
 }
 \While{true}{
 	$\pi,i \asn \MinPath(G,l)$\;
@@ -14,10 +14,10 @@ $P \asn \emptyset$\;
 	$P \asn P\cup\set{\pi}$\;
 
 	\tcc{Aggiorna i costi ed elimina gli archi già usati $c$ volte}
-	\For{$a\in\pi$}{
-		$l(a) = l(a) \cdot \beta $\;
-		\If{$l(a) = \beta^c$}{
-			delete $a$
+	\For{$e\in\pi$}{
+		$l(e) = l(e) \cdot \beta $\;
+		\If{$l(e) = \beta^c$}{
+			elimina $e$ \;
 		}
 	}
 }

@@ -1,10 +1,10 @@
-\KwInput{$m_1,m_2,t_1,\dots,t_n,\varepsilon$}
+\KwInput{$t_1,\dots,t_n,\varepsilon$}
 
-\If{$\epsilon\geq 1$}{
-	assegna i task $\set{t_1,\dots,t_n}$\;
+\If{$\varepsilon\geq 1$}{
+	assegna i task $\set{t_1,\dots,t_n}$ alla macchina $1$ \;
 	\Return\;
 }
 Ordina in ordine decrescente di costo i task $t_1,\dots,t_n$\;
-$k \asn \ceil{\frac{1}{\epsilon}-1}$\;
+$k \asn \ceil{\frac{1}{\varepsilon}-1}$\;
 Cerca esaustivamente l'assegnamento ottimo dei task $t_1,\dots,t_k$ e applicalo\;
 Assegna in modo greedy (i.e. alla macchina più scarica) i task $t_{k+1},\dots,t_n$\;

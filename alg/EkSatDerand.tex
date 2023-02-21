@@ -1,6 +1,6 @@
 \SetKw{Continue}{continue}
 
-$D \asn \emptyset$
+$D \asn \emptyset$\;
 \For{$i\asn1,\dots,n$}{
 	$\Delta_0 \asn 0$\;
 	$\Delta_1 \asn 0$\;
@@ -14,11 +14,11 @@ $D \asn \emptyset$
 			\Continue\;
 		}
 		$h \asn \card{\set{k\mid k>i\land (x_k\in c_j \lor \neg x_k\in c_j)}}$\;
-		\If{$\neg x_i\notin c_j$}{
+		\If{$x_i\in c_j$}{
 			$\Delta_0 \asn \Delta_0 - \frac{1}{2^h}$\;
 			$\Delta_1 \asn \Delta_1 + \frac{1}{2^h}$\;
 			$\Delta D_1 \asn \Delta D_1 \cup \{j\}$\;
-		}\Else{
+		}\Else{ \tcp{caso $\neg x_i\in c_j$}
 			$\Delta_0 \asn \Delta_0 + \frac{1}{2^h}$\;
 			$\Delta_1 \asn \Delta_1 - \frac{1}{2^h}$\;
 			$\Delta D_0 \asn \Delta D_0 \cup \{j\}$\;

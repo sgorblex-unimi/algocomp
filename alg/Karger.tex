@@ -1,0 +1,16 @@
+\SetKwFunction{Unif}{uniformExtraction}
+\SetKwFunction{Connected}{isConnected}
+\SetKwFunction{FindConnected}{findConnectedComponent}
+\SetKwFunction{Choose}{chooseAnElement}
+\KwInput{grafo $G=(V,E)$}
+
+\If{$\lnot$\Connected{$G$}}{
+	\Return{\FindConnected{$G$}}\;
+}
+\While{$\card V > 2$}{
+	\tcp{Estrai uniformemente a caso un lato e contrailo}
+	$e = \Unif{$E$}$\;
+	$G = G\downarrow e$\;
+}
+\tcp{Restituisci uno dei due vertici rimanenti}
+\Return{\Choose{$V$}}\;

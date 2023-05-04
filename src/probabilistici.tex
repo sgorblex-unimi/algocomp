@@ -199,7 +199,7 @@ Per l'analisi dell'algoritmo \ref{algo:ProbSetCover} si richiamano due risultati
 		                                        & = 1-\sum_{u\in U}\prod_{i:u\in S_i} (1-\hat x_i)^{\ceil{k+\ln n}}                                                                                        \\
 		                                        & \geq 1-\sum_{u\in U}\prod_{i:u\in S_i} e^{-\hat x_i\ceil{k+\ln n}} &  & \quad \text{$1-x\leq e^{-x}$}                                                    \\
 		                                        & = 1-\sum_{u\in U} e^{-\ceil{k+\ln n}\sum_{i:u\in S_i} \hat x_i}                                                                                          \\
-		                                        & \geq \sum_{u\in U} e^{-\ceil{k+\ln n}}                             &  & \quad \text{per vincolo su $\hat x_i$}                                           \\
+		                                        & \geq 1-\sum_{u\in U} e^{-\ceil{k+\ln n}}                           &  & \quad \text{per vincolo su $\hat x_i$}                                           \\
 		                                        & = 1-ne^{-\ceil{k+\ln n}} \geq 1-ne^{-(k+\ln n)}                                                                                                          \\
 		                                        & = 1-ne^{-k}e^{-\ln n} = 1-e^{-k} \text.
 	\end{align*}
@@ -348,7 +348,7 @@ Può poi cambiare stato in funzione del valore del bit restituito.
 	Un linguaggio $L\subseteq 2^*$ appartiene a $\NP$ se e solo se esiste una macchina di Turing oracolare $V$ tale che:
 	\begin{itemize}
 		\item $V(x,w)$ termina in un numero di passi polinomiale in $\len x$;
-		\item $\forall x\in 2\star \quad \exists w\in 2\star \mid v(x,w)$ accetta $\iff x\in L$.
+		\item $\forall x\in 2\star \quad \exists w\in 2\star \mid V(x,w)$ accetta $\iff x\in L$.
 	\end{itemize}
 \end{defin}
 
@@ -407,7 +407,7 @@ Grazie al teorema PCP è possibile dimostrare che l'approssimabilità polinomial
 \end{theorem}
 \begin{proof}
 	\newcommand{\Rand}{\mathcal R}
-	Sia $L$ \NP-completo. Allora per il teorema PCP esistono $\bar q\in O(1)$ e $r\in O(\log n)$ tali che $L\in\PCP[r,q]$.
+	Sia $L$ \NP-completo. Allora per il teorema PCP esistono $\bar q\in O(1)$ e $r\in O(\log n)$ tali che $L\in\PCP[r,\bar q]$.
 	Sia $V$ il verificatore probabilistico caratteristico di $L$.
 	% TODO: includere approfondimento riguardo al caso in cui il numero di query cambi in base a input e stringa randomica. Quale epsilon si sceglie in quel caso?
 	Per semplicità, si assuma che il verificatore effettui esattamente $q\in\N$ query per ogni input.
@@ -432,12 +432,12 @@ Grazie al teorema PCP è possibile dimostrare che l'approssimabilità polinomial
 	\end{itemize}
 
 	Sia $\varepsilon:=\frac{1}{2^{q+1}}$.
-	Per assurdo, si ammetta che \MaxSat ammetta un algoritmo $\varepsilon$-approssimabile e sia $t$ la soluzione approssimante prodotta da questo algoritmo sull'istanza che consiste nella formula $\Phi_z$.
+	Per assurdo, si ammetta che \MaxSat ammetta un algoritmo $(1+\varepsilon)$-approssimante e sia $t$ la soluzione prodotta da questo algoritmo sull'istanza che consiste nella formula $\Phi_z$.
 	Sia $t\star$ la soluzione ottima su tale istanza.
 	\begin{itemize}
 		\item se $z\in L$ allora
 		      \begin{equation*}
-			      t \geq \frac{t\star}{1+\varepsilon} = \frac{\card\Rand}{1+\frac{1}{2^{q+1}}} =: A
+			      t \geq \frac{t\star}{1+\varepsilon} = \frac{\card\Rand 2^q}{1+\frac{1}{2^{q+1}}} =: A
 		      \end{equation*}
 		\item se $z\notin L$ allora
 		      \begin{equation*}

@@ -3,7 +3,7 @@
 \For{$e \in E$}{
 	$P_e \asn 0$\;
 }
-\While{esiste un lato $\bar e=\set{\bar i,\bar j}$ tale che $\angle{P_{\bar e}}$ non è stretto né su $\bar i$ né su $\bar j$}{
+\While{esiste un lato $\bar e=\set{\bar i,\bar j}$ tale che $\angle{P_e}_{e\in E}$ non è stretto né su $\bar i$ né su $\bar j$}{
 	$\Delta \asn \min\set{w_{\bar i}-\sum_{e\ni\bar i} P_e , w_{\bar j}-\sum_{e\ni\bar j} P_e}$\;
 	$P_{\bar e} \asn P_{\bar e} + \Delta$\;
 }

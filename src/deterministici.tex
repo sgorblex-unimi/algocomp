@@ -664,7 +664,7 @@ Si consideri il vettore $r$, ottenuto dall'arrotondamento di $x$, ossia, per cia
 	L'insieme $\set{i\in V\mid r_i=1}$ è una $2$-approssimazione per \VertexCover.
 \end{theorem}
 \begin{proof}
-	Sia $w:=\sum{i\in V} w_i r_i$ il costo della soluzione di \VertexCover indotta dall'istanza arrotondata di \LinearProgramming, e sia $w\star$ la soluzione ottima. Si denoti con $w\star_{\text{LP}}$ il costo ottimo dell'istanza di \LinearProgramming e $w\star_{\text{ILP}}$ quello di \IntegerLinearProgramming.
+	Sia $w:=\sum_{i\in V} w_i r_i$ il costo della soluzione di \VertexCover indotta dall'istanza arrotondata di \LinearProgramming, e sia $w\star$ la soluzione ottima. Si denoti con $w\star_{\text{LP}}$ il costo ottimo dell'istanza di \LinearProgramming e $w\star_{\text{ILP}}$ quello di \IntegerLinearProgramming.
 	Applicando il lemma \ref{lem:ilp_r_i_leq_2_x_i}:
 	\begin{equation*}
 		w = \sum_{i\in V} w_i r_i \leq 2\sum_{i\in V} w_i x_i = 2w\star_{\text{LP}} \leq 2w\star_{\text{ILP}} = w\star
@@ -747,7 +747,7 @@ Sia $\bar l$ la funzione di costo in tale iterazione e $\bar I$ l'insieme degli 
 		      \end{align*}
 		      Tale valore è al più uguale a $\beta^{c+1}$, essendo il cammino $\pi$ corto perché $j<\bar t$.
 	\end{itemize}
-	Quindi, all'inizio dell'iterazione $\bar t$, a un costo iniziale di $m$ sono state aggiunte $\card{\bar I}$ variazioni (una per ogni iterazione e quindi aggiunta di cammini a $I$) di al più $\beta^c$ l'una, ergo:
+	Quindi, all'inizio dell'iterazione $\bar t$, a un costo iniziale di $m$ sono state aggiunte $\card{\bar I}$ variazioni (una per ogni iterazione e quindi aggiunta di cammini a $I$) di al più $\beta^{c+1}$ l'una, ergo:
 	\begin{equation*}
 		\sum_{e\in E} \bar l(e) \leq \beta^{c+1}\card{\bar I}+m \text.
 	\end{equation*}

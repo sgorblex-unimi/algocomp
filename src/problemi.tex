@@ -292,11 +292,11 @@ Il problema di decisione risponde quindi alla domanda: "nel problema di ottimizz
 
 % TODO: definizioni da rivedere
 \begin{defin}[\PTAS]
-	\PTAS (Polynomial Time Approximation Scheme) è la classe di problemi di ottimizzazione $\Pi$ tali che esiste un algoritmo che dato $x\in I_\Pi$ e $\varepsilon>1$, trova in tempo polinomiale in $\len x$ un $y\in\amm_\Pi(x)$ con $R_\Pi(x,y)\leq\varepsilon$.
+	\PTAS (Polynomial Time Approximation Scheme) è la classe di problemi di ottimizzazione $\Pi$ tali che esiste un algoritmo che dato $x\in I_\Pi$ e $\epsilon>1$, trova in tempo polinomiale in $\len x$ un $y\in\amm_\Pi(x)$ con $R_\Pi(x,y)\leq\epsilon$.
 \end{defin}
-\noindent Si noti che il tempo è polinomiale in $\len x$ ma non necessariemente in $\varepsilon$.
+\noindent Si noti che il tempo è polinomiale in $\len x$ ma non necessariemente in $\epsilon$.
 \begin{defin}[\FPTAS]
-	\FPTAS è la classe dei problemi di \PTAS tali che l'algoritmo caratteristico ha tempo polinomiale sia in $\len x$ sia in $1/\varepsilon$.
+	\FPTAS è la classe dei problemi di \PTAS tali che l'algoritmo caratteristico ha tempo polinomiale sia in $\len x$ sia in $1/\epsilon$.
 \end{defin}
 
 

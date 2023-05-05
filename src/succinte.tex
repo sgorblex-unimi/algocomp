@@ -619,13 +619,13 @@ Quindi la struttura è compatta:
 \section{Parentesi ben bilanciate}
 L'insieme $D_k$, con $k\in\N$, contiene le parole di Dyck di semilunghezza $k$, cioè composte da $2k$ parentesi ben bilanciate (di cui $k$ aperte e $k$ chiuse). Gli insiemi $D_k$ sono definiti induttivamente:
 \begin{itemize}
-	\item $\varepsilon\in D_0$
+	\item $\emptyword\in D_0$
 	\item $x\in D_n,y\in D_m\Rightarrow xy\in D_{n+m}$
 	\item $x\in D_n\Rightarrow (x)\in D_{n+1}$
 \end{itemize}
 Equivalentemente
 \begin{itemize}
-	\item $\varepsilon\in D_0$
+	\item $\emptyword\in D_0$
 	\item $x\in D_n,y\in D_m\Rightarrow (x)y\in D_{n+m+1}$
 \end{itemize}
 

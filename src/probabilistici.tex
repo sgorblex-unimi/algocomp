@@ -403,7 +403,7 @@ Grazie al teorema PCP è possibile dimostrare che l'approssimabilità polinomial
 
 \subsection{\MaxSat}
 \begin{theorem}
-	Se $\P\neq\NP$, esiste $\varepsilon>0$ tale che \MaxSat non è $(1+\varepsilon)$-approssimabile in tempo polinomiale.
+	Se $\P\neq\NP$, esiste $\epsilon>0$ tale che \MaxSat non è $(1+\epsilon)$-approssimabile in tempo polinomiale.
 \end{theorem}
 \begin{proof}
 	\newcommand{\Rand}{\mathcal R}
@@ -431,13 +431,13 @@ Grazie al teorema PCP è possibile dimostrare che l'approssimabilità polinomial
 		\item se $z\notin L$, scelto un qualunque oracolo, $V$ accetta con probabilità inferiore a $1/2$, ossia per meno della metà delle stringhe casuali. È possibile soddisfare meno della metà delle sottoformule $\phi^{z,R}$ della formula $\Phi_z$. In termini di clausole, sono soddisfatte $2^q$ clausole per ognuna delle al più $\frac{\card\Rand}{2}$ sottoformule soddisfatte e al più $2^q-1$ per le altre almeno $\frac{\card\Rand}{2}$, per un totale di $\frac{\card\Rand}{2}2^q+\frac{\card\Rand}{2}(2^q-1)$ clausole.
 	\end{itemize}
 
-	Sia $\varepsilon:=\frac{1}{2^{q+1}}$.
-	Per assurdo, si ammetta che \MaxSat ammetta un algoritmo $(1+\varepsilon)$-approssimante e sia $t$ la soluzione prodotta da questo algoritmo sull'istanza che consiste nella formula $\Phi_z$.
+	Sia $\epsilon:=\frac{1}{2^{q+1}}$.
+	Per assurdo, si ammetta che \MaxSat ammetta un algoritmo $(1+\epsilon)$-approssimante e sia $t$ la soluzione prodotta da questo algoritmo sull'istanza che consiste nella formula $\Phi_z$.
 	Sia $t\star$ la soluzione ottima su tale istanza.
 	\begin{itemize}
 		\item se $z\in L$ allora
 		      \begin{equation*}
-			      t \geq \frac{t\star}{1+\varepsilon} = \frac{\card\Rand 2^q}{1+\frac{1}{2^{q+1}}} =: A
+			      t \geq \frac{t\star}{1+\epsilon} = \frac{\card\Rand 2^q}{1+\frac{1}{2^{q+1}}} =: A
 		      \end{equation*}
 		\item se $z\notin L$ allora
 		      \begin{equation*}
@@ -456,7 +456,7 @@ Grazie al teorema PCP è possibile dimostrare che l'approssimabilità polinomial
 	Poiché $A>B$, è possibile costruire un algoritmo che decida se $z\in L$ in tempo polinomiale come segue:
 	\begin{enumerate}
 		\item costruire in tempo polinomiale la formula $\Phi_z$ che simula il certificatore $V$;
-		\item eseguire l'algoritmo polinomiale che $1+\varepsilon$-approssima \MaxSat su $\Phi_z$, ottenendo una soluzione di valore $t$;
+		\item eseguire l'algoritmo polinomiale che $1+\epsilon$-approssima \MaxSat su $\Phi_z$, ottenendo una soluzione di valore $t$;
 		\item se $t\geq A$ allora $z\in L$; se $t\leq B$ allora $z\notin L$.
 		      Poiché $L$ è \NP-completo, ciò è impossibile se $\P\neq\NP$.
 	\end{enumerate}

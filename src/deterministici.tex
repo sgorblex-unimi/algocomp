@@ -146,17 +146,17 @@ Si può ora procedere con la dimostrazione del teorema \ref{thm:greedyloadbalanc
 
 Si dimostra che questo risultato sull'analisi di \GreedyLoadBalancing è tight:
 \begin{theorem}
-	Per ogni $\varepsilon>0$ esiste un input di \LoadBalancing su cui \GreedyLoadBalancing produce una soluzione $L$ tale che
+	Per ogni $\epsilon>0$ esiste un input di \LoadBalancing su cui \GreedyLoadBalancing produce una soluzione $L$ tale che
 	\begin{equation*}
-		2-\varepsilon\leq\frac L{L\star}
+		2-\epsilon\leq\frac L{L\star}
 	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Scegliamo un numero di macchine $m\geq\frac1\varepsilon$ e un numero di task $n=m(m-1)+1$. Questi task consistono, nell'ordine, in $n-1$ task di durata $1$ e un task da $m$. Naturalmente la soluzione ottima assegna unicamente il task da $m$ a una macchina, che risulta la più carica, quindi $L\star=m$.
+	Scegliamo un numero di macchine $m\geq\frac1\epsilon$ e un numero di task $n=m(m-1)+1$. Questi task consistono, nell'ordine, in $n-1$ task di durata $1$ e un task da $m$. Naturalmente la soluzione ottima assegna unicamente il task da $m$ a una macchina, che risulta la più carica, quindi $L\star=m$.
 
 	Per assegnare i task, l'algoritmo assegna un task da $1$ per ogni macchina ciclicamente finché arriva il task da $m$, che viene assegnato a una macchina di carico $m-1$ producendo un costo finale di $2m-1$. In questo caso si ha
 	\begin{equation*}
-		\frac L{L\star}=\frac{2m-1}{m}=2-\frac1m\geq2-\varepsilon
+		\frac L{L\star}=\frac{2m-1}{m}=2-\frac1m\geq2-\epsilon
 	\end{equation*}
 \end{proof}
 
@@ -470,12 +470,12 @@ Ergo:
 
 Per quanto riguarda l'ottimalità di questo bound:
 \begin{theorem}
-	Per ogni $\varepsilon>0$, \GreedySetCover non è $(O(\log n)-\varepsilon)$-approssimante per \MinSetCover.
+	Per ogni $\epsilon>0$, \GreedySetCover non è $(O(\log n)-\epsilon)$-approssimante per \MinSetCover.
 \end{theorem}
 \begin{proof}
 	% TODO: è necessario essere più precisi in questa costruzione: si può fare con qualunque n? È necessaria una potenza di 2? Gli insiemi S finali possono contenere un solo elemento o sempre almeno 2? Etc.
-	Fissati $\varepsilon$ e $n$ (sia per semplicità $n=2^k$ per qualche $k\in\N^+,k>2$), si consideri l'input per \MinSetCover mostrato in figura \ref{fig:setcover_tightness}.
-	L'input è costituito da due insiemi disgiunti $A$ e $B$ di costo $1+\varepsilon$ e cardinalità $n/2$; e $\log_2 n$ insiemi disgiunti $S_1,S_2,\dots,S_{\log_2 n}$, di cardinalità rispettive $n/2,n/4,\dots$ e costo $1$. In ciascun insieme $S_i$, metà degli elementi è contenuta in $A$ e l'altra metà in $B$.
+	Fissati $\epsilon$ e $n$ (sia per semplicità $n=2^k$ per qualche $k\in\N^+,k>2$), si consideri l'input per \MinSetCover mostrato in figura \ref{fig:setcover_tightness}.
+	L'input è costituito da due insiemi disgiunti $A$ e $B$ di costo $1+\epsilon$ e cardinalità $n/2$; e $\log_2 n$ insiemi disgiunti $S_1,S_2,\dots,S_{\log_2 n}$, di cardinalità rispettive $n/2,n/4,\dots$ e costo $1$. In ciascun insieme $S_i$, metà degli elementi è contenuta in $A$ e l'altra metà in $B$.
 
 	\begin{figure}[ht]
 		\centering
@@ -484,8 +484,8 @@ Per quanto riguarda l'ottimalità di questo bound:
 		\label{fig:setcover_tightness}
 	\end{figure}
 
-	L'algoritmo sceglie nell'ordine gli insiemi $S_i$ in quanto il costo di aggiungerli è, per ogni iterazione $j$, $\frac{1}{n/2^j}$, contro un costo di $\frac{1+\varepsilon}{n/2^j}$ per scegliere $A$ o $B$.
-	Questo porta un costo complessivo di $\log_2 n$. La soluzione ottima tuttavia è naturalmente quella composta dagli insiemi $A$ e $B$, che ha un costo di $2+2\varepsilon$. Il rapporto tra le due è necessariamente logaritmico.
+	L'algoritmo sceglie nell'ordine gli insiemi $S_i$ in quanto il costo di aggiungerli è, per ogni iterazione $j$, $\frac{1}{n/2^j}$, contro un costo di $\frac{1+\epsilon}{n/2^j}$ per scegliere $A$ o $B$.
+	Questo porta un costo complessivo di $\log_2 n$. La soluzione ottima tuttavia è naturalmente quella composta dagli insiemi $A$ e $B$, che ha un costo di $2+2\epsilon$. Il rapporto tra le due è necessariamente logaritmico.
 \end{proof}
 
 
@@ -946,13 +946,13 @@ L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione r
 \end{proof}
 
 \begin{theorem}
-	Per ogni $\varepsilon>0$ esiste un input del TSP metrico su cricca su cui l'algoritmo di Christofides produce una soluzione $\pi$ tale che
+	Per ogni $\epsilon>0$ esiste un input del TSP metrico su cricca su cui l'algoritmo di Christofides produce una soluzione $\pi$ tale che
 	\begin{equation*}
-		\frac 3 2-\varepsilon \leq \frac{\delta(\pi)}{\delta\star}
+		\frac 3 2-\epsilon \leq \frac{\delta(\pi)}{\delta\star}
 	\end{equation*}
 \end{theorem}
 \begin{proof}
-	Dato $n$ pari e $\varepsilon\in(0,1)$, si consideri il grafo in figura \ref{fig:christotight}, in cui gli archi sono etichettati con i loro pesi. Si estenda il grafo a una cricca $G$, in cui ogni lato $\set{u,v}$ non rappresentato ha come peso il peso del cammino minimo tra $u$ e $v$ sul grafo originale.
+	Dato $n$ pari e $\epsilon\in(0,1)$, si consideri il grafo in figura \ref{fig:christotight}, in cui gli archi sono etichettati con i loro pesi. Si estenda il grafo a una cricca $G$, in cui ogni lato $\set{u,v}$ non rappresentato ha come peso il peso del cammino minimo tra $u$ e $v$ sul grafo originale.
 
 	\begin{figure}[ht]
 		\centering
@@ -962,22 +962,22 @@ L'analisi dell'algoritmo ci porta a dimostrare un risultato di approssimazione r
 	\end{figure}
 
 	L'algoritmo di Christofides identifica l'albero ricoprente $T$ indotto da tutti i lati di peso $1$, quindi $\delta(T)=n-1$.
-	L'algoritmo seleziona poi $D=\set{v_1,v_n}$ e su di esso il matching $M$ composto dal solo lato $\set{v_1,v_n}$ di peso $\delta(M)=(1+\varepsilon)\left(\frac n2-1\right)+1$.
+	L'algoritmo seleziona poi $D=\set{v_1,v_n}$ e su di esso il matching $M$ composto dal solo lato $\set{v_1,v_n}$ di peso $\delta(M)=(1+\epsilon)\left(\frac n2-1\right)+1$.
 	Sul grafo indotto dall'unione $H$ di $T$ e $M$ l'algoritmo costruisce il circuito euleriano, nonché hamiltoniano, composto dall'unione degli archi di peso $1$ e l'arco che compone $M$.
 	Il costo $\delta$ del circuito costruito è quindi:
 	\begin{equation*}
-		\delta = n-1 + (1+\varepsilon)\left(\frac n2-1\right)+1 = \frac32n+\varepsilon\left(\frac n2-1\right)-1 \text.
+		\delta = n-1 + (1+\epsilon)\left(\frac n2-1\right)+1 = \frac32n+\epsilon\left(\frac n2-1\right)-1 \text.
 	\end{equation*}
-	Ma il circuito hamiltoniano ottimo è quello che, a partire da $v_1$, percorre tutti gli archi di peso $1+\varepsilon$ che uniscono vertici di indice dispari, l'arco $\set{v_{n-1},v_n}$, tutti gli archi di peso $1+\varepsilon$ di indice pari e infine l'arco $\set{v_1,v_2}$.
+	Ma il circuito hamiltoniano ottimo è quello che, a partire da $v_1$, percorre tutti gli archi di peso $1+\epsilon$ che uniscono vertici di indice dispari, l'arco $\set{v_{n-1},v_n}$, tutti gli archi di peso $1+\epsilon$ di indice pari e infine l'arco $\set{v_1,v_2}$.
 	Il costo $\delta\star$ di tale circuito è:
 	\begin{equation*}
-		\delta\star = 2(1+\varepsilon)\left(\frac n2-1\right) + 2 = n+\varepsilon(n-2) \text.
+		\delta\star = 2(1+\epsilon)\left(\frac n2-1\right) + 2 = n+\epsilon(n-2) \text.
 	\end{equation*}
 	Quindi
 	\begin{equation*}
-		\frac{\delta}{\delta\star} = \frac{\frac32n+\varepsilon\left(\frac n2-1\right)-1}{n+\varepsilon(n-2)}
+		\frac{\delta}{\delta\star} = \frac{\frac32n+\epsilon\left(\frac n2-1\right)-1}{n+\epsilon(n-2)}
 	\end{equation*}
-	Che è definitivamente\footnote{Precisamente, la disequazione è vera per $n\geq 2+\frac{1-2\varepsilon}{\varepsilon^2}$.} maggiore o uguale a $\frac 3 2-\varepsilon$.
+	Che è definitivamente\footnote{Precisamente, la disequazione è vera per $n\geq 2+\frac{1-2\epsilon}{\epsilon^2}$.} maggiore o uguale a $\frac 3 2-\epsilon$.
 
 \end{proof}
 
@@ -1012,7 +1012,7 @@ Questo problema è anche chiamato \MinimumPartition in quanto è equivalente al 
 Il problema è \NPO-completo.
 
 L'algoritmo \ref{algo:partitionbalance} è un algoritmo \PTAS-caratterizzante per $2$-\LoadBalancing.
-L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed esponenziale rispetto a $\varepsilon$.
+L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed esponenziale rispetto a $\epsilon$.
 
 \begin{algorithm}
 	\caption{Algoritmo \PTAS per $2$-\LoadBalancing.}
@@ -1021,13 +1021,13 @@ L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed es
 \end{algorithm}
 
 \begin{theorem}
-	Dato $\varepsilon>0$, l'algoritmo \ref{algo:partitionbalance} produce in tempo polinomiale in $n$ una $(1+\varepsilon)$-approssimazione per $2$-\LoadBalancing.
+	Dato $\epsilon>0$, l'algoritmo \ref{algo:partitionbalance} produce in tempo polinomiale in $n$ una $(1+\epsilon)$-approssimazione per $2$-\LoadBalancing.
 \end{theorem}
 \begin{proof}
 	Sia $L:=\frac12\sum_{i=1}^n t_i$.
-	Il costo ottimo è almeno $L$, perciò se $\varepsilon\geq1$, assegnando tutti i task alla stessa macchina si ottiene un costo di $\sum_{i=1}^n t_i=2L\leq(1+\varepsilon)L\star$. Qualunque altro assegnamento produrrebbe una soluzione migliore, e quindi altrettanto buona, per questo caso.
+	Il costo ottimo è almeno $L$, perciò se $\epsilon\geq1$, assegnando tutti i task alla stessa macchina si ottiene un costo di $\sum_{i=1}^n t_i=2L\leq(1+\epsilon)L\star$. Qualunque altro assegnamento produrrebbe una soluzione migliore, e quindi altrettanto buona, per questo caso.
 
-	Se $\varepsilon<1$, si consideri lo stato delle macchine al termine dell'esecuzione e sia $L_1\geq L_2$ senza perdita di generalità.
+	Se $\epsilon<1$, si consideri lo stato delle macchine al termine dell'esecuzione e sia $L_1\geq L_2$ senza perdita di generalità.
 	Sia $t_h$ l'ultimo task assegnato alla macchina $1$.
 	\begin{itemize}
 		% TODO: inserire considerazioni della dispensa aggiuntiva del prof
@@ -1053,11 +1053,11 @@ L'algoritmo opera in tempo polinomiale rispetto alla dimensione dell'input ed es
 			                         & = 1+\frac{t_h}{2L}                                                           \\
 			                         & \leq 1+\frac{t_h}{t_h(k+1)}                &  & \text{per la \ref{eq:2lb:2}} \\
 			                         & = 1+\frac{1}{k+1}                                                            \\
-			                         & \leq 1+\frac{1}{\frac{1}{\varepsilon}-1+1} &  & k\geq\frac{1}{\varepsilon}-1 \\
-			                         & = \varepsilon+1 \text.
+			                         & \leq 1+\frac{1}{\frac{1}{\epsilon}-1+1} &  & k\geq\frac{1}{\epsilon}-1 \\
+			                         & = \epsilon+1 \text.
 		      \end{align*}
 	\end{itemize}
-	Considerate le complessità delle operazioni di ordinamento, della ricerca esaustiva delle $2^k$ combinazioni per la parte ottima, e della coda per la parte greedy, l'algoritmo ha tempo d'esecuzione $O(n\log n+2^{\frac{1}{\varepsilon}}n)$.
+	Considerate le complessità delle operazioni di ordinamento, della ricerca esaustiva delle $2^k$ combinazioni per la parte ottima, e della coda per la parte greedy, l'algoritmo ha tempo d'esecuzione $O(n\log n+2^{\frac{1}{\epsilon}}n)$.
 \end{proof}
 
 
@@ -1111,9 +1111,9 @@ L'algoritmo può essere migliorato, a costo di perdere l'esattezza, introducendo
 L'algoritmo risultante approssima a piacere in tempo polinomiale.
 
 Sia $\pi=\tuple{\angle{v_i}_{i\in n},\angle{w_i}_{i\in n},W}$ un'istanza di \Knapsack. Si rimuovano eventuali pesi $i$ tali che $w_i>W$, che non contribuiscono ad alcuna soluzione ammissibile.
-Dato un valore $\varepsilon\in(0,1]$, si definisce il valore di scala $\theta$ come
+Dato un valore $\epsilon\in(0,1]$, si definisce il valore di scala $\theta$ come
 \begin{equation*}
-	\theta:=\frac{\varepsilon v_{\max}}{2n} \text.
+	\theta:=\frac{\epsilon v_{\max}}{2n} \text.
 \end{equation*}
 Si considerino le istanze $\bar\pi:=\tuple{\angle{\bar v_i=\ceil{\frac{v_i}{\theta}}\theta}_{i\in n},\angle{w_i}_{i\in n},W}$ e $\hat\pi:=\tuple{\angle{\hat v_i=\ceil{\frac{v_i}{\theta}}}_{i\in n},\angle{w_i}_{i\in n},W}$, che scalano in modo diverso i valori e lasciano invariati pesi e capacità.
 Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\star$ e $\hat v\star$ i loro valori.
@@ -1128,7 +1128,7 @@ Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\sta
 \begin{lemma}
 	Sia $I$ una soluzione ammissibile per $\pi$. Allora
 	\begin{equation*}
-		(1+\varepsilon)\sum_{i\in\hat I\star} v_i \geq \sum_{i\in I} v_i
+		(1+\epsilon)\sum_{i\in\hat I\star} v_i \geq \sum_{i\in I} v_i
 	\end{equation*}
 \end{lemma}
 \begin{proof}
@@ -1139,43 +1139,43 @@ Siano $\bar I\star$ e $\hat I\star$ le rispettive soluzioni ottime e $\bar v\sta
 		                  & \leq \sum_{i\in\hat I\star} (v_i+\theta)                             &  & \quad \text{in quanto
 		$\bar v_i=\ceil{\frac{v_i}{\theta}}\theta\leq\left(\frac{v_i}{\theta}+1\right)\theta=v_i+\theta$}                                          \\
 		                  & \leq n\theta+\sum_{i\in\hat I\star} v_i                                                                                \\
-		                  & = \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \text.
+		                  & = \frac{\epsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \text.
 	\end{align*}
 	Quindi
 	\begin{equation}\label{eq:knap:1}
-		\sum_{i\in I} v_i \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
+		\sum_{i\in I} v_i \leq \frac{\epsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
 	\end{equation}
 
 	\noindent Si consideri la soluzione ammissibile composta da un solo peso di valore massimo. Applicando (\ref{eq:knap:1}):
 	\begin{gather}
-		v_{\max} \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \leq \frac{v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \nonumber \\
+		v_{\max} \leq \frac{\epsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \leq \frac{v_{\max}}{2} + \sum_{i\in\hat I\star} v_i \nonumber \\
 		\sum_{i\in\hat I\star} v_i \geq \frac{v_{\max}}{2} \label{eq:knap:2}
 	\end{gather}
 	Tornando alla generica soluzione ammissibile $I$ e applicando (\ref{eq:knap:1}) e (\ref{eq:knap:2}):
 	\begin{gather*}
-		\sum_{i\in I} v_i \leq \frac{\varepsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
-		\leq \varepsilon\sum_{i\in\hat I\star} v_i + \sum_{i\in\hat I\star} v_i = (1+\varepsilon)\sum_{i\in\hat I\star} v_i
+		\sum_{i\in I} v_i \leq \frac{\epsilon v_{\max}}{2} + \sum_{i\in\hat I\star} v_i
+		\leq \epsilon\sum_{i\in\hat I\star} v_i + \sum_{i\in\hat I\star} v_i = (1+\epsilon)\sum_{i\in\hat I\star} v_i
 	\end{gather*}
 \end{proof}
 \begin{corollario}\label{corol:knapapprox}
-	$\displaystyle(1+\varepsilon)\sum_{i\in\hat I\star} v_i \geq v\star$
+	$\displaystyle(1+\epsilon)\sum_{i\in\hat I\star} v_i \geq v\star$
 \end{corollario}
 
 \begin{theorem}
 	$\Knapsack\in\FPTAS$.
 \end{theorem}
 \begin{proof}
-	Risolvendo il problema $\hat\pi$ ottimamente con $\WeightDynamicKnapsack$ si trova una soluzione $\hat I\star$ che ha valore, nella funzione obiettivo originale, di $\sum_{i\in\hat I\star} v_i$. In virtù del corollario \ref{corol:knapapprox} tale valore produce un rapporto di approssimazione di $1+\varepsilon$.
+	Risolvendo il problema $\hat\pi$ ottimamente con $\WeightDynamicKnapsack$ si trova una soluzione $\hat I\star$ che ha valore, nella funzione obiettivo originale, di $\sum_{i\in\hat I\star} v_i$. In virtù del corollario \ref{corol:knapapprox} tale valore produce un rapporto di approssimazione di $1+\epsilon$.
 
-	Per verificare che questo metodo sia effettivamente polinomiale in $n$ e $\frac{1}{\varepsilon}$, valutiamo il numero di colonne della matrice $B$.
+	Per verificare che questo metodo sia effettivamente polinomiale in $n$ e $\frac{1}{\epsilon}$, valutiamo il numero di colonne della matrice $B$.
 	Nel caso peggiore tutti i pesi sono uguali a $\hat v_{\max}$, pertanto esso sarà $n \hat v_{\max}$.
 	Ma vale
 	\begin{equation*}
-		\hat v_{\max}=\ceil{\frac{v_{\max}}{\theta}}=\ceil{\frac{2nv_{\max}}{\varepsilon v_{\max}}}=\ceil{\frac{2n}{\varepsilon}}\leq\frac{2n}{\varepsilon}+1 \text,
+		\hat v_{\max}=\ceil{\frac{v_{\max}}{\theta}}=\ceil{\frac{2nv_{\max}}{\epsilon v_{\max}}}=\ceil{\frac{2n}{\epsilon}}\leq\frac{2n}{\epsilon}+1 \text,
 	\end{equation*}
 	quindi la dimensione complessiva della matrice è
 	\begin{equation*}
-		n\cdot n\hat v_{\max}\leq n^2\left(\frac{2n}{\varepsilon}+1\right)=\frac{2n^3}{\varepsilon}+n^2
+		n\cdot n\hat v_{\max}\leq n^2\left(\frac{2n}{\epsilon}+1\right)=\frac{2n^3}{\epsilon}+n^2
 	\end{equation*}
 \end{proof}
 

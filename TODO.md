@@ -9,7 +9,6 @@ Nota bene che quando una correzione viene implementata bisogna rimuovere i relat
 
 ## Correzioni facili ma noiose
 - rimuovere label quando non servono. Adottare una nomenclatura consistente delle label
-- usare `\epsilon` invece di `\varepsilon` e aggiungere nel preambolo `\renewcommand{\epsilon}{\varepsilon}`
 - usare `\ref` invece che `\cref` dove è rimasto quest'ultimo
 - adottare una notazione consistente per le tuple (`<>` vs `()` - vedi anche comando `\tuple`)
 - nella scheda del problema bisogna essere coerenti: si dice prima cos'è una copertura/dominatingset/etc. e poi nella scheda si dice di trovarne uno di costo minimo. Evitare di dare una spiegazione (specie se vaga) dell'oggetto da minimizzare nella scheda invece che citare semplicemente il nome tecnico spiegato altrove. Bilanciare citazione/spiegazione, tenere in considerazione il rapporto tra tempo "Semantica" e campo "Ammissibili". In effetti, valutare se tutte le sezioni della scheda sono necessarie

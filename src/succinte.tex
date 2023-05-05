@@ -423,7 +423,7 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 	\end{equation*}
 \end{theorem}
 \begin{corollario}
-	$\forall n \quad\log_2(C_n)=2n+O(\log n)$.
+	$\log_2(C_n)=2n-O(\log n)$.
 \end{corollario}
 \begin{proof}
 	Ricordando l'approssimazione di Stirling per il fattoriale:
@@ -436,18 +436,20 @@ Definiamo inoltre le funzioni $\trext$ e $\trint$, definite rispettivamente come
 		                                 & = \frac{(2n)!}{(n+1)(n!)^2}                                                                             \\
 		                                 & \sim \frac{\sqrt{4\pi n}\left(\frac{2n}{e}\right)^{2n}}{(n+1)\cdot 2\pi n\left(\frac{n}{e}\right)^{2n}} \\
 		                                 & = \frac{1}{n+1}\cdot \frac{1}{\sqrt{\pi n}}\cdot 2^{2n}                                                 \\
-		                                 & \approx \frac{4^n}{\sqrt{\pi n^3}}
+		                                 & \approx \frac{2^{2n}}{\sqrt{\pi n^3}}
 	\end{align*}
-	Da cui
-	% TODO: spiegare
-	\begin{equation*}
-		\log_2(C_n) = 2n-O(\log n) \text.
-	\end{equation*}
+	da cui
+	\begin{align*}
+		\log_2(C_n) & \approx \log_2\left(\frac{2^{2n}}{\sqrt{\pi n^3}}\right) \\
+		            & = \log_2(2^{2n}) - \log_2(\sqrt{\pi n^3})                \\
+		            & = 2n-\frac 12 \log_2(\pi n^3)                          \\
+		            & = 2n-O(\log n) \text. \qedhere
+	\end{align*}
 \end{proof}
 \begin{corollario}\label{corol:bitree:itlb}
 	L'information theoretical lower bound in bit per gli alberi binari è
 	\begin{equation*}
-		Z_n = 2n-O(\log_2 n) \text.
+		Z_n = 2n-O(\log n) \text.
 	\end{equation*}
 \end{corollario}
 
@@ -501,11 +503,11 @@ Per implementare l'operazione $\trparent$, si osservi che in virtù delle equazi
 \end{equation*}
 da cui si ricava
 \begin{equation*}
-	\rank(p)=\floor{\frac x2-\frac 12}
+	\rank(p)=\floor{\frac q2-\frac 12}
 \end{equation*}
 e quindi, essendo $\select(\rank(p))=p$ poiché $v_p=1$:
 \begin{equation*}
-	p=\select(\rank(p))=\select\left(\floor{\frac x2-\frac 12}\right) \text.
+	p=\select(\rank(p))=\select\left(\floor{\frac q2-\frac 12}\right) \text.
 \end{equation*}
 
 È quindi possibile fare uso di una struttura per rappresentare il vettore $v$ che sia succinta rispetto all'information theoretical lower bound trovato al \cref{corol:bitree:itlb}:
@@ -537,8 +539,7 @@ Per evitare di usare un vettore di $n\cdot\log_2 u$ bit, viene definito un valor
 La rappresentazione di Elias-Fano estrae da ogni intero $x_i$ la parte $l_i:=x_i\mod 2^l$, formata dai $l$ bit meno significativi. Per memorizzare le parti $l_i$ si fa uso di un vettore $L$ di $n$ elementi, ciascuno di $l$ bit.
 
 Per le parti più significative, si calcolano i valori $u_i:=\floor{\frac{x_i}{2^l}}-\floor{\frac{x_{i-1}}{2^l}}$ (dove implicitamente $x_{-1}=0$), che vengono memorizzati in codifica unaria in una porzione di memoria $U$.
-
-Poiché ci interessa il caso sparso, assumeremo $l\neq 0$, in quanto $l=0 \iff u<n$.
+Nell'analisi prenderemo in considerazione il caso sparso ($u>n$), quindi assumeremo $l=\floor{\log_2\left(\frac{u}{n}\right)}$.
 
 
 \subsubsection{Costo in spazio}
@@ -644,7 +645,7 @@ Si noti che la funzione di eccesso non può scendere sotto il valore che ha nell
 Le parole di Dyck si classificano sulla base della loro funzione di eccesso in due categorie:
 \begin{description}
 	\item[fortemente bilanciate] la funzione non ha zeri se non per il primo e l'ultimo simbolo;
-	\item[debolmente bilanciate] la funzione assume uno zero in una posizione $i\neq0$. Il prefisso di lunghezza $i+1$ della parola è fortemente bilanciato.
+	\item[debolmente bilanciate] la funzione ha uno zero in una posizione $i$ diversa dalla prima e dall'ultima. Il prefisso di lunghezza $i+1$ della parola è fortemente bilanciato.
 \end{description}
 
 L'ADT che vogliamo descrivere per le stringhe di parentesi ben bilanciate si compone delle seguenti primitive, che hanno come input una posizione $p$:
@@ -789,14 +790,14 @@ L'algoritmo si compone dei seguenti passi:
 Lo spazio occupato in bit da queste strutture è:
 \begin{equation*}
 	\begin{aligned}
-		 & w & n                 \\
-		 & E & k  \log_2 n       \\
-		 & M & \leq (2k-3)\log n \\
-		 & O & k  \log_2 n       \\
+		 & w & n             \\
+		 & E & k l           \\
+		 & M & \leq 2(2k-3)l \\
+		 & O & kl            \\
 		 & p & n + o(n)
 	\end{aligned}
 \end{equation*}
-Se si sceglie $l=\log_2 n$, si fa uso di un totale di al più $D_n=(6k-6)\log_2 n+2n+o(n)=8n+o(n)$ bit.
+Se si sceglie $l=\log_2 n$, si fa uso di un totale di al più $D_n=(6k-6)\log_2 n+2n+o(n)=8n+o(n)$ bit (ricordando che $k=\ceil{\frac nl}=\ceil{\frac{n}{\log_2 n}}<\frac{n}{\log_2 n}+1$).
 Per confrontare questa grandezza con l'information theoretical lower bound consideriamo due insiemi isomorfi alle parentesi ben bilanciate: le foreste ordinate e gli alberi binari.
 
 
@@ -842,7 +843,7 @@ Si consideri la funzione $B:F_n\to B_n$ (dove $B_n$ è l'insieme degli alberi bi
 	\centering
 	% TODO: bruttissima, migliorare
 	\input{img/dyck_isoforeste.tikz}
-	\caption{Esempio di calcolo isomorfismo tra foreste e alberi binari.}
+	\caption{Esempio di calcolo dell'isomorfismo tra foreste ordinate e alberi binari.}
 	\label{fig:iso_forest_bintree_example}
 \end{figure}
 
@@ -852,9 +853,9 @@ Dal momento che i tre insiemi sono isomorfi, le loro cardinalità sono uguali. C
 \end{equation*}
 da cui
 \begin{equation*}
-	Z_n=\log_2(C_n)=O(n) \text{ bit}.
+	Z_n=\log_2(C_n)=2n-O(\log n) \text{ bit}.
 \end{equation*}
-Ergo, la struttura vista per l'ADT delle parentesi ben bilanciate che ha un costo in spazio di $8n+o(n)$ bit è compatta.
+Ergo, la struttura vista per l'ADT delle parentesi ben bilanciate che ha un costo in spazio di $8n+o(n)=O(Z_n)$ bit è compatta.
 
 
 
@@ -877,7 +878,7 @@ L'analisi che segue si basa su alcune assunzioni, solo approssimabili nella prat
 Le sequenze di peeling di un grafo generalizzano la nozione di aciclicità agli ipergrafi e forniscono una tecnica applicabile al metodo MWHC.
 
 \begin{defin}
-	Sia $G=(V,E)$ un grafo non orientato. Una sequenza di peeling per $G$ è una sequenza di coppie $\tuple{e_i,x_i}\in E\times V$, con $x_i\in e_i$, in cui appaiono tutti i lati e tale per cui nessun vertice $x_i$ (detto cardine o \flang{hinge}) è apparso nei lati $i$.
+	Sia $G=(V,E)$ un grafo non orientato. Una sequenza di peeling per $G$ è una sequenza di coppie $\tuple{e_i,x_i}\in E\times V$, con $x_i\in e_i$, in cui appaiono tutti i lati e tale per cui nessun vertice $x_i$ (detto cardine o \flang{hinge}) appare nei lati $e_1,\dots,e_{i-1}$.
 \end{defin}
 
 \begin{figure}[ht]
@@ -921,11 +922,11 @@ Si consideri un insieme universo $U$ e un insieme $S\subset U$ di chiavi tale ch
 Un dizionario $D$ ha in input un valore $x\in U$ e produce un output.
 È data una funzione $f:S\to 2^r$ detta \emph{prescritta}: l'output di $D$ è $f(x)$ se $x\in S$, mentre può consistere in qualunque valore se $x\in U\setminus S$.
 
-La tecnica HWHC permette di ricavare la prescritta in una data chiave senza la necessità di memorizzare alcuna chiave. Per fare ciò, vengono estratte casualmente due funzioni di hash $h_1,h_2:U\to n$.
+La tecnica MWHC permette di ricavare la prescritta in una data chiave senza la necessità di memorizzare alcuna chiave. Per fare ciò, vengono estratte casualmente due funzioni di hash $h_1,h_2:U\to n$.
 Viene poi costruito un grafo non orientato $G=(V,E)$, dove $V=n$ e $E=\set{\set{h_1(x),h_2(x)}\mid x\in S}$ (quindi $\card E=m$).
 Se si verifica una delle seguenti condizioni, l'estrazione di $h_1$ e $h_2$ viene ripetuta:
 \begin{itemize}
-	\item $\exists x,y\mid \set{h_1(x),h_2(x)}=\set{h_1(y)=h_2(y)}$;
+	\item $\exists x,y\mid x\neq y\land \set{h_1(x),h_2(x)}=\set{h_1(y),h_2(y)}$;
 	\item $\exists x\mid h_1(x)=h_2(x)$;
 	\item $G$ contiene cicli.
 \end{itemize}
@@ -951,7 +952,7 @@ Per $n>m$, \cite{Majewski:96:MWHC} dimostra:
 	Se $n>2.09m$, la procedura di selezione di $h_1$ e $h_2$ termina in un numero atteso di $2$ tentativi.
 \end{theorem}
 Adattando la procedura all'utilizzo di un $3$-ipergrafo, il rapporto $\gamma$ tra $n$ e $m$ è minimo: $n>1.23m$.
-Il costo in spazio di questa struttura è quello per salvare i valori di $n$ variabili di $r$ bit. Considerato il rapporto tra $n$ e $m$ regolato da $\gamma$, tale costo è di $\gamma rm$ bit. Poiché si sta memorizzando una funzione $f:m\to 2^r$, le cui sono in numero $(2^r)^m$, l'information theoretical lower bound è $rm$ e pertanto, essendo $\gamma$ costante, la struttura è compatta.
+Il costo in spazio di questa struttura è quello per salvare i valori di $n$ variabili di $r$ bit. Considerato il rapporto tra $n$ e $m$ regolato da $\gamma$, tale costo è di $\gamma rm$ bit. Poiché si sta memorizzando una funzione $f:m\to 2^r$ tra $(2^r)^m$ possibili, l'information theoretical lower bound è $rm$ e pertanto, essendo $\gamma$ costante, la struttura è compatta.
 
 \subsubsection{MWHC compresso}
 Il sistema della tecnica MWHC è indeterminato, con un numero di gradi di libertà di $n-m$. Ponendo le variabili libere a $0$, e mantenendo i valori non nulli solo per i cardini, si ottiene un vettore $W$ con al più $m$ valori non nulli.

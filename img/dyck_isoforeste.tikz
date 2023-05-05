@@ -1,12 +1,12 @@
 \begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
 	%uncomment if require: \path (0,300); %set diagram left start at 0, and has height of 300
 
-	%Straight Lines [id:da1467409507063523]
-	\draw    (144.93,41.07) -- (144.93,71.07);
-	\draw [shift={(144.93,71.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
-	\draw [shift={(144.93,41.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
 	%Shape: Circle [id:dp48951213847038366]
-	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (154.57,54.79) .. controls (154.57,52.93) and (156.07,51.43) .. (157.93,51.43) .. controls (159.78,51.43) and (161.29,52.93) .. (161.29,54.79) .. controls (161.29,56.64) and (159.78,58.14) .. (157.93,58.14) .. controls (156.07,58.14) and (154.57,56.64) .. (154.57,54.79) -- cycle;
+	\draw [shift={(144.93,53.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	%Straight Lines [id:da1467409507063523]
+	\draw    (160.93,40.07) -- (160.93,70.07);
+	\draw [shift={(160.93,70.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	\draw [shift={(160.93,40.07)}, rotate = 90] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
 
 	%Straight Lines [id:da5368285010745462]
 	\draw    (226.43,55) -- (208.31,76.91) -- (201.86,84.71);
@@ -37,9 +37,7 @@
 	%Shape: Triangle [id:dp12559883893437063]
 	\draw   (377.98,125.79) -- (422.9,177.5) -- (333.05,177.5) -- cycle;
 	%Straight Lines [id:da48087885685526743]
-	\draw    (379.19,155.5) -- (379.33,171.64);
-	\draw [shift={(379.33,171.64)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
-	\draw [shift={(379.19,155.5)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
+	\draw [shift={(379.89,160.59)}, rotate = 89.49] [color={rgb, 255:red, 0; green, 0; blue, 0 }  ][fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.75]      (0, 0) circle [x radius= 3.35, y radius= 3.35];
 	%Straight Lines [id:da02388870469608051]
 	\draw    (403.26,95.5) -- (445.69,115.21);
 	%Straight Lines [id:da6273665141516217]

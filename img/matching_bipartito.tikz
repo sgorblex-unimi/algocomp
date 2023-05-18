@@ -1,20 +1,20 @@
-\begin{tikzpicture}
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 1)  (a) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 2)  (b) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 3)  (c) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 4)  (d) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (0, 5)  (e) {};
+\begin{tikzpicture}[every node/.style={draw,inner sep=0pt,minimum size=5pt,fill,circle},matching/.style={red,thick}]
+	\node at (0,1) (a) {};
+	\node at (0,2) (b) {};
+	\node at (0,3) (c) {};
+	\node at (0,4) (d) {};
+	\node at (0,5) (e) {};
 
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 2)  (f) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 3)  (g) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 4)  (h) {};
-	\node[draw,inner sep=0pt,minimum size=5pt,fill, circle] at (3, 5)  (i) {};
+	\node at (3,2) (f) {};
+	\node at (3,3) (g) {};
+	\node at (3,4) (h) {};
+	\node at (3,5) (i) {};
 
-	\draw (a) -- (i);
-	\draw (b) -- (i);
-	\draw (d) -- (i);
-	\draw[red] (e) -- (i);
-	\draw[red] (b) -- (f);
-	\draw[red] (c) -- (g);
-	\draw (c) -- (h);
+	\draw		(a) -- (i);
+	\draw		(b) -- (i);
+	\draw		(d) -- (i);
+	\draw[matching]	(e) -- (i);
+	\draw[matching]	(b) -- (f);
+	\draw[matching]	(c) -- (g);
+	\draw		(c) -- (h);
 \end{tikzpicture}

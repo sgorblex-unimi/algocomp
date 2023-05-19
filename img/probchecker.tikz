@@ -1,27 +1,14 @@
-\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-	\draw (280,152) .. controls (280,145.37) and (285.37,140) .. (292,140) -- (358,140) .. controls (364.63,140) and (370,145.37) .. (370,152) -- (370,188) .. controls (370,194.63) and (364.63,200) .. (358,200) -- (292,200) .. controls (285.37,200) and (280,194.63) .. (280,188) -- cycle ;
-	\draw (170,168.67) -- (277,168.67) ;
-	\draw [shift={(280,168.67)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-	\draw (370,168.67) -- (477,168.67) ;
-	\draw [shift={(480,168.67)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-	\draw (320.13,199.88) -- (320.13,214.71) -- (320.13,229.21) -- (454.13,229.85) -- (454.5,229.85) ;
-	\draw [shift={(457.5,229.85)}, rotate = 180] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-	\draw (500,242.31) -- (500,319.25) -- (226,319.25) -- (226,285.75) ;
-	\draw [shift={(226,282.75)}, rotate = 90] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-	\draw (294.61,80.53) -- (294.61,111.03) -- (325.61,111.03) -- (325.61,137.03) ;
-	\draw [shift={(325.61,140.03)}, rotate = 270] [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ][line width=0.08]  [draw opacity=0] (8.93,-4.29) -- (0,0) -- (8.93,4.29) -- cycle    ;
-
-	\draw (311,160.67) node [anchor=north west][inner sep=0.75pt]   [align=left] {MdT};
-	\draw (204.67,144) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle x\in 2\star$};
-	\draw (383.83,144.5) node [anchor=north west][inner sep=0.75pt]   [align=left] {True/False};
-	\draw (179.33,257) -- (462.33,257) -- (462.33,281) -- (179.33,281) -- cycle  ;
-	\draw (182.33,261.4) node [anchor=north west][inner sep=0.75pt]    {$1\ 0\ 1\ 1\ 0\ 0\ 0\ 0\ 1\ 1\ 1\ 1\ 1\ 0\ 0\ 0\ 0\ 1\ 1\ 1\ ...\ $};
-	\draw (262,284.83) node [anchor=north west][inner sep=0.75pt]   [align=left] {nastro dell'oracolo $\displaystyle w\in 2\star$};
-	\draw (458,218) -- (557,218) -- (557,242) -- (458,242) -- cycle  ;
-	\draw (461,222.4) node [anchor=north west][inner sep=0.75pt]    {$0\ 0\ \cdots \ 0\ 1\ 1$};
-	\draw (458,192) node [anchor=north west][inner sep=0.75pt]   [align=left] {nastro di query};
-	\draw (392.5,322) node [anchor=north west][inner sep=0.75pt]   [align=left] {$\displaystyle 3^{a}$ posizione};
-	\draw (129.94,55.78) -- (419.94,55.78) -- (419.94,79.78) -- (129.94,79.78) -- cycle  ;
-	\draw (132.94,60.18) node [anchor=north west][inner sep=0.75pt]    {$1\ 1\ 1\ 1\ 0\ 0\ 1\ 1\ 0\ 1\ 0\ 1\ 1\ 0\ 1\ 1\ 1\ 0\ 0\ 0\ \cdots $};
-	\draw (129.11,31.28) node [anchor=north west][inner sep=0.75pt]   [align=left] {sorgente di bit random $\displaystyle r\in 2^{*}$};
+\begin{tikzpicture}[-arr/.style={-{Latex[scale=1.5]}}]
+	\node[draw, rounded corners=5pt,minimum width=2.5cm,minimum height=1.5cm] (tm) {Macchina di Turing};
+	\draw[-arr] (-4,0) -- (tm.west)	node[midway,above] {input};
+	\draw[-arr] (tm.east) -- (4,0)	node[midway,above] {output};
+	\matrix (rand) [tape,above=1 of tm] { 0 & 1 & 0 & 1 & 1 & 1 & 0 & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 0 & 0 & \dots\\};
+	\draw[-arr,shorten <=-3.5pt] (rand.south) -- (tm.north);
+	\node[above=0 of rand] {sorgente aleatoria};
+	\matrix (query) [tape,below=of tm] { 1 & 0 & 1 & 0 & 0 & 1 & 1 & \dots\\};
+	\draw[-arr,shorten >=-3.5pt] (tm.south) -- (query.north);
+	\node[below=0 of query] {nastro di query};
+	\node[draw,rounded corners=3pt,minimum width=1.5cm,minimum height=1cm,right=0.7 of query] (oracolo) {$w$};
+	\node[below=0 of oracolo] {oracolo};
+	\draw[-arr,shorten <=-3.5pt] (query.east) -- (oracolo.west);
 \end{tikzpicture}

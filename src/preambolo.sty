@@ -47,7 +47,8 @@
 \usepackage{tikz}
 \usetikzlibrary{external}
 \tikzexternalize[prefix=tikz_cache/]
-\usetikzlibrary{positioning,shapes.geometric}
+\usetikzlibrary{positioning,shapes.geometric,matrix,arrows.meta}
+\tikzset{tape/.style={matrix of nodes,nodes in empty cells,column sep=-\pgflinewidth,row sep=-\pgflinewidth,nodes={draw,minimum size=.5cm,anchor=center}}}
 
 
 % REFS

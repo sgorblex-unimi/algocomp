@@ -1,20 +1,11 @@
-\begin{tikzpicture}[x=0.75pt,y=0.75pt,yscale=-1,xscale=1]
-	\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (312.92,126.04) -- (317.75,115.9) -- (328.33,115.9) -- (333.17,126.04) -- cycle;
-	\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (346,114.3) -- (334.2,125.7) -- (334.2,114.3) -- cycle;
-	\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (360.11,21.08) -- (402.87,115.9) -- (317.34,115.9) -- cycle;
-	\draw  [fill={rgb, 255:red, 0; green, 0; blue, 0 }  ,fill opacity=1 ] (360.11,106.08) .. controls (360.11,102.68) and (362.87,99.92) .. (366.28,99.92) .. controls (369.68,99.92) and (372.44,102.68) .. (372.44,106.08) .. controls (372.44,109.49) and (369.68,112.25) .. (366.28,112.25) .. controls (362.87,112.25) and (360.11,109.49) .. (360.11,106.08) -- cycle;
-	\draw    (366.28,106.08) -- (356.04,122.86);
-	\draw    (366.28,106.08) -- (376.09,121.82);
-	\draw   (360.11,21.08) -- (436.94,191.08) -- (283.28,191.08) -- cycle;
-	\draw    (312.18,126.95) -- (334.47,126.95);
-	\draw    (345.08,116.14) -- (402.93,116.14);
-	\draw    (345.49,115.99) -- (333.99,127.24);
-	\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (350.11,123.93) .. controls (350.11,120.53) and (352.87,117.76) .. (356.28,117.76) .. controls (359.68,117.76) and (362.44,120.53) .. (362.44,123.93) .. controls (362.44,127.34) and (359.68,130.1) .. (356.28,130.1) .. controls (352.87,130.1) and (350.11,127.34) .. (350.11,123.93) -- cycle;
-	\draw  [fill={rgb, 255:red, 255; green, 255; blue, 255 }  ,fill opacity=1 ] (370.11,124.11) .. controls (370.11,120.71) and (372.87,117.95) .. (376.28,117.95) .. controls (379.68,117.95) and (382.44,120.71) .. (382.44,124.11) .. controls (382.44,127.52) and (379.68,130.28) .. (376.28,130.28) .. controls (372.87,130.28) and (370.11,127.52) .. (370.11,124.11) -- cycle;
-	\draw  [color={rgb, 255:red, 246; green, 237; blue, 156 }  ,draw opacity=1 ][fill={rgb, 255:red, 246; green, 237; blue, 156 }  ,fill opacity=1 ] (320.12,125.88) -- (333.92,109.62) -- (333.95,125.85) -- cycle;
-	\draw (341.53,125.76) node [anchor=north west][inner sep=0.75pt]    {$q$};
-	\draw (364.58,131.05) node [anchor=north west][inner sep=0.75pt]    {$q+1$};
-	\draw (363.18,78.26) node [anchor=north west][inner sep=0.75pt]    {$p$};
-	\draw (353.2,51.2) node [anchor=north west][inner sep=0.75pt]    {$T'$};
-	\draw (414,30.4) node [anchor=north west][inner sep=0.75pt]    {$T$};
+\begin{tikzpicture}[child/.style={draw,circle},father/.style={child,fill}]
+  \draw (0,0) -- (4,0) -- (2,4) -- cycle;
+  \draw (0.6,1.2) -- (1.5,1.2) -- (1.9,1.7) -- (3.15,1.7);
+  \node (p) [father,label=above:{$p$}] at (2.4,1.97) {};
+  \node (q) [child,label=below left:{$q$}] at (2.1,1.45) {};
+  \node (qp) [child,label=below:{$q+1$}] at (2.7,1.45) {};
+  \draw (p) -- (q);
+  \draw (p) -- (qp);
+  \node at (2,3) {$T'$};
+  \node at (0.8,3.5) {$T$};
 \end{tikzpicture}

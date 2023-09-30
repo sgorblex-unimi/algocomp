@@ -21,13 +21,32 @@ Nota bene che quando una correzione viene implementata bisogna rimuovere i relat
 
 
 ## Correzioni non banali
-- occorre rifare in modo pulito tutte le figure pesantemente basate su coordinate (retaggio della vecchia versione in cui le figure erano probabilmente esportate da qualche GUI)
+- occorre rifare in modo pulito tutte le figure pesantemente basate su coordinate (retaggio della vecchia versione in cui le figure erano probabilmente esportate da qualche GUI). Vedi sezione sotto
 - bisogna decidere come gestire la definizione di NP. Nel primo capitolo non viene spiegato in modo esaustivo, quindi potrebbe essere utile spostare il concetto di macchina di Turing oracolare lì (invece che prima del verificatore probabilistico per PCP)
 - in BiMaxMatching, bisogna spiegare meglio come funziona la visita per trovare il cammino aumentante, spiegando perché tale approccio non sia possibile per il caso non bipartito (riferirsi al fatto che MaxMatching richiede una visita più complessa per trovare un cammino aumentante)
 - nella costruzione del bad input per GreedySetCover, bisogna capire e specificare che valori di n sono buoni, ed eventuali ceiling/floor
 - in 2LB, bisogna integrare le informazioni del pdf di Boldi riguardo al caso in cui l'ultimo task della macchina più carica sia assegnato nella fase esaustiva (possibilmente senza copiare l'intera dimostrazione)
 - in MaxSat PCP, si fa l'assunzione che il numero di query sia costante tra i diversi input, il che permette di scegliere un epsilon ma non è banale. Analizzare il caso e dimostrare che non c'è perdita di generalità. A seconda di quanto il risultato è complesso, potrebbe essere necessario includere la cosa in un'appendice
 - nella struttura di Jacobson, bisogna capire e specificare se sono necessari eventuali ceiling/floor e requisiti sulla lunghezza del vettore
+
+
+### Immagini da sistemare
+- [ ] Classi di complessità strutturale: P e NP-c dovrebbero essere divisi da una linea tratteggiata. Allo stesso modo l'unione di P e NP-c dovrebbe essere delimitata da una linea tratteggiata
+- [x] Classi ottimizzazione
+- [x] BiMaxMatching: bipartito, aumentante pre, aumentante post
+- [ ] CenterSelectionPlus: rifare
+- [ ] GreedySetCover: chiarire la teoria (quali valori di n sono validi) e rifare
+- [x] Christofides
+- [x] Macchine di Turing: deterministica, probabilistica, oracolare, verificatore probabilistico
+- [ ] Jacobson - blocchi e superblocchi, calcolo del rango: rifare. Scegliere migliori dimensioni di blocchi e superblocchi
+- [ ] Alberi binari: migliorare figura del passo induttivo; la radice dovrebbe essere adiacente alle radici dei sottoalberi
+- [x] Alberi binari: albero con vettore, calcolo del rango
+- [ ] Parentesi bilanciate: funzione eccesso
+- [ ] Parentesi bilanciate - divisione in blocchi: figura colorata confusionaria. Tutto un po' schiacciato. Rifare
+- [ ] Parentesi bilanciate - foresta ordinata: pulire sorgente
+- [ ] Parentesi bilanciate - isomorfismo alberi/foreste: rifare
+- [ ] Peeling MWHC: brutto grafo e notazione incoerente
+
 
 
 

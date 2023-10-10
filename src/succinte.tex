@@ -64,8 +64,11 @@ Le strutture di rango e selezione sono ADT che consistono in un vettore $b$ di l
 Per esempio, se $b = [0 1 1 0 1 0 1]$ le tabelle di rank e select di $b$ sono descritte in \cref{table:rank_sel}.
 \begin{table}[ht]
 	\centering
+	\caption{Operazioni di rango e selezione su $b$.}
+	\label{table:rank_sel}
 	\begin{subtable}{0.45\textwidth}
 		\centering
+		\caption{$\rank_b(p)$}
 		\begin{tabular}{c|c}
 			$p$ & $\rank_b(p)$ \\ \hline
 			0   & 0            \\
@@ -77,10 +80,10 @@ Per esempio, se $b = [0 1 1 0 1 0 1]$ le tabelle di rank e select di $b$ sono de
 			6   & 3            \\
 			7   & 4
 		\end{tabular}
-		\caption{$\rank_b(p)$}
 	\end{subtable}
 	\begin{subtable}{0.45\textwidth}
 		\centering
+		\caption{$\select_b(p)$}
 		\begin{tabular}{c|c}
 			$k$ & $\select_b(p)$ \\ \hline
 			0   & 1              \\
@@ -89,10 +92,7 @@ Per esempio, se $b = [0 1 1 0 1 0 1]$ le tabelle di rank e select di $b$ sono de
 			3   & 6              \\
 			4   & 7
 		\end{tabular}
-		\caption{$\select_b(p)$}
 	\end{subtable}
-	\caption{Operazioni di rango e selezione su $b$.}
-	\label{table:rank_sel}
 \end{table}
 
 Valgono due proprietà fondamentali per le operazioni di rango e selezione:
@@ -124,6 +124,8 @@ Si costruiscono quindi due vettori, $S$ e $B$. Per ogni superblocco $i$, $S_i$ c
 
 \begin{table}
 	\centering
+	\caption{Rango di ogni possibile blocco di lunghezza $4$.}
+	\label{table:example_rank_block4}
 	\begin{tabular}{|c|c|c|c|c|c|c|}
 		\hline
 		\multirow{2}{*}{$0000$} & $p$        & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
@@ -134,8 +136,6 @@ Si costruiscono quindi due vettori, $S$ e $B$. Per ogni superblocco $i$, $S_i$ c
 		\multirow{2}{*}{$1111$} & $p$        & $0$ & $1$ & $2$ & $3$ & $4$ \\ \cline{2-7}
 		                        & $\rank(p)$ & $0$ & $1$ & $2$ & $3$ & $4$ \\ \hline
 	\end{tabular}
-	\caption{Rango di ogni possibile blocco di lunghezza $4$.}
-	\label{table:example_rank_block4}
 \end{table}
 
 I ranghi delle posizioni in un blocco sono salvati in un'apposita tabella, per evitare di doverli calcolare ogni volta. È quindi necessaria una tabella (simile a quanto mostrato in \cref{table:example_rank_block4}) che contiene il rango di ogni posizione, per ogni possibile tipo di blocco. I tipi di blocco possibili sono, in numero:

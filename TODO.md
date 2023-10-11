@@ -34,7 +34,7 @@ Nota bene che quando una correzione viene implementata bisogna rimuovere i relat
 - [ ] Classi di complessità strutturale: P e NP-c dovrebbero essere divisi da una linea tratteggiata. Allo stesso modo l'unione di P e NP-c dovrebbe essere delimitata da una linea tratteggiata
 - [x] Classi ottimizzazione
 - [x] BiMaxMatching: bipartito, aumentante pre, aumentante post
-- [ ] CenterSelectionPlus: rifare
+- [x] CenterSelectionPlus
 - [ ] GreedySetCover: chiarire la teoria (quali valori di n sono validi) e rifare
 - [x] Christofides
 - [x] Macchine di Turing: deterministica, probabilistica, oracolare, verificatore probabilistico

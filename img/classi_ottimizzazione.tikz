@@ -1,14 +1,14 @@
-\begin{tikzpicture}
-\node at (-1.1,2.5) {\NPO};
-\draw (0,0) ellipse (4cm and 3cm);
-\node at (-1.1,1.7) {\APX};
-\draw (-0.5,-0.3) ellipse (3cm and 2.5cm);
-\node at (-1.1,0.9) {\PTAS};
-\draw (-0.5,-0.6) ellipse (2.5cm and 2cm);
-\node at (-1.1,0) {\FPTAS};
-\draw (-0.5,-0.9) ellipse (2cm and 1.5cm);
-\node at (-1.1,-1.1) {\PO};
-\draw (-0.5,-1.2) ellipse (1.5cm and 0.9cm);
-\node at (3.1,-0.3) {\NPO-c};
-\draw[dashed] (1.7,-0.5) ellipse (2cm and 1.5cm);
+\begin{tikzpicture}[line width=0.75pt]
+	\node at (-1.1,2.5) {\NPO};
+	\draw (0,0) ellipse (4cm and 3cm);
+	\node at (-1.1,1.7) {\APX};
+	\draw (-0.5,-0.3) ellipse (3cm and 2.5cm);
+	\node at (-1.1,0.9) {\PTAS};
+	\draw (-0.5,-0.6) ellipse (2.5cm and 2cm);
+	\node at (-1.1,0) {\FPTAS};
+	\draw (-0.5,-0.9) ellipse (2cm and 1.5cm);
+	\node at (-1.1,-1.1) {\PO};
+	\draw (-0.5,-1.2) ellipse (1.5cm and 0.9cm);
+	\node at (3.1,-0.3) {\NPO-c};
+	\draw[dashed] (1.7,-0.5) ellipse (2cm and 1.5cm);
 \end{tikzpicture}

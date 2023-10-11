@@ -1,11 +1,11 @@
-\begin{tikzpicture}[set/.style={black,rounded corners=10,thick}]
-	\draw[set] (0,0) rectangle (10,5.5);
-	\draw[set] (4.9,5.1) node {Problemi decidibili};
-	\draw[set] (0.5,0.5) rectangle (9.5,4.7);
-	\draw[set] (5,4.3) node {\NP};
-	\draw[set] (1,1) rectangle (5,4);
-	\draw[set] (3,2.5) node {\P};
-	\draw[set] (5.1,1) rectangle (9,4);
-	\draw[set] (7,3) node {\NP-completi};
-	\draw[set] (7,2) node {\Sat};
+\begin{tikzpicture}[line width=0.75pt]
+	\draw         (0,0)      ellipse (4cm and 3cm);
+	\draw         (0,2.5)    node {Decidibili};
+	\draw         (0,-0.3)   ellipse (3.2cm and 2.4cm);
+	\draw         (0,1.7)    node {\NP};
+	\draw[dashed] (0,-0.5)   ellipse (2.7cm and 1.9cm);
+	\draw         (-1.1,0.5) node {\P};
+	\draw         (1.1,0.5)  node {\NP-c};
+	\draw         (1.3,-0.8) node {\Sat};
+	\draw[dashed] (0,-2.36) -- (90:1.4);
 \end{tikzpicture}

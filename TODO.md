@@ -31,7 +31,7 @@ Nota bene che quando una correzione viene implementata bisogna rimuovere i relat
 
 
 ### Immagini da sistemare
-- [ ] Classi di complessità strutturale: P e NP-c dovrebbero essere divisi da una linea tratteggiata. Allo stesso modo l'unione di P e NP-c dovrebbe essere delimitata da una linea tratteggiata
+- [x] Classi di complessità strutturale
 - [x] Classi ottimizzazione
 - [x] BiMaxMatching: bipartito, aumentante pre, aumentante post
 - [x] CenterSelectionPlus

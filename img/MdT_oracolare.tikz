@@ -1,4 +1,4 @@
-\begin{tikzpicture}[-arr/.style={-{Latex[scale=1.5]}}]
+\begin{tikzpicture}
 	\node[draw, rounded corners=5pt,minimum width=2.5cm,minimum height=1.5cm] (tm) {Macchina di Turing};
 	\draw[-arr] (-4,0) -- (tm.west)	node[midway,above] {input};
 	\draw[-arr] (tm.east) -- (4,0)	node[midway,above] {output};

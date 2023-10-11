@@ -1,4 +1,4 @@
-\begin{tikzpicture}[-arr/.style={-{Latex[scale=1.5]}},v/.style={fill=green!40},p/.style={fill=red!40},n/.style={fill=blue!30}]
+\begin{tikzpicture}[v/.style={fill=green!40},p/.style={fill=red!40},n/.style={fill=blue!30}]
 	\matrix (w) [tape] { |[p]| ( & |[v]| ( & |[v]| ) & |[p]| ( & |[n]| ( & |[n]| ) & |[v]| ( & |[v]| ) & |[n]| ) & |[p]| ( & |[v]| ( & |[v]| ) & |[n]| ) & |[n]| ) \\};
 	\draw ([xshift=0.07mm,yshift=6mm]w-1-6.west) -- ([xshift=0.07mm,yshift=-6mm]w-1-6.west);
 	\draw ([xshift=0.07mm,yshift=6mm]w-1-11.west) -- ([xshift=0.07mm,yshift=-6mm]w-1-11.west);

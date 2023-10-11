@@ -1,9 +1,9 @@
-\begin{tikzpicture}[child/.style={draw,circle},father/.style={child,fill}]
+\begin{tikzpicture}
   \draw (0,0) -- (4,0) -- (2,4) -- cycle;
-  \draw (0.6,1.2) -- (1.5,1.2) -- (1.9,1.7) -- (3.15,1.7);
-  \node (p) [father,label=above:{$p$}] at (2.4,1.97) {};
-  \node (q) [child,label=below left:{$q$}] at (2.1,1.45) {};
-  \node (qp) [child,label=below:{$q+1$}] at (2.7,1.45) {};
+  \draw (0.6,1.2) -- (1.6,1.2) -- (1.9,1.7) -- (3.15,1.7);
+  \node (p) [int,label=above:{$p$}] at (2.4,1.97) {};
+  \node (q) [leaf,label=below left:{$q$}] at (2.1,1.45) {};
+  \node (qp) [leaf,label=below:{$q+1$}] at (2.7,1.45) {};
   \draw (p) -- (q);
   \draw (p) -- (qp);
   \node at (2,3) {$T'$};

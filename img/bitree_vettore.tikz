@@ -1,36 +1,36 @@
 \begin{subfigure}[t]{0.45\textwidth}
 	\centering
-	\begin{tikzpicture}[every node/.style={draw,circle,minimum size=4mm},sibling distance=20mm,level distance=10mm,level 3/.style={sibling distance=23mm},level 4/.style={sibling distance=15mm}]
+	\begin{tikzpicture}[every node/.style={int},level distance=1cm,level 3/.style={sibling distance=2cm},level 4/.style={sibling distance=15mm}]
 		\node[label=above:{0}] {}
 			child {
 				node[label=above:{1}] {}
 					child {
-						node[fill,label=above:{3}]{}
+						node[leaf,label=above:{3}]{}
 					}
 					child {
 						node[label=above:{4}] {}
 						child {
 							node[label=above:{5}]{}
 							child {
-								node[fill,label=above:{7}]{}
+								node[leaf,label=above:{7}]{}
 							}
 							child {
-								node[fill,label=above:{8}]{}
+								node[leaf,label=above:{8}]{}
 							}
 						}
 						child {
 							node[label=above:{6}] {}
 							child {
-								node[fill,label=above:{9}] {}
+								node[leaf,label=above:{9}] {}
 							}
 							child {
-								node[fill,label=above:{10}] {}
+								node[leaf,label=above:{10}] {}
 							}
 						}
 					}
 			}
 			child {
-				node[fill,label=above:{2}]{}
+				node[leaf,label=above:{2}]{}
 			};
 	\end{tikzpicture}
 	\caption{Albero binario numerato.}

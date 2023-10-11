@@ -1,12 +1,15 @@
-\begin{tikzpicture}
-	\draw[->] (-1, 0) -- (8.50, 0) node[right] {$x$};
-	\draw[->] (-1, 0) -- (-1, 4) node[above] {$y$};
+\begin{tikzpicture}[point/.style={fill,circle,inner sep=1pt}]
+	\draw[->] (-.5,0) -- (8,0)	node[right] {$i$};
+	\draw[->] (-.5,0) -- (-.5,3.5)	node[above] {$E(i)$};
 
-	\draw (0,0) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (1,1) node[circle,fill,inner sep=1pt]{};
-	\draw (1,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (2,1) node[circle,fill,inner sep=1pt]{};
-	\draw (2,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (3,1) node[circle,fill,inner sep=1pt]{};
-	\draw (3,1) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (4,2) node[circle,fill,inner sep=1pt]{};
-	\draw (4,2) node[circle,fill,inner sep=1pt, label=above:{(}] {} -- (5,2) node[circle,fill,inner sep=1pt]{};
-	\draw (5,2) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (6,1) node[circle,fill,inner sep=1pt]{};
-	\draw (6,1) node[circle,fill,inner sep=1pt, label=above:{)}] {} -- (7,0) node[circle,fill,inner sep=1pt, label=above:{)}]{};
+	\node (i0) [point,label=above:{$($}] at (0,0) {};
+	\node (i1) [point,label=above:{$($}] at (1,1) {};
+	\node (i2) [point,label=above:{$)$}] at (2,1) {};
+	\node (i3) [point,label=above:{$($}] at (3,1) {};
+	\node (i4) [point,label=above:{$($}] at (4,2) {};
+	\node (i5) [point,label=above:{$)$}] at (5,2) {};
+	\node (i6) [point,label=above:{$)$}] at (6,1) {};
+	\node (i7) [point,label=above:{$)$}] at (7,0) {};
+
+	\draw (i0) -- (i1) -- (i2) -- (i3) -- (i4) -- (i5) -- (i6) -- (i7);
 \end{tikzpicture}

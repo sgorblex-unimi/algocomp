@@ -474,12 +474,12 @@ Sia $p$ la posizione di una parentesi nel blocco $B_i$. La parentesi $w_p$ si di
 		\end{description}
 \end{description}
 Indichiamo con $\dypion(B_i)$ l'insieme delle pioniere nel blocco $B_i$ e con $\dypion(w)$ l'insieme delle pioniere complessive nella parola $w$.
-Ad esempio nella figura \ref{fig:paren_blocks} le parentesi gialle sono vicine, quelle rosse sono pioniere e quelle blu sono non-pioniere.
+A titolo si esempio si veda la figura \ref{fig:paren_blocks}.
 
 \begin{figure}[ht]
 	\centering
 	\input{img/dyck_classi_parentesi.tikz}
-	\caption{Divisione in blocchi di una parola di Dyck.}
+	\caption{Divisione in blocchi di una parola di Dyck. Le parentesi verdi sono vicine, quelle rosse sono pioniere e quelle blu sono non-pioniere.}
 	\label{fig:paren_blocks}
 \end{figure}
 
@@ -638,12 +638,11 @@ Si consideri la funzione $B:F_n\to B_n$ (dove $B_n$ è l'insieme degli alberi bi
 % TODO: anche qui si potrebbe essere più formali. Per rivedere queste definizioni andrebbero riviste quelle di albero binario al relativo paragrafo
 \begin{itemize}
 	\item $B(\seq{})$ è l'albero costituito dalla sola radice;
-	\item $B(\seq{\tree(f)},g)$ è l'albero binario costituito da una radice che ha per figlio sinistro $B(f)$ e destro $B(g)$.
+	\item $B(\seq{\tree(f),g})$ è l'albero binario costituito da una radice che ha per figlio sinistro $B(f)$ e destro $B(g)$.
 \end{itemize}
 
 \begin{figure}[ht]
 	\centering
-	% TODO: bruttissima, migliorare
 	\input{img/dyck_isoforeste.tikz}
 	\caption{Esempio di calcolo dell'isomorfismo tra foreste ordinate e alberi binari.}
 	\label{fig:iso_forest_bintree_example}

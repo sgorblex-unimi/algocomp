@@ -41,10 +41,7 @@ Nota bene che quando una correzione viene implementata bisogna rimuovere i relat
 - [ ] Jacobson - blocchi e superblocchi, calcolo del rango: rifare. Scegliere migliori dimensioni di blocchi e superblocchi
 - [ ] Alberi binari: migliorare figura del passo induttivo; la radice dovrebbe essere adiacente alle radici dei sottoalberi
 - [x] Alberi binari: albero con vettore, calcolo del rango
-- [ ] Parentesi bilanciate: funzione eccesso
-- [ ] Parentesi bilanciate - divisione in blocchi: figura colorata confusionaria. Tutto un po' schiacciato. Rifare
-- [ ] Parentesi bilanciate - foresta ordinata: pulire sorgente
-- [ ] Parentesi bilanciate - isomorfismo alberi/foreste: rifare
+- [x] Parentesi bilanciate: funzione eccesso, divisione in blocchi, foresta ordinata, isomorfismo alberi/foreste
 - [ ] Peeling MWHC: brutto grafo e notazione incoerente
 
 

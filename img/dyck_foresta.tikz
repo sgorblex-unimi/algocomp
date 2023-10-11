@@ -1,13 +1,17 @@
-\begin{tikzpicture}
-	\draw (0,1)	node[fill,circle, inner sep=1pt] {} -- (0,0) node[fill,circle,inner sep=1pt] {};
+\begin{tikzpicture}[scale=0.8]
+	\node[int] (T0) {} child { node[leaf] {}};
 
-	\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (2,0) node[fill,circle,inner sep=1pt] {};
-	\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (1,0) node[fill,circle,inner sep=1pt] {};
-	\draw (2,1)	node[fill,circle, inner sep=1pt] {} -- (3,0) node[fill,circle,inner sep=1pt] {};
+	\node[int,right=1.5cm of T0] (T1) {}
+	child {node[leaf] {} }
+	child {node[leaf] {} };
 
-	\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (4,0) node[fill,circle,inner sep=1pt] {};
-	\draw (4,0)	node[fill,circle, inner sep=1pt] {} -- (4,-1) node[fill,circle,inner sep=1pt] {};
-	\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (5,0) node[fill,circle,inner sep=1pt] {};
-	\draw (5,1)	node[fill,circle, inner sep=1pt] {} -- (6,0) node[fill,circle,inner sep=1pt] {};
-	\draw (6,0)	node[fill,circle, inner sep=1pt] {} -- (6,-1) node[fill,circle,inner sep=1pt] {};
+	\node[int,right=2.5cm of T1] (T1) {}
+	child {node[int] {}
+			child {node[leaf] {}}
+		}
+	child {node[leaf] {} }
+	child {node[int] {}
+			child {node[leaf] {}}
+			child {node[leaf] {}}
+		};
 \end{tikzpicture}
